@@ -1,5 +1,9 @@
 package com.sparta.peopleoff.domain.menu.repository;
 
-public interface MenuRepository {
+import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MenuRepository extends JpaRepository<MenuEntity, UUID> {
 
 }

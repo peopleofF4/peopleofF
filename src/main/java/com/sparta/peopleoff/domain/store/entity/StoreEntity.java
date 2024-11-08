@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_store")
@@ -53,6 +54,7 @@ public class StoreEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
+  @Setter
   private DeletionStatusEnum deletionStatus = DeletionStatusEnum.ACTIVE;
 
   @Column

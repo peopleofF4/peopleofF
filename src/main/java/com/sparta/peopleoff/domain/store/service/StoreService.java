@@ -2,12 +2,16 @@ package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
+import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
-import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreService {
@@ -38,5 +42,19 @@ public class StoreService {
     );
 
     return storeRepository.save(newStore);
+  }
+
+  @Transactional(readOnly = true)
+  public StoreGetResponseDto getStoreById(UUID storeId) {
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 ID의 가게가 존재하지 않습니다."));
+    return new StoreGetResponseDto(store);
+  }
+
+  @Transactional(readOnly = true)
+  public List<StoreGetResponseDto> getAllStores() {
+    return storeRepository.findAll().stream()
+        .map(StoreGetResponseDto::new)
+        .collect(Collectors.toList());
   }
 }

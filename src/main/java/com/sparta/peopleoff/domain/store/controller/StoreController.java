@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -74,5 +75,11 @@ public class StoreController {
   public ResponseEntity<?> deleteStore(@PathVariable UUID storeId) {
     storeService.deleteStore(storeId);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<List<StoreGetResponseDto>> searchStores(@RequestParam String keyword) {
+    List<StoreGetResponseDto> stores = storeService.searchStores(keyword);
+    return ResponseEntity.ok(stores);
   }
 }

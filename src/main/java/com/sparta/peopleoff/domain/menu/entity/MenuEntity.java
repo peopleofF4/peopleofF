@@ -49,4 +49,10 @@ public class MenuEntity {
     this.price = price;
     this.store = store;
   }
+
+  public void update(String menuName, String menuDescription, int price) {
+    this.menuName = menuName;
+    this.menuDescription = menuDescription;
+    this.price = price;
+  }
 }

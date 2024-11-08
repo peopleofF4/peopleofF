@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.menu.service;
 
 import com.sparta.peopleoff.domain.menu.dto.MenuPostRequestDto;
+import com.sparta.peopleoff.domain.menu.dto.MenuPutRequestDto;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.menu.repository.MenuRepository;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
@@ -33,5 +34,14 @@ public class MenuService {
     );
 
     return menuRepository.save(menu);
+  }
+
+  @Transactional
+  public MenuEntity updateMenu(UUID menuId, MenuPutRequestDto requestDto) {
+    MenuEntity menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 메뉴 ID입니다."));
+
+    menu.update(requestDto.getMenuName(), requestDto.getMenuDescription(), requestDto.getPrice());
+    return menu;
   }
 }

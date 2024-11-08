@@ -1,6 +1,6 @@
 package com.sparta.peopleoff.domain.order.entity;
 
-import com.sparta.peopleoff.domain.order_detail.entity.OrderDetailEntity;
+import com.sparta.peopleoff.domain.orderdetail.entity.OrderDetailEntity;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;

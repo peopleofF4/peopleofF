@@ -1,8 +1,7 @@
-package com.sparta.peopleoff.domain.order_detail.entity;
+package com.sparta.peopleoff.domain.orderdetail.entity;
 
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
-import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

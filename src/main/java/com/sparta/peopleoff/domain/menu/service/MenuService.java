@@ -69,4 +69,11 @@ public class MenuService {
     }
     menuRepository.deleteById(menuId);
   }
+
+  public List<MenuGetResponseDto> searchMenus(String keyword) {
+    return menuRepository.findByMenuNameContainingOrMenuDescriptionContaining(keyword, keyword)
+        .stream()
+        .map(MenuGetResponseDto::new)
+        .collect(Collectors.toList());
+  }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -40,22 +41,28 @@ public class MenuController {
     return ResponseEntity.ok(menus);
   }
 
-  @GetMapping("menu/{menuId}")
+  @GetMapping("/menu/{menuId}")
   public ResponseEntity<MenuGetResponseDto> getMenuById(@PathVariable UUID menuId) {
     MenuGetResponseDto menu = menuService.getMenuById(menuId);
     return ResponseEntity.ok(menu);
   }
 
-  @PutMapping("menu/{menuId}")
+  @PutMapping("/menu/{menuId}")
   public ResponseEntity<MenuEntity> updateMenu(@PathVariable UUID menuId,
       @RequestBody MenuPutRequestDto requestDto) {
     MenuEntity menu = menuService.updateMenu(menuId, requestDto);
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("menu/{menuId}")
+  @DeleteMapping("/menu/{menuId}")
   public ResponseEntity<?> deleteMenu(@PathVariable UUID menuId) {
     menuService.deleteMenu(menuId);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/menu/search")
+  public ResponseEntity<List<MenuGetResponseDto>> searchMenus(@RequestParam String keyword) {
+    List<MenuGetResponseDto> menus = menuService.searchMenus(keyword);
+    return ResponseEntity.ok(menus);
   }
 }

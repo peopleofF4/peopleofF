@@ -8,4 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MenuRepository extends JpaRepository<MenuEntity, UUID> {
 
   List<MenuEntity> findByStoreId(UUID storeId);
+
+  List<MenuEntity> findByMenuNameContainingOrMenuDescriptionContaining(String nameKeyword,
+      String descriptionKeyword);
 }

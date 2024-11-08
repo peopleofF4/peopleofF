@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.store.service;
 
+import com.sparta.peopleoff.common.enums.DeletionStatusEnum;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -69,5 +70,13 @@ public class StoreService {
         .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 이름입니다."));
 
     store.update(storeUpdateRequestDto, category);
+  }
+
+  @Transactional
+  public void deleteStore(UUID storeId) {
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
+
+    store.setDeletionStatus(DeletionStatusEnum.DELETED); // 삭제 상태로 변경
   }
 }

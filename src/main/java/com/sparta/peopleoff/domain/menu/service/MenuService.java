@@ -44,4 +44,12 @@ public class MenuService {
     menu.update(requestDto.getMenuName(), requestDto.getMenuDescription(), requestDto.getPrice());
     return menu;
   }
+
+  @Transactional
+  public void deleteMenu(UUID menuId) {
+    if (!menuRepository.existsById(menuId)) {
+      throw new IllegalArgumentException("유효하지 않은 메뉴 ID입니다.");
+    }
+    menuRepository.deleteById(menuId);
+  }
 }

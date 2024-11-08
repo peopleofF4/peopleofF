@@ -6,6 +6,7 @@ import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.menu.service.MenuService;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,5 +36,11 @@ public class MenuController {
       @RequestBody MenuPutRequestDto requestDto) {
     MenuEntity menu = menuService.updateMenu(menuId, requestDto);
     return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{menuId}")
+  public ResponseEntity<?> deleteMenu(@PathVariable UUID menuId) {
+    menuService.deleteMenu(menuId);
+    return ResponseEntity.noContent().build();
   }
 }

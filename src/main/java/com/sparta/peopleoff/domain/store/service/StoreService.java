@@ -77,6 +77,16 @@ public class StoreService {
     StoreEntity store = storeRepository.findById(storeId)
         .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
 
-    store.setDeletionStatus(DeletionStatusEnum.DELETED); // 삭제 상태로 변경
+    store.setDeletionStatus(DeletionStatusEnum.DELETED);
+  }
+
+  @Transactional(readOnly = true)
+  public List<StoreGetResponseDto> searchStores(String keyword) {
+    return storeRepository
+        .findByStoreNameContainingOrCategory_CategoryNameContainingOrStoreAddressContainingOrStorePhoneNumberContaining(
+            keyword, keyword, keyword, keyword)
+        .stream()
+        .map(StoreGetResponseDto::new)
+        .collect(Collectors.toList());
   }
 }

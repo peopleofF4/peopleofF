@@ -3,6 +3,7 @@ package com.sparta.peopleoff.domain.store.entity;
 import com.sparta.peopleoff.common.enums.DeletionStatusEnum;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatusEnum;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
@@ -81,6 +82,15 @@ public class StoreEntity {
     this.businessNumber = businessNumber;
     this.minimumOrderPrice = minimumOrderPrice;
     this.user = user;
+    this.category = category;
+  }
+
+  public void update(StorePutRequestDto dto, CategoryEntity category) {
+    this.storeName = dto.getStoreName();
+    this.storeAddress = dto.getStoreAddress();
+    this.storePhoneNumber = dto.getStorePhoneNumber();
+    this.businessNumber = dto.getBusinessNumber();
+    this.minimumOrderPrice = dto.getMinimumOrderPrice();
     this.category = category;
   }
 }

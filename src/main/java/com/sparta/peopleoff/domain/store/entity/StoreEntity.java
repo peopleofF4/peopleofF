@@ -1,18 +1,20 @@
 package com.sparta.peopleoff.domain.store.entity;
 
-
+import com.sparta.peopleoff.common.enums.DeletionStatusEnum;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatusEnum;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
@@ -44,13 +46,13 @@ public class StoreEntity {
   @Column(nullable = false)
   private int minimumOrderPrice;
 
-  // Enum : pending(default):보류 / accepted:수락 / rejected:거절
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private String registrationStatus;
+  private RegistrationStatusEnum registrationStatus = RegistrationStatusEnum.PENDING;
 
-  // Enum : active:활성 / deleted:삭제
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private String deletionStatus;
+  private DeletionStatusEnum deletionStatus = DeletionStatusEnum.ACTIVE;
 
   @Column
   private int totalRating;
@@ -62,7 +64,7 @@ public class StoreEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
   private CategoryEntity category;
 
@@ -70,4 +72,15 @@ public class StoreEntity {
   private List<MenuEntity> menuList;
 
 
+  public StoreEntity(String storeName, String storeAddress, String storePhoneNumber,
+      String businessNumber, int minimumOrderPrice, UserEntity user,
+      CategoryEntity category) {
+    this.storeName = storeName;
+    this.storeAddress = storeAddress;
+    this.storePhoneNumber = storePhoneNumber;
+    this.businessNumber = businessNumber;
+    this.minimumOrderPrice = minimumOrderPrice;
+    this.user = user;
+    this.category = category;
+  }
 }

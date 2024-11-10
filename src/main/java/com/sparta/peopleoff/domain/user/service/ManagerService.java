@@ -105,9 +105,24 @@ public class ManagerService {
 
         // [예외3] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
-                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다.."));
+                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
 
         store.setRegistrationStatus(registrationStatus);
+
+        storeRepository.save(store);
+    }
+
+    public void updateStoreDelete(UUID storeId, DeletionStatus deletionStatus) {
+        // [예외1] - Admin 권한 체크
+//        checkAdminAuthority(user);
+
+        // [예외2] - 이전과 같은 상태
+
+        // [예외3] - 존재하지 않는 가게
+        StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
+                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
+
+        store.setDeletionStatus(deletionStatus);
 
         storeRepository.save(store);
     }

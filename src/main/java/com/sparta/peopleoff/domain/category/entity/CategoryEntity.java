@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.category.entity;
 
+import com.sparta.peopleoff.domain.category.dto.CategoryRequestDto;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
@@ -16,6 +17,9 @@ public class CategoryEntity {
   private UUID id;
 
   @Column(nullable = false, length = 100)
-  private String category_name;
+  private String categoryName;
 
+  public CategoryEntity(CategoryRequestDto categoryRequestDto) {
+    this.categoryName = categoryRequestDto.getCategoryName();
+  }
 }

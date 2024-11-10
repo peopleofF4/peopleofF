@@ -27,7 +27,6 @@ public class AdminService {
      * @param user
      * @return
      */
-    @Transactional
     public List<UserResponseDto> getUsers(User user) {
         // [예외1] - Admin 권한 체크
 //        checkAdminAuthority(user);
@@ -55,7 +54,7 @@ public class AdminService {
                 userEntity.getRole()
         );
     }
-
+//    @Transactional
 //    public ManagerApproveResponseDto managerApprove() {
 //
 //    }

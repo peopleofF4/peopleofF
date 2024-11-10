@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.user.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
@@ -67,5 +68,14 @@ public class ManagerController {
                                                                   @RequestParam RegistrationStatus registrationStatus) {
         managerService.updateStoreRegist(storeId, registrationStatus);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("가게 등록 상태를 변경했습니다."));
+    }
+
+    // 가게 삭제 승인 / 거부
+    @PutMapping("/store/{store_id}/regist")
+    private ResponseEntity<ApiResponse<String>> updateStoreDelete(//@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @PathVariable UUID storeId,
+                                                                  @RequestParam DeletionStatus deletionStatus) {
+        managerService.updateStoreDelete(storeId, deletionStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("가게 삭제 상태를 변경했습니다."));
     }
 }

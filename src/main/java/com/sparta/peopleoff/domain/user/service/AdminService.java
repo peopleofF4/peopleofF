@@ -56,8 +56,9 @@ public class AdminService {
         );
     }
 
-    public ManagerApproveResponseDto managerApprove() {
-    }
+//    public ManagerApproveResponseDto managerApprove() {
+//
+//    }
 
 //    private void checkAdminAuthority(User user) {
 //        private void checkAdminAuthority(User user) {

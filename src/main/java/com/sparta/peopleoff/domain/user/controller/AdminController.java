@@ -33,11 +33,11 @@ public class AdminController {
 //        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userResponseDtos));
 //    }
 
-    // 매니저 등록 승인
-    @PutMapping("/{userId}")
-    private ResponseEntity<ApiResponse<ManagerApproveResponseDto>> ManagerApprove() {
-        ManagerApproveResponseDto managerApproveResponseDto = adminService.managerApprove();
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(managerApproveResponseDto));
-    }
+//    // 매니저 등록 승인
+//    @PutMapping("/{userId}")
+//    private ResponseEntity<ApiResponse<ManagerApproveResponseDto>> ManagerApprove() {
+//        ManagerApproveResponseDto managerApproveResponseDto = adminService.managerApprove();
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(managerApproveResponseDto));
+//    }
 }

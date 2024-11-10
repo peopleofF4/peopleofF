@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 public class UserResponseDto {
     private Long id;
-    private String nickname;
+    private String UserName
+    private String nickName;
     private String email;
     private String phoneNumber;
     private String address;
@@ -14,7 +15,7 @@ public class UserResponseDto {
 
     public UserResponseDto(UserEntity user) {
         this.id = user.getId();
-        this.nickname = user.getNickName();
+        this.nickName = user.getNickName();
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
         this.address = user.getAddress();
@@ -24,7 +25,18 @@ public class UserResponseDto {
     public UserResponseDto(Long id, String nickName, String email,
                            String phoneNumber, String address, String role) {
         this.id = id;
-        this.nickname = nickName;
+        this.nickName = nickName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.role = role;
+    }
+
+    public UserResponseDto(Long id, String userName, String nickName, String email,
+                           String phoneNumber, String address, String role) {
+        this.id = id;
+        this.UserName = userName;
+        this.nickName = nickName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;

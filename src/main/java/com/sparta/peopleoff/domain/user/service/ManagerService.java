@@ -16,6 +16,7 @@ public class ManagerService {
 
     private final UserRepository userRepository;
 
+
     @Transactional
     public void deleteUser(Long userIdToDelete, User user) {
         // [예외1] - 없는 사용자

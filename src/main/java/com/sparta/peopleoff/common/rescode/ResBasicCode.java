@@ -15,7 +15,6 @@ public enum ResBasicCode implements ResCodeIfs {
 
   OK(HttpStatus.OK.value(), "200", "Success"),
   BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "400", "Bad Request"),
-  NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "404", "Not Found"),
   SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "500", "UnKnone Server Error"),
   NULL_POINT(HttpStatus.INTERNAL_SERVER_ERROR.value(), "512", "Null point");
 

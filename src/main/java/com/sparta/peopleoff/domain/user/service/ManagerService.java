@@ -3,6 +3,7 @@ package com.sparta.peopleoff.domain.user.service;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
+import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -23,7 +24,7 @@ public class ManagerService {
 
     @Transactional
     public void deleteUser(Long userIdToDelete, User user) {
-        // [예외1] - 없는 사용자
+        // [예외1] - 존재하지 않는 사용자
         UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
@@ -49,7 +50,7 @@ public class ManagerService {
 
         // [예외2] - 검색결과가 없음
         if (searchUsers.isEmpty()) {
-            throw new CustomApiException(ResBasicCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
         }
 
         return searchUsers.stream()
@@ -64,6 +65,24 @@ public class ManagerService {
                         ))
                 .collect(Collectors.toList());
 
+    }
+
+    /**
+     * 유저 권한 수정
+     * @param userId
+     */
+    @Transactional
+    public void updateUserRole(Long userId/*, User user*/, UserRoleRequestDto userRoleRequestDto) {
+        // [예외1] - Admin 권한 체크
+//        checkAdminAuthority(user);
+
+        // [예외2] - 없는 사용자
+        UserEntity user = userRepository.findById(userId).orElseThrow(()
+                -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
+
+        user.setRole(userRoleRequestDto.getRole());
+
+        userRepository.save(user);
     }
 
 //    private void checkAdminAuthority(User user) {

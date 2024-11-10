@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.user.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
+import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.service.ManagerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,5 +38,19 @@ public class ManagerController {
     ) {
         List<UserResponseDto> responseDtos = managerService.searchUser(userName/*, userDetails*/);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
+    }
+
+    /**
+     * 유저 권한 수정
+     * @param userId
+     * @return
+     */
+    @PutMapping("/user/{userId}/role/update")
+    private ResponseEntity<ApiResponse<String>> updateUserRole(@PathVariable Long userId,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserRoleRequestDto userRoleRequestDto
+    ) {
+        managerService.updateUserRole(userId/*, userDetails.getUser()*/, userRoleRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("유저 권한 수정을 성공했습니다."));
     }
 }

@@ -1,16 +1,17 @@
 package com.sparta.peopleoff.domain.user.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.service.ManagerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public class ManagerController {
 
     private ManagerService managerService;
 
+//   회원 삭제
 //    @PutMapping("/user/{userId}")
 //   private ResponseEntity<ApiResponse<Long>> deleteUser(@PathVariable Long userId,
 //                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -44,7 +46,7 @@ public class ManagerController {
      * 유저 권한 수정
      * @param userId
      * @return
-     */
+     */ // TODO: 반환 타입 UpdateResponseDto로 바꾸기
     @PutMapping("/user/{userId}/role/update")
     private ResponseEntity<ApiResponse<String>> updateUserRole(@PathVariable Long userId,
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -52,5 +54,18 @@ public class ManagerController {
     ) {
         managerService.updateUserRole(userId/*, userDetails.getUser()*/, userRoleRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("유저 권한 수정을 성공했습니다."));
+    }
+
+    /**
+     * 가게 등록 승인 / 거부
+     * @param registrationStatus
+     * @return
+     */ //TODO: 반환 타입 UpdateResponseDto로 바꾸기
+    @PutMapping("/store/{store_id}/regist")
+    private ResponseEntity<ApiResponse<String>> updateStoreRegist(//@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @PathVariable UUID storeId,
+                                                                  @RequestParam RegistrationStatus registrationStatus) {
+        managerService.updateStoreRegist(storeId, registrationStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("가게 등록 상태를 변경했습니다."));
     }
 }

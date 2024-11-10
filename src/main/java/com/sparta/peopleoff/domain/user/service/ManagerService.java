@@ -1,7 +1,10 @@
 package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 public class ManagerService {
 
     private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
 
 
     @Transactional
@@ -83,6 +88,28 @@ public class ManagerService {
         user.setRole(userRoleRequestDto.getRole());
 
         userRepository.save(user);
+    }
+
+    /**
+     * 가게 등록 승인 / 거부
+     *
+     * @param storeId
+     * @param registrationStatus
+     */
+    @Transactional
+    public void updateStoreRegist(UUID storeId, RegistrationStatus registrationStatus) {
+        // [예외1] - Admin 권한 체크
+//        checkAdminAuthority(user);
+
+        // [예외2] - 이전과 같은 상태
+
+        // [예외3] - 존재하지 않는 가게
+        StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
+                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다.."));
+
+        store.setRegistrationStatus(registrationStatus);
+
+        storeRepository.save(store);
     }
 
 //    private void checkAdminAuthority(User user) {

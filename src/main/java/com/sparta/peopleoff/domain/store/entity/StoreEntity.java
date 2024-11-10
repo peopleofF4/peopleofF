@@ -1,6 +1,8 @@
 package com.sparta.peopleoff.domain.store.entity;
 
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -18,9 +20,11 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_store")
+@Setter
 @Getter
 @NoArgsConstructor
 public class StoreEntity {
@@ -46,11 +50,11 @@ public class StoreEntity {
 
   // Enum : pending(default):보류 / accepted:수락 / rejected:거절
   @Column(nullable = false)
-  private String registrationStatus;
+  private RegistrationStatus registrationStatus;
 
   // Enum : active:활성 / deleted:삭제
   @Column(nullable = false)
-  private String deletionStatus;
+  private DeletionStatus deletionStatus;
 
   @Column
   private int totalRating;

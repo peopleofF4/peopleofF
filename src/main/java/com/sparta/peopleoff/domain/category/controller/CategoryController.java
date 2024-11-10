@@ -28,7 +28,7 @@ public class CategoryController {
     @PostMapping
     private ResponseEntity<ApiResponse<String>> createCategory(
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestPart CategoryRequestDto categoryRequestDto) {
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         categoryService.createCategory(/*userDetails.getUser(), */categoryRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("카테고리 생성을 성공했습니다."));
     }
@@ -43,7 +43,7 @@ public class CategoryController {
     private ResponseEntity<ApiResponse<String>> updateCategory(
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable UUID categoryId,
-            @Valid @RequestPart CategoryRequestDto categoryRequestDto) {
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         categoryService.updateCategory(/*userDetails.getUser(), */categoryId, categoryRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("카테고리 수정을 성공했습니다."));
     }

@@ -1,12 +1,15 @@
 package com.sparta.peopleoff.domain.store.controller;
 
+import com.sparta.peopleoff.common.apiresponse.ApiResponse;
+import com.sparta.peopleoff.common.rescode.ForbiddenErrorCode;
+import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.service.StoreService;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.service.UserService;
+import com.sparta.peopleoff.exception.CustomApiException;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -33,53 +36,54 @@ public class StoreController {
   }
 
   @PostMapping
-  public ResponseEntity<?> registerStore(@RequestBody StorePostRequestDto storeRequestDto) {
+  public ResponseEntity<ApiResponse<Void>> registerStore(
+      @RequestBody StorePostRequestDto storeRequestDto) {
 
     // UserEntity user = userService.getAuthenticatedUser();
 
     // 테스트용
     UserEntity user = userService.findById(storeRequestDto.getUserId())
-        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "인증되지 않은 사용자 ID입니다."));
 
     if (!user.getRole().equals("OWNER")) {
-      return ResponseEntity.status(403).body("권한이 없습니다.");
+      throw new CustomApiException(ForbiddenErrorCode.FORBIDDEN_OWNER, "사장님만 접근 가능합니다.");
     }
 
-    StoreEntity store = storeService.registerStore(storeRequestDto, user);
-
-    return ResponseEntity.ok().build();
+    storeService.registerStore(storeRequestDto, user);
+    return ResponseEntity.ok(ApiResponse.OK(null));
   }
 
   @GetMapping("/{storeId}")
-  public ResponseEntity<StoreGetResponseDto> getStoreById(@PathVariable UUID storeId) {
+  public ResponseEntity<ApiResponse<StoreGetResponseDto>> getStoreById(@PathVariable UUID storeId) {
     StoreGetResponseDto store = storeService.getStoreById(storeId);
-    return ResponseEntity.ok(store);
+    return ResponseEntity.ok(ApiResponse.OK(store));
   }
 
   @GetMapping
-  public ResponseEntity<List<StoreGetResponseDto>> getAllStores() {
+  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores() {
     List<StoreGetResponseDto> stores = storeService.getAllStores();
-    return ResponseEntity.ok(stores);
+    return ResponseEntity.ok(ApiResponse.OK(stores));
   }
 
   @PutMapping("/{storeId}")
-  public ResponseEntity<?> updateStore(
+  public ResponseEntity<ApiResponse<Void>> updateStore(
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
 
     storeService.updateStore(storeId, storeUpdateRequestDto);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(ApiResponse.OK(null));
   }
 
   @DeleteMapping("/{storeId}")
-  public ResponseEntity<?> deleteStore(@PathVariable UUID storeId) {
+  public ResponseEntity<ApiResponse<Void>> deleteStore(@PathVariable UUID storeId) {
     storeService.deleteStore(storeId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(ApiResponse.OK(null));
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<StoreGetResponseDto>> searchStores(@RequestParam String keyword) {
+  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> searchStores(
+      @RequestParam String keyword) {
     List<StoreGetResponseDto> stores = storeService.searchStores(keyword);
-    return ResponseEntity.ok(stores);
+    return ResponseEntity.ok(ApiResponse.OK(stores));
   }
 }

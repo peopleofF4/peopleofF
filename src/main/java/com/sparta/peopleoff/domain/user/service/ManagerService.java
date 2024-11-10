@@ -112,6 +112,11 @@ public class ManagerService {
         storeRepository.save(store);
     }
 
+    /**
+     * 가게 삭제 승인 / 거부
+     * @param storeId
+     * @param deletionStatus
+     */
     public void updateStoreDelete(UUID storeId, DeletionStatus deletionStatus) {
         // [예외1] - Admin 권한 체크
 //        checkAdminAuthority(user);

@@ -70,7 +70,12 @@ public class ManagerController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK("가게 등록 상태를 변경했습니다."));
     }
 
-    // 가게 삭제 승인 / 거부
+    /**
+     * 가게 삭제 승인 / 거부
+     * @param storeId
+     * @param deletionStatus
+     * @return
+     */
     @PutMapping("/store/{store_id}/regist")
     private ResponseEntity<ApiResponse<String>> updateStoreDelete(//@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable UUID storeId,

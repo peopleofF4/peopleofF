@@ -29,10 +29,19 @@ public class Result {
     );
   }
 
-  public static Result ERROR(ResCodeIfs resCodeIfs) {
+  public static Result OK(ResCodeIfs resCode) {
     return new Result(
-        resCodeIfs.getResCode(),
-        resCodeIfs.getDescription()
+        resCode.getHttpStatusCode().toString(),
+        resCode.getResCode(),
+        resCode.getDescription()
+    );
+  }
+
+  public static Result ERROR(ResCodeIfs resCode) {
+    return new Result(
+        resCode.getHttpStatusCode().toString(),
+        resCode.getResCode(),
+        resCode.getDescription()
     );
   }
 

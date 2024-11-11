@@ -3,11 +3,13 @@ package com.sparta.peopleoff.common.apiresponse;
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /*
  * API 공통 spec
  * */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiResponse<T> {
@@ -16,6 +18,19 @@ public class ApiResponse<T> {
 
   @Valid
   T body;
+
+  public static ApiResponse<Void> OK(ResCodeIfs resCode) {
+    ApiResponse<Void> apiResponse = new ApiResponse<>();
+    apiResponse.result = Result.OK(resCode);
+    return apiResponse;
+  }
+
+  public static <T> ApiResponse<T> OK(T data, ResCodeIfs resCode) {
+    ApiResponse<T> apiResponse = new ApiResponse<>();
+    apiResponse.result = Result.OK(resCode);
+    apiResponse.body = data;
+    return apiResponse;
+  }
 
   public static <T> ApiResponse<T> OK(T data) {
     ApiResponse<T> apiResponse = new ApiResponse<>();

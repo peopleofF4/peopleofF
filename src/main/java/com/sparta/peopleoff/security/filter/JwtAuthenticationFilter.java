@@ -34,8 +34,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       HttpServletResponse response) throws AuthenticationException {
     try {
 
-      log.info("JwtAuthenticationFilter attemptAuthentication 메서드 들어옴");
-
       LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(),
           LoginRequestDto.class);
 
@@ -78,22 +76,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   protected void unsuccessfulAuthentication(HttpServletRequest request,
       HttpServletResponse response, AuthenticationException failed) throws IOException {
 
-    // 상태 코드 설정
-//    response.setStatus(HttpStatus.BAD_REQUEST.value());
-//    response.setContentType("application/json");
-
     //ResponseEntity 형식을 맞춰 바디에 에러 정보 작성
     ApiResponse<Object> errorResponse = ApiResponse.ERROR(ResErrorCode.LOGIN_FAILED);
 
     // 일반적인 인증 실패 처리
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType("application/json");
-
-//    Map<String, String> errorDetails = new HashMap<>();
-//    errorDetails.put("error", "Authentication failed");
-//    errorDetails.put("message", failed.getMessage());
-//
-//    new ObjectMapper().writeValue(response.getOutputStream(), errorDetails);
 
     new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
   }

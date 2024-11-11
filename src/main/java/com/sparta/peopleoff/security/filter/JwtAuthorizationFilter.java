@@ -36,7 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     if (StringUtils.hasText(refreshToken)) {
 
-      if (jwtUtil.validateToken(refreshToken)) {
+      if (jwtUtil.validateToken(refreshToken, res)) {
         System.out.println("refreshToken = " + refreshToken);
         checkRefreshTokenAndReIssueAccessToken(res, refreshToken);
         return;
@@ -71,7 +71,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     if (StringUtils.hasText(accessToken)) {
 
-      if (jwtUtil.validateToken(accessToken)) {
+      if (jwtUtil.validateToken(accessToken, response)) {
         Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
 
         log.info("checkAccessTokenAndAuthentication 메서드 실행 후 contextHolder에 set");

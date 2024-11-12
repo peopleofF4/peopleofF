@@ -13,7 +13,7 @@ public enum ResSuccessCode implements ResCodeIfs {
   LOGIN_SUCCESS(HttpStatus.OK.value(), "200", "login Success"),
 
   // TOKEN
-  ACCESS_TOKEN_GENERATED(HttpStatus.OK.value(), "201", "AccessToken is generated");
+  ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated");
 
   private final Integer httpStatusCode;   // 아래와 상응하는 HttpStatusCode
 

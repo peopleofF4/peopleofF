@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.common.apiresponse;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result {
 
   private String resultCode;

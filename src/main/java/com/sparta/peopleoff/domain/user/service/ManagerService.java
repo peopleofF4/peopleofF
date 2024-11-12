@@ -51,7 +51,7 @@ public class ManagerService {
         // [예외1] - Admin 권한 체크
 //        checkAdminAuthority(user);
 
-        List<UserEntity> searchUsers = userRepository.findByUsernameContaining(userName);
+        List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
 
         // [예외2] - 검색결과가 없음
         if (searchUsers.isEmpty()) {

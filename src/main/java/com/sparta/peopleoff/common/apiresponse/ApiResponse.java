@@ -3,6 +3,7 @@ package com.sparta.peopleoff.common.apiresponse;
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /*
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  * */
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class ApiResponse<T> {
 
   private Result result;

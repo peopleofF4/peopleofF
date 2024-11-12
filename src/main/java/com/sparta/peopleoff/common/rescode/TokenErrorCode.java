@@ -13,7 +13,8 @@ public enum TokenErrorCode implements ResCodeIfs {
   INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "2000", "Invalid Token"),
   EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "2001", "Token has expired"),
   TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED.value(), "2002", "Unknown Token Error"),
-  AUTHORIZATION_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "2003",
+  UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "2003", "Unsupported Token"),
+  AUTHORIZATION_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "2004",
       "Authorization Token Not Found"),
   ;
 

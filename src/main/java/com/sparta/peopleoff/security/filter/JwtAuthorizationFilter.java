@@ -30,21 +30,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
       throws ServletException, IOException {
 
-    log.info("JwtAuthorizationFilter doFilterInternal 메서드 들어옴");
-
     String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(req);
 
     if (StringUtils.hasText(refreshToken)) {
 
       if (jwtUtil.validateToken(refreshToken, res)) {
-        System.out.println("refreshToken = " + refreshToken);
         checkRefreshTokenAndReIssueAccessToken(res, refreshToken);
         return;
       }
 
     }
-
-    log.info("JwtAuthorizationFilter doFilterInternal 메서드 checkAccessTokenAndAuthentication 바로전");
 
     checkAccessTokenAndAuthentication(req, res, filterChain);
   }
@@ -74,7 +69,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       if (jwtUtil.validateToken(accessToken, response)) {
         Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
 
-        log.info("checkAccessTokenAndAuthentication 메서드 실행 후 contextHolder에 set");
         setAuthentication(claims.getSubject());
       }
 

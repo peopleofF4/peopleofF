@@ -1,9 +1,9 @@
 package com.sparta.peopleoff.config;
 
+import com.sparta.peopleoff.jwt.JwtUtil;
 import com.sparta.peopleoff.security.UserDetailsServiceImpl;
 import com.sparta.peopleoff.security.filter.JwtAuthenticationFilter;
 import com.sparta.peopleoff.security.filter.JwtAuthorizationFilter;
-import com.sparta.peopleoff.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

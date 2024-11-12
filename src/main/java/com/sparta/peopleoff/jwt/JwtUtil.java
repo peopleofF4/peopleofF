@@ -1,4 +1,4 @@
-package com.sparta.peopleoff.util;
+package com.sparta.peopleoff.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
@@ -10,8 +10,8 @@ import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
-import com.sparta.peopleoff.security.refreshtoken.entity.RefreshTokenEntity;
-import com.sparta.peopleoff.security.refreshtoken.repository.RefreshTokenRepository;
+import com.sparta.peopleoff.jwt.refreshtoken.entity.RefreshTokenEntity;
+import com.sparta.peopleoff.jwt.refreshtoken.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

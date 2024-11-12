@@ -1,4 +1,4 @@
-package com.sparta.peopleoff.security.refreshtoken.entity;
+package com.sparta.peopleoff.jwt.refreshtoken.entity;
 
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;

@@ -1,7 +1,7 @@
-package com.sparta.peopleoff.security.refreshtoken.repository;
+package com.sparta.peopleoff.jwt.refreshtoken.repository;
 
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
-import com.sparta.peopleoff.security.refreshtoken.entity.RefreshTokenEntity;
+import com.sparta.peopleoff.jwt.refreshtoken.entity.RefreshTokenEntity;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

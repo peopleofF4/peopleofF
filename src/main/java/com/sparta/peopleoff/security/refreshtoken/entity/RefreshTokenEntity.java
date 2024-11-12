@@ -35,10 +35,10 @@ public class RefreshTokenEntity {
     this.refreshToken = refreshToken;
   }
 
-  // TODO setter 만들어야 되는지?
+  // 생성자로도
   public void updateRefreshToken(String refreshToken, UserEntity user) {
-    setRefreshToken(refreshToken);
     this.user = user;
+    this.refreshToken = refreshToken;
   }
 
 }

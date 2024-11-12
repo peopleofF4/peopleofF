@@ -45,7 +45,6 @@ public class UserService {
   }
 
   public UserInfoResponseDto getUserInfo(UserDetailsImpl user) {
-    System.out.println("user = " + user.getUser());
     UserInfoResponseDto response = new UserInfoResponseDto(user);
     return response;
   }

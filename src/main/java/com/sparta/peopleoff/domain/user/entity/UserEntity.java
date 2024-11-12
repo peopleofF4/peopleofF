@@ -49,7 +49,7 @@ public class UserEntity {
   @Column(nullable = false, length = 255)
   private String address;
 
-  @Column(nullable = false)
+  @Column
   @Enumerated(EnumType.STRING)
   private ManagerApproveRegistrationStatus managerRegistrationStatus = ManagerApproveRegistrationStatus.NONE;
 

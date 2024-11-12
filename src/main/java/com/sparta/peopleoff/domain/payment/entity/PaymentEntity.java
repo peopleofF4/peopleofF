@@ -5,6 +5,8 @@ import com.sparta.peopleoff.domain.order.entity.enums.OrderStatus;
 import com.sparta.peopleoff.domain.payment.entity.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +32,7 @@ public class PaymentEntity {
 
   // Enum : pending(default):보류 / success:성공 / failed:실패
   @Column(nullable = false, length = 50)
+  @Enumerated(EnumType.STRING)
   private PaymentStatus paymentStatus;
 
   @OneToOne

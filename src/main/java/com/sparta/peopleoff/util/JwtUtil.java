@@ -7,7 +7,7 @@ import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.common.rescode.TokenErrorCode;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
-import com.sparta.peopleoff.domain.user.entity.UserRole;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import com.sparta.peopleoff.security.refreshtoken.entity.RefreshTokenEntity;

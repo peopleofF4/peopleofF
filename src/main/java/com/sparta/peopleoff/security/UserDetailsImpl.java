@@ -1,7 +1,7 @@
 package com.sparta.peopleoff.security;
 
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
-import com.sparta.peopleoff.domain.user.entity.UserRole;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Getter;

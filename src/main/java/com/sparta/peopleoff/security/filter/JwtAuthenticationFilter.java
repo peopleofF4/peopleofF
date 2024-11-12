@@ -5,7 +5,7 @@ import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResErrorCode;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.user.dto.LoginRequestDto;
-import com.sparta.peopleoff.domain.user.entity.UserRole;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import com.sparta.peopleoff.util.JwtUtil;
 import jakarta.servlet.FilterChain;

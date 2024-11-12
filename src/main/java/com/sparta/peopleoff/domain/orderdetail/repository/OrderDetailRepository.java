@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetailEntity, UUID> {
 
+  OrderDetailEntity findByOrderId(UUID orderId);
 }

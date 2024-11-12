@@ -86,4 +86,8 @@ public class OrderEntity {
     this.orderType = OrderType.ON_LINE;
     this.expiredAt = LocalDateTime.now().plusMinutes(5);
   }
+
+  public void cancel() {
+    this.orderStatus = OrderStatus.CANCELED;
+  }
 }

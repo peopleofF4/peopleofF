@@ -7,6 +7,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,5 +28,15 @@ public class OrderController {
   ) {
     orderService.createOnlineOrder(orderPostRequestDto, storeId, user);
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  // 주문 취소
+  @DeleteMapping("/api/v1/order/{orderId}")
+  public ResponseEntity<Void> cancelOrder(
+      @PathVariable UUID orderId,
+      UserEntity user
+  ) {
+    orderService.cancelOrder(orderId, user);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }

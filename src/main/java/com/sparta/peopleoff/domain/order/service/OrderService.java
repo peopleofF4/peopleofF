@@ -11,6 +11,7 @@ import com.sparta.peopleoff.domain.payment.repository.PaymentRepository;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,36 @@ public class OrderService {
     orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
 
     paymentRepository.save(PaymentEntity.toEntity(reqDto.getOrder().getTotalPrice(), orderEntity));
+  }
+
+  @Transactional
+  public void cancelOrder(UUID orderId, UserEntity user) {
+
+    OrderEntity order = findOrderEntity(orderId);
+
+    if (!order.getUser().getId().equals(user.getId())) {
+      throw new IllegalArgumentException("주문을 삭제할 권한이 없습니다.");
+    }
+
+    if (LocalDateTime.now().isAfter(order.getExpiredAt())) {
+      throw new IllegalStateException("주문은 생성 후 5분이 초과하여 삭제할 수 없습니다.");
+    }
+
+    order.cancel();
+
+    orderDetailRepository.delete(orderDetailRepository.findByOrderId(orderId));
+
+    paymentRepository.findByOrderId(orderId).cancel();
+  }
+
+  private OrderEntity findOrderEntity(UUID orderId) {
+    return orderRepository.findById(orderId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 주문번호가 존재하지 않습니다"));
+  }
+
+  private OrderDetailEntity findOrderDetailEntity(UUID orderDetailId) {
+    return orderDetailRepository.findById(orderDetailId).orElseThrow(
+        () -> new IllegalArgumentException("입력한 주문 정보가 존재하지 않습니다."));
   }
 }
 

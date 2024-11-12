@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.payment.entity;
 
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
+import com.sparta.peopleoff.domain.order.entity.enums.OrderStatus;
 import com.sparta.peopleoff.domain.payment.entity.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,5 +44,9 @@ public class PaymentEntity {
 
   public static PaymentEntity toEntity(int totalPayment, OrderEntity order) {
     return new PaymentEntity(totalPayment, order);
+  }
+
+  public void cancel() {
+    this.paymentStatus = PaymentStatus.FAILED;
   }
 }

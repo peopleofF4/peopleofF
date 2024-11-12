@@ -36,4 +36,17 @@ public class OrderDetailEntity {
   @JoinColumn(name = "menu_id", nullable = false)
   private MenuEntity menu;
 
+  private OrderDetailEntity(MenuEntity menu, OrderEntity order, int menuCount) {
+    this.menu = menu;
+    this.order = order;
+    this.menuCount = menuCount;
+  }
+
+  public static OrderDetailEntity toEntity(MenuEntity menu, OrderEntity order, int menuCount) {
+    return new OrderDetailEntity(menu, order, menuCount);
+  }
+
+  public void setOrder(OrderEntity order) {
+    this.order = order;
+  }
 }

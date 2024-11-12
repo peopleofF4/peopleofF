@@ -1,0 +1,57 @@
+package com.sparta.peopleoff.domain.order.service;
+
+import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
+import com.sparta.peopleoff.domain.order.entity.OrderEntity;
+import com.sparta.peopleoff.domain.order.repository.OrderRepository;
+import com.sparta.peopleoff.domain.orderdetail.entity.OrderDetailEntity;
+import com.sparta.peopleoff.domain.orderdetail.repository.OrderDetailRepository;
+import com.sparta.peopleoff.domain.payment.entity.PaymentEntity;
+import com.sparta.peopleoff.domain.payment.repository.PaymentRepository;
+import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.repository.StoreRepository;
+import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+  private final OrderRepository orderRepository;
+  private final OrderDetailRepository orderDetailRepository;
+  private final StoreRepository storeRepository;
+  private final PaymentRepository paymentRepository;
+
+
+  @Transactional
+  public void createOnlineOrder(OrderPostRequestDto reqDto, UUID storeId, UserEntity user) {
+
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new IllegalArgumentException("입력한 가게의 정보가 존재하지 않습니다"));
+
+    OrderEntity orderEntityForSave = reqDto.getOrder().toEntity(store, user);
+    OrderEntity orderEntity = orderRepository.save(orderEntityForSave);
+
+    for (int i = 0; i < reqDto.getMenuItems().size(); i++) {
+      OrderPostRequestDto.MenuItem menuItem = reqDto.getMenuItems().get(i);
+
+      MenuEntity menu = store.getMenuList().stream()
+          .filter(m -> m.getId().equals(menuItem.getMenuId()))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException
+              ("입력한 메뉴 '" + menuItem.getMenuId() + "'가 존재하지 않습니다"));
+
+      OrderDetailEntity orderDetailEntity
+          = OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+
+      orderEntity.addOrderDetail(orderDetailEntity);
+    }
+    orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
+
+    paymentRepository.save(PaymentEntity.toEntity(reqDto.getOrder().getTotalPrice(), orderEntity));
+  }
+}
+

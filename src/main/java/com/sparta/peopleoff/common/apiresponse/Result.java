@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.common.apiresponse;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result {
 
   private String resultCode;
@@ -29,10 +31,19 @@ public class Result {
     );
   }
 
-  public static Result ERROR(ResCodeIfs resCodeIfs) {
+  public static Result OK(ResCodeIfs resCode) {
     return new Result(
-        resCodeIfs.getResCode(),
-        resCodeIfs.getDescription()
+        resCode.getHttpStatusCode().toString(),
+        resCode.getResCode(),
+        resCode.getDescription()
+    );
+  }
+
+  public static Result ERROR(ResCodeIfs resCode) {
+    return new Result(
+        resCode.getHttpStatusCode().toString(),
+        resCode.getResCode(),
+        resCode.getDescription()
     );
   }
 

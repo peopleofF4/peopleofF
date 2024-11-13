@@ -28,6 +28,8 @@ out/
 !**/src/test/**/out/
 
 **/application.properties
+*.yaml
+*.yml
 
 ### NetBeans ###
 /nbproject/private/

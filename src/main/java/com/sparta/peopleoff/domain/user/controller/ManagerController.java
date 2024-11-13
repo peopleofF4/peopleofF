@@ -62,7 +62,7 @@ public class ManagerController {
      * @param registrationStatus
      * @return
      */ //TODO: 반환 타입 UpdateResponseDto로 바꾸기
-    @PutMapping("/store/{store_id}/regist")
+    @PutMapping("/store/{storeId}/regist")
     private ResponseEntity<ApiResponse<String>> updateStoreRegist(//@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable UUID storeId,
                                                                   @RequestParam RegistrationStatus registrationStatus) {
@@ -76,7 +76,7 @@ public class ManagerController {
      * @param deletionStatus
      * @return
      */
-    @PutMapping("/store/{store_id}/regist")
+    @PutMapping("/store/{storeId}/delete")
     private ResponseEntity<ApiResponse<String>> updateStoreDelete(//@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable UUID storeId,
                                                                   @RequestParam DeletionStatus deletionStatus) {

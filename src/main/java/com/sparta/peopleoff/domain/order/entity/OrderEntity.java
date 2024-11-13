@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.order.entity;
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderStatus;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderType;
 import com.sparta.peopleoff.domain.orderdetail.entity.OrderDetailEntity;
@@ -65,6 +66,10 @@ public class OrderEntity {
 
   private String deliveryAddress;
 
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private DeletionStatus deletionStatus;
+
   public void addOrderDetail(OrderDetailEntity orderDetail) {
     this.orderDetailList.add(orderDetail);
     orderDetail.setOrder(this);
@@ -85,25 +90,18 @@ public class OrderEntity {
     this.orderStatus = OrderStatus.PLACED;
     this.orderType = OrderType.ON_LINE;
     this.expiredAt = LocalDateTime.now().plusMinutes(5);
+    this.deletionStatus = DeletionStatus.ACTIVE;
   }
 
-  public OrderEntity(
-      int totalPrice,
-      String orderRequest,
-      StoreEntity store,
-      UserEntity user
-  ) {
-    this.totalPrice = totalPrice;
-    this.orderRequest = orderRequest;
+  public void updateOrder(int updateTotalPrice) {
+    this.totalPrice = updateTotalPrice;
+  }
+  public void updateOffLine(StoreEntity store) {
     this.deliveryAddress = store.getStoreAddress();
-    this.store = store;
-    this.user = user;
-    this.orderStatus = OrderStatus.PLACED;
     this.orderType = OrderType.OFF_LINE;
-    this.expiredAt = LocalDateTime.now().plusMinutes(5);
   }
-
   public void cancel() {
     this.orderStatus = OrderStatus.CANCELED;
+    this.deletionStatus = DeletionStatus.DELETED;
   }
 }

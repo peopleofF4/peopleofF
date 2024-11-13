@@ -85,7 +85,7 @@ public class ManagerService {
         UserEntity user = userRepository.findById(userId).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
-        user.setRole(userRoleRequestDto.getRole());
+        user.setRole(userRoleRequestDto.getUserRole());
 
         userRepository.save(user);
     }

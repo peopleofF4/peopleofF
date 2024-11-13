@@ -1,17 +1,11 @@
 package com.sparta.peopleoff.domain.user.service;
 
-import ch.qos.logback.core.spi.ErrorCodes;
-import com.sparta.peopleoff.common.rescode.ResBasicCode;
-import com.sparta.peopleoff.common.rescode.ResCodeIfs;
-import com.sparta.peopleoff.domain.user.dto.ManagerApproveResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
-import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,8 +45,7 @@ public class AdminService {
                 userEntity.getEmail(),
                 userEntity.getPhoneNumber(),
                 userEntity.getAddress(),
-                userEntity.getRole()
-        );
+                userEntity.getRole());
     }
 //    @Transactional
 //    public ManagerApproveResponseDto managerApprove() {

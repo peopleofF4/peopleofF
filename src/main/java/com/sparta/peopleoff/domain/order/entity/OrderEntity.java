@@ -87,6 +87,22 @@ public class OrderEntity {
     this.expiredAt = LocalDateTime.now().plusMinutes(5);
   }
 
+  public OrderEntity(
+      int totalPrice,
+      String orderRequest,
+      StoreEntity store,
+      UserEntity user
+  ) {
+    this.totalPrice = totalPrice;
+    this.orderRequest = orderRequest;
+    this.deliveryAddress = store.getStoreAddress();
+    this.store = store;
+    this.user = user;
+    this.orderStatus = OrderStatus.PLACED;
+    this.orderType = OrderType.OFF_LINE;
+    this.expiredAt = LocalDateTime.now().plusMinutes(5);
+  }
+
   public void cancel() {
     this.orderStatus = OrderStatus.CANCELED;
   }

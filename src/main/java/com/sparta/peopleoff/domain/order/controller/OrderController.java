@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.order.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.domain.order.dto.OrderPostOffLineRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.service.OrderService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
@@ -30,6 +31,18 @@ public class OrderController {
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.createOnlineOrder(orderPostRequestDto, storeId, user);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ApiResponse.OK(ResBasicCode.CREATED));
+  }
+
+  // 오프라인 주문 생성
+  @PostMapping("/api/v1/store/{storeId}/order/offLine")
+  public ResponseEntity<ApiResponse<Void>> createOfflineOrder(
+      @RequestBody OrderPostOffLineRequestDto orderPostOffLineRequestDto,
+      @PathVariable("storeId") UUID storeId,
+      @AuthenticationPrincipal UserDetailsImpl user
+  ) {
+    orderService.createOfflineOrder(orderPostOffLineRequestDto, storeId, user);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(ApiResponse.OK(ResBasicCode.CREATED));
   }

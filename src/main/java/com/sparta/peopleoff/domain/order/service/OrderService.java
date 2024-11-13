@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.order.service;
 
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.order.dto.OrderPostOffLineRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.order.repository.OrderRepository;
@@ -56,6 +57,35 @@ public class OrderService {
     }
     orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
 
+    paymentRepository.save(PaymentEntity.toEntity(reqDto.getOrder().getTotalPrice(), orderEntity));
+  }
+
+  public void createOfflineOrder(OrderPostOffLineRequestDto reqDto, UUID storeId,
+      UserDetailsImpl user) {
+
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new CustomApiException(
+            ResBasicCode.BAD_REQUEST, "입력한 가게의 정보가 존재하지 않습니다"));
+
+    if (!user.getUser().getId().equals(store.getUser().getId())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "본인의 가게가 아닙니다");
+    }
+
+    OrderEntity orderEntityForSave = reqDto.getOrder().toEntity(store, user.getUser());
+    OrderEntity orderEntity = orderRepository.save(orderEntityForSave);
+
+    for (OrderPostRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
+      MenuEntity menu = store.getMenuList().stream()
+          .filter(m -> m.getId().equals(menuItem.getMenuId()))
+          .findFirst()
+          .orElse(null);
+
+      OrderDetailEntity orderDetailEntity
+          = OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+      orderEntity.addOrderDetail(orderDetailEntity);
+    }
+
+    orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
     paymentRepository.save(PaymentEntity.toEntity(reqDto.getOrder().getTotalPrice(), orderEntity));
   }
 

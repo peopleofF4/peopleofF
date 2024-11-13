@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -9,6 +10,7 @@ import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.exception.CustomApiException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,10 +30,9 @@ public class StoreService {
 
   @Transactional
   public StoreEntity registerStore(StorePostRequestDto storeRequestDto, UserEntity user) {
-
     CategoryEntity category = categoryRepository.findByCategoryName(
             storeRequestDto.getCategoryName())
-        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 이름입니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 카테고리 이름입니다."));
 
     StoreEntity newStore = new StoreEntity(
         storeRequestDto.getStoreName(),
@@ -49,7 +50,8 @@ public class StoreService {
   @Transactional(readOnly = true)
   public StoreGetResponseDto getStoreById(UUID storeId) {
     StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 ID의 가게가 존재하지 않습니다."));
+        .orElseThrow(
+            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 ID의 가게가 존재하지 않습니다."));
     return new StoreGetResponseDto(store);
   }
 
@@ -63,11 +65,11 @@ public class StoreService {
   @Transactional
   public void updateStore(UUID storeId, StorePutRequestDto storeUpdateRequestDto) {
     StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
 
     CategoryEntity category = categoryRepository.findByCategoryName(
             storeUpdateRequestDto.getCategoryName())
-        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 이름입니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 카테고리 이름입니다."));
 
     store.update(storeUpdateRequestDto, category);
   }
@@ -75,9 +77,10 @@ public class StoreService {
   @Transactional
   public void deleteStore(UUID storeId) {
     StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
 
     store.setDeletionStatus(DeletionStatus.DELETED);
+    storeRepository.save(store);
   }
 
   @Transactional(readOnly = true)

@@ -11,7 +11,7 @@ x-goog-api-key: AIzaSyBpX38E9lu0OwI5z6NahIQBDi0DFVSeog0
 }
 
 ###
-POST http://localhost:8080/ai/chat
+POST http://localhost:8080/menu/{menuId}/ai/chat
 Content-Type: application/json
 
 {

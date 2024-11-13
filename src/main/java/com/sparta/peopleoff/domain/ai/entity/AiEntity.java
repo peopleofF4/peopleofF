@@ -27,8 +27,9 @@ public class AiEntity {
   @JoinColumn(name = "menu_id", nullable = false)
   private MenuEntity menu;
 
-  public AiEntity(String prompt, String message) {
+  public AiEntity(String prompt, String message, MenuEntity menu) {
     this.aiRequest = prompt;
     this.aiResponse = message;
+    this.menu = menu;
   }
 }

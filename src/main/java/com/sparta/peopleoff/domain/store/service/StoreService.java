@@ -1,6 +1,6 @@
 package com.sparta.peopleoff.domain.store.service;
 
-import com.sparta.peopleoff.common.enums.DeletionStatusEnum;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -77,7 +77,7 @@ public class StoreService {
     StoreEntity store = storeRepository.findById(storeId)
         .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
 
-    store.setDeletionStatus(DeletionStatusEnum.DELETED);
+    store.setDeletionStatus(DeletionStatus.DELETED);
   }
 
   @Transactional(readOnly = true)

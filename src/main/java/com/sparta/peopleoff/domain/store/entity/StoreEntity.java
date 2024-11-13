@@ -1,10 +1,10 @@
 package com.sparta.peopleoff.domain.store.entity;
 
-import com.sparta.peopleoff.common.enums.DeletionStatusEnum;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatusEnum;
+import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,12 +50,12 @@ public class StoreEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private RegistrationStatusEnum registrationStatus = RegistrationStatusEnum.PENDING;
+  private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   @Setter
-  private DeletionStatusEnum deletionStatus = DeletionStatusEnum.ACTIVE;
+  private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
 
   @Column
   private int totalRating;

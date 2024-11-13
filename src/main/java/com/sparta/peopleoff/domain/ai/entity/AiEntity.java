@@ -10,7 +10,7 @@ import org.hibernate.mapping.ToOne;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "p_ai")
+@Table(name = "ai")
 public class AiEntity {
 
   @Id

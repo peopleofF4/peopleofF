@@ -1,6 +1,5 @@
 package com.sparta.peopleoff.domain.user.entity;
 
-import com.sparta.peopleoff.common.enums.DeletionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,11 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "p_user")
-@Setter
 @Getter
 @NoArgsConstructor
 public class UserEntity {
@@ -44,6 +41,6 @@ public class UserEntity {
   private String address;
 
   // Enum : active:활성 / deleted:삭제
-  private DeletionStatus deletionStatus;
+  private String deletionStatus;
 
 }

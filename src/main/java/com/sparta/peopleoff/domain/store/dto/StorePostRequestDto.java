@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StorePostRequestDto {
 
-  private Long userId;
   private String storeName;
   private String storeAddress;
   private String storePhoneNumber;

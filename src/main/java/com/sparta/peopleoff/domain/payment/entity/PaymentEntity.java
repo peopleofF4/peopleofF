@@ -54,6 +54,10 @@ public class PaymentEntity {
     return new PaymentEntity(totalPayment, order);
   }
 
+  public void update(int totalPayment) {
+    this.totalPayment = totalPayment;
+  }
+
   public void cancel() {
     this.paymentStatus = PaymentStatus.FAILED;
     this.deletionStatus = DeletionStatus.DELETED;

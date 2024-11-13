@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.common.apiresponse;
 
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
+import com.sparta.peopleoff.domain.ai.dto.AiResponseDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,51 +1,22 @@
 package com.sparta.peopleoff.domain.ai.dto;
 
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
-import java.util.List;
+import java.util.UUID;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class AiResponseDto {
-    private List<Candidate> candidates;
-    private PromptFeedback promptFeedback;
 
-    @Getter
-    @Setter
-    public static class Candidate {
-        private Content content;
-        private String finishReason;
-        private int index;
-        private List<SafetyRating> safetyRatings;
+    private UUID id;
 
-    }
+    private String aiResponse;
 
-    @Getter @Setter
-    @ToString
-    public static class Content {
-        private List<Parts> parts;
-        private String role;
+    private String menuName;
 
-    }
-
-    @Getter @Setter
-    @ToString
-    public static class Parts {
-        private String text;
-
-    }
-
-    @Getter @Setter
-    public static class SafetyRating {
-        private String category;
-        private String probability;
-    }
-
-    @Getter @Setter
-    public static class PromptFeedback {
-        private List<SafetyRating> safetyRatings;
-
+    public AiResponseDto(UUID id, String aiResponse) {
+        this.id = id;
+        this.aiResponse = aiResponse;
     }
 }

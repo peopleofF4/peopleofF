@@ -1,17 +1,25 @@
 package com.sparta.peopleoff.domain.ai.service;
 
-import com.sparta.peopleoff.domain.ai.dto.AiRequestDto;
 import com.sparta.peopleoff.domain.ai.dto.AiResponseDto;
+import com.sparta.peopleoff.domain.ai.dto.GeminiRequestDto;
+import com.sparta.peopleoff.domain.ai.dto.GeminiResponseDto;
+import com.sparta.peopleoff.domain.ai.entity.AiEntity;
+import com.sparta.peopleoff.domain.ai.repository.AiRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AiService {
+
+    private final AiRepository aiRepository;
 
     @Qualifier("geminiRestTemplate")
     @Autowired
@@ -23,17 +31,23 @@ public class AiService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
-    public String getContents(String prompt) {
+    public AiResponseDto getContents(UUID menuId, String prompt) {
         // [예외 1] - 권한 OWNER
         // [예외 2] - 글자 수 1~255
         // Gemini에 요청 전송
-        String requestUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent" + "?key=" + "AIzaSyBpX38E9lu0OwI5z6NahIQBDi0DFVSeog0";
+        String requestUrl = apiUrl + "?key=" + geminiApiKey;
 
-        AiRequestDto request = new AiRequestDto(prompt);
-        AiResponseDto response = restTemplate.postForObject(requestUrl, request, AiResponseDto.class);
+        GeminiRequestDto request = new GeminiRequestDto(prompt);
+        GeminiResponseDto response = restTemplate.postForObject(requestUrl, request, GeminiResponseDto.class);
 
         String message = response.getCandidates().get(0).getContent().getParts().get(0).getText().toString();
 
-        return message;
+        AiEntity aiEntity = new AiEntity(prompt, message);
+
+        aiRepository.save(aiEntity);
+
+        AiResponseDto aiResponseDto = new AiResponseDto(aiEntity.getId(), aiEntity.getAiResponse());
+
+        return aiResponseDto;
     }
 }

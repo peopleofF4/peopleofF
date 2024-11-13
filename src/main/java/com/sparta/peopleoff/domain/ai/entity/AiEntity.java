@@ -26,4 +26,9 @@ public class AiEntity {
   @ManyToOne
   @JoinColumn(name = "menu_id", nullable = false)
   private MenuEntity menu;
+
+  public AiEntity(String prompt, String message) {
+    this.aiRequest = prompt;
+    this.aiResponse = message;
+  }
 }

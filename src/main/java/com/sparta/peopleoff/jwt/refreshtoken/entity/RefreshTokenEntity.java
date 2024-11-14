@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.jwt.refreshtoken.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_refresh_token")
 @Getter
 @NoArgsConstructor
-public class RefreshTokenEntity {
+public class RefreshTokenEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,7 +36,7 @@ public class RefreshTokenEntity {
     this.refreshToken = refreshToken;
   }
 
-  // 생성자로도
+  // 외래키의 주인은 생성자로도 set 가능
   public void updateRefreshToken(String refreshToken, UserEntity user) {
     this.user = user;
     this.refreshToken = refreshToken;

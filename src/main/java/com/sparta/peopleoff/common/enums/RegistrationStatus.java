@@ -1,4 +1,4 @@
-package com.sparta.peopleoff.domain.store.entity.enums;
+package com.sparta.peopleoff.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum RegistrationStatus {
   PENDING("보류"),
   ACCEPTED("수락"),
-  REJECTED("거절");
+  REJECTED("거절"),
+  NONE("없음");
 
   private final String description;
 }

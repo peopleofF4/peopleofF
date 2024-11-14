@@ -1,8 +1,9 @@
 package com.sparta.peopleoff.domain.user.entity;
 
-import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
-import com.sparta.peopleoff.domain.user.entity.enums.ManagerApproveRegistrationStatus;
+import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +15,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
+@DynamicUpdate
 @Entity
 @Table(name = "p_user")
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class UserEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,11 +52,7 @@ public class UserEntity {
 
   @Column
   @Enumerated(EnumType.STRING)
-  private ManagerApproveRegistrationStatus managerRegistrationStatus = ManagerApproveRegistrationStatus.NONE;
-
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
+  private RegistrationStatus registrationStatus = RegistrationStatus.NONE;
 
   public UserEntity(UserSignUpRequestDto userSignUpRequestDto) {
     this.userName = userSignUpRequestDto.getUserName();
@@ -62,6 +61,17 @@ public class UserEntity {
     this.email = userSignUpRequestDto.getEmail();
     this.phoneNumber = userSignUpRequestDto.getPhoneNumber();
     this.address = userSignUpRequestDto.getAddress();
+  }
+
+  public void updateUser(UserUpdateRequestDto userUpdateRequestDto) {
+    this.userName = userUpdateRequestDto.getUserName();
+    this.nickName = userUpdateRequestDto.getNickName();
+    this.phoneNumber = userUpdateRequestDto.getPhoneNumber();
+    this.address = userUpdateRequestDto.getAddress();
+  }
+
+  public void updatePassword(String newPassword) {
+    this.password = newPassword;
   }
 
 }

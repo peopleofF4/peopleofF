@@ -8,16 +8,16 @@ import com.sparta.peopleoff.domain.ai.entity.AiEntity;
 import com.sparta.peopleoff.domain.ai.repository.AiRepository;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.menu.repository.MenuRepository;
+import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.awt.*;
 import java.util.UUID;
 
 @Service
@@ -37,8 +37,10 @@ public class AiService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
-    public AiResponseDto getContents(UUID menuId, String prompt) {
-        // Todo: [예외 1] - 권한 OWNER
+    public AiResponseDto getContents(UUID menuId, String prompt, UserEntity user) {
+        // [예외 1] - 권한 OWNER
+        checkOwnerAuthority(user);
+
         // Gemini에 요청 전송
         String requestUrl = apiUrl + "?key=" + geminiApiKey;
 
@@ -57,5 +59,11 @@ public class AiService {
         AiResponseDto aiResponseDto = new AiResponseDto(aiEntity.getId(), aiEntity.getAiResponse());
 
         return aiResponseDto;
+    }
+
+    private void checkOwnerAuthority(UserEntity user) {
+        if (!(UserRole.OWNER).equals(user.getRole())) {
+            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "Owner 권한으로 접근할 수 있읍니다.");
+        }
     }
 }

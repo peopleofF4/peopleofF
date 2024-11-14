@@ -50,7 +50,7 @@ public class UserEntity extends SoftDeleteEntity {
   @Column(nullable = false, length = 255)
   private String address;
 
-  @Column
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private RegistrationStatus registrationStatus = RegistrationStatus.NONE;
 

@@ -24,6 +24,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  @Transactional
   public void signUp(UserSignUpRequestDto userSignUpRequestDto) {
 
     // Password Encode
@@ -86,10 +87,11 @@ public class UserService {
         .orElseThrow(
             () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다."));
 
-    user.updateUser(userUpdateInfoDto); // 여기도 변경감지 일어나나 check
+    user.updateUser(userUpdateInfoDto); // 여기도 변경감지
 
   }
 
+  @Transactional
   public void changePassword(UserChangePasswordDto userChangePasswordDto,
       UserDetailsImpl userDetails) {
 

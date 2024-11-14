@@ -6,26 +6,30 @@ import com.sparta.peopleoff.common.rescode.ResErrorCode;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.user.dto.LoginRequestDto;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
-import com.sparta.peopleoff.jwt.JwtUtil;
+import com.sparta.peopleoff.jwt.JwtTokenProvider;
+import com.sparta.peopleoff.jwt.refreshtoken.service.RefreshTokenService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final JwtUtil jwtUtil;
+  private final RefreshTokenService refreshTokenService;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-    this.jwtUtil = jwtUtil;
+  public JwtAuthenticationFilter(RefreshTokenService refreshTokenService) {
+    this.refreshTokenService = refreshTokenService;
     setFilterProcessesUrl("/api/v1/users/login");
   }
 
@@ -52,22 +56,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-      FilterChain chain, Authentication authResult) throws IOException {
+      FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
+    SecurityContextHolder.getContext().setAuthentication(authResult);
+
     String username = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getEmail();
     UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-    String accessToken = jwtUtil.createAccessToken(username, role);
-    String refreshToken = jwtUtil.createRefreshToken(username, role);
+    String accessToken = JwtTokenProvider.createAccessToken(username, role);
+    String refreshToken = JwtTokenProvider.createRefreshToken(username, role);
+
+    refreshTokenService.saveRefreshToken(username, refreshToken);
 
     log.info("Access_Token : {}", accessToken);
     log.info("Refresh_Token : {}", refreshToken);
 
-    jwtUtil.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+    sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
     ApiResponse<Void> commonResponse = ApiResponse.OK(ResSuccessCode.LOGIN_SUCCESS);
-
-    response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType("application/json");
 
     new ObjectMapper().writeValue(response.getOutputStream(), commonResponse);
   }
@@ -79,10 +85,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //ResponseEntity 형식을 맞춰 바디에 에러 정보 작성
     ApiResponse<Object> errorResponse = ApiResponse.ERROR(ResErrorCode.LOGIN_FAILED);
 
-    // 일반적인 인증 실패 처리
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.setContentType("application/json");
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
     new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
+  }
+
+  private void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken,
+      String refreshToken) {
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+    response.setHeader(JwtTokenProvider.ACCESS_HEADER, accessToken);
+    response.setHeader(JwtTokenProvider.REFRESH_HEADER, refreshToken);
   }
 }

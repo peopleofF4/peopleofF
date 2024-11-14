@@ -1,10 +1,10 @@
 package com.sparta.peopleoff.domain.store.entity;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -55,8 +55,7 @@ public class RefreshTokenService {
         refreshToken);
 
     if (refreshTokenEntity.isPresent()) {
-      UserEntity user = refreshTokenEntity.get().getUser();  // 여기서 Lazy loading이 되야된다.
-      System.out.println("reIssueAccessToken있고 user lazyLoding 확인" + user);
+      UserEntity user = refreshTokenEntity.get().getUser();  // 여기서 Lazy loading 확인.
       response.setHeader(JwtTokenProvider.ACCESS_HEADER,
           JwtTokenProvider.createAccessToken(user.getEmail(), user.getRole()));
     }

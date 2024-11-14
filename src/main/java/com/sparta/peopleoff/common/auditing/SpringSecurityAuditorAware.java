@@ -44,8 +44,6 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
     StringBuilder sb = new StringBuilder(email);
     int halflength = sb.length() / 2;
 
-    log.info("email : {}", email);
-
     if (email.length() < 15) {
       sb.replace(halflength - 2, halflength + 2, "****");
     } else {

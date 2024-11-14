@@ -1,9 +1,9 @@
 package com.sparta.peopleoff.domain.user.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
-import com.sparta.peopleoff.domain.user.entity.enums.ManagerApproveRegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +52,7 @@ public class UserEntity extends SoftDeleteEntity {
 
   @Column
   @Enumerated(EnumType.STRING)
-  private ManagerApproveRegistrationStatus managerRegistrationStatus = ManagerApproveRegistrationStatus.NONE;
+  private RegistrationStatus registrationStatus = RegistrationStatus.NONE;
 
   public UserEntity(UserSignUpRequestDto userSignUpRequestDto) {
     this.userName = userSignUpRequestDto.getUserName();

@@ -28,7 +28,7 @@ public class ManagerController {
      * @param userDetails
      * @return
      */
-    @PutMapping("/user/{userId}")
+    @DeleteMapping("/user/{userId}")
    private ResponseEntity<ApiResponse<Long>> deleteUser(@PathVariable Long userId,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         managerService.deleteUser(userId, userDetails.getUser());
@@ -40,7 +40,7 @@ public class ManagerController {
      * @param userName
      * @return
      */
-    @GetMapping("/store/search")
+    @GetMapping("/user/search")
     private ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
             @RequestParam String userName,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -65,7 +65,9 @@ public class ManagerController {
 
     /**
      * 가게 등록 승인 / 거부
-     * @param registrationStatus
+     * @param userDetails
+     * @param storeId
+     * @param managerApproveRequestDto
      * @return
      */ //TODO: 반환 타입 UpdateResponseDto로 바꾸기
     @PutMapping("/store/{storeId}/regist")
@@ -78,8 +80,9 @@ public class ManagerController {
 
     /**
      * 가게 삭제 승인 / 거부
+     * @param userDetails
      * @param storeId
-     * @param deletionStatus
+     * @param managerApproveRequestDto
      * @return
      */ //TODO: 반환 타입 UpdateResponseDto로 바꾸기
     @PutMapping("/store/{storeId}/delete")

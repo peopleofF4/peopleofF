@@ -100,6 +100,10 @@ public class UserService {
       throw new CustomApiException(ResBasicCode.BAD_REQUEST, "wrong password");
     }
 
+    if (passwordEncoder.matches(userChangePasswordDto.getNewPassword(), user.getPassword())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "same password");
+    }
+
     String newPassword = passwordEncoder.encode(userChangePasswordDto.getNewPassword());
 
     user.updatePassword(newPassword);

@@ -107,6 +107,7 @@ public class UserController {
    * @param userDetails
    * @return
    */
+  @PutMapping("/users/change-password")
   public ResponseEntity<ApiResponse<Void>> changePassword(
       @RequestBody @Valid UserChangePasswordDto userChangePasswordDto
       , @AuthenticationPrincipal UserDetailsImpl userDetails) {

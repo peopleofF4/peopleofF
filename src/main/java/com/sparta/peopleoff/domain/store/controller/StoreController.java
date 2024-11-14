@@ -49,7 +49,7 @@ public class StoreController {
     return ResponseEntity.ok(ApiResponse.OK(store, ResBasicCode.OK));
   }
 
-  @GetMapping("/stores/stores")
+  @GetMapping("/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores() {
     List<StoreGetResponseDto> stores = storeService.getAllStores();
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));

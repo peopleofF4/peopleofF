@@ -1,6 +1,5 @@
 package com.sparta.peopleoff.domain.store.service;
 
-import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
@@ -79,7 +78,7 @@ public class StoreService {
     StoreEntity store = storeRepository.findById(storeId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
 
-    store.setDeletionStatus(DeletionStatus.DELETED);
+    store.delete();
   }
 
   @Transactional(readOnly = true)

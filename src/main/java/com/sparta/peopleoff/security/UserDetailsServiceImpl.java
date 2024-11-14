@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.security;
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-    UserEntity user = userRepository.findByEmail(email).orElseThrow(
-        () -> new UsernameNotFoundException("Not found" + email));
+    UserEntity user = userRepository.findByEmailAndDeletionStatus(email, DeletionStatus.ACTIVE)
+        .orElseThrow(
+            () -> new UsernameNotFoundException("Not found" + email));
 
     return new UserDetailsImpl(user);
   }

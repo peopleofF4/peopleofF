@@ -18,6 +18,7 @@ import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.exception.CustomApiException;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -59,6 +60,25 @@ public class OrderService {
 
       return new OrderSearchResponseDto(orderDto, menuItems);
     });
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderSearchResponseDto> getOrders(UserDetailsImpl user) {
+
+    List<OrderEntity> orderEntities = orderRepository.findAllByUserId(user.getUser().getId());
+    List<OrderSearchResponseDto> responseDtos = new ArrayList<>();
+
+    for (OrderEntity orderEntity : orderEntities) {
+      OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
+
+      List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
+          .map(this::mapToMenuItemDto)
+          .collect(Collectors.toList());
+
+      responseDtos.add(new OrderSearchResponseDto(orderDto, menuItems));
+    }
+
+    return responseDtos;
   }
 
   @Transactional

@@ -8,6 +8,7 @@ import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderType;
 import com.sparta.peopleoff.domain.order.service.OrderService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,15 @@ public class OrderController {
   ) {
     Page<OrderSearchResponseDto> res =
         orderService.searchOrder(storeId, user, orderType, menuId, page - 1, size);
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
+  }
+
+  // 주문 조회
+  @GetMapping("/api/v1/users/{userId}/orders")
+  public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getOrders(
+      @AuthenticationPrincipal UserDetailsImpl user
+  ) {
+    List<OrderSearchResponseDto> res = orderService.getOrders(user);
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 

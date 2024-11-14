@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/stores")
+@RequestMapping("/api/v1")
 public class StoreController {
 
   private final StoreService storeService;
@@ -31,7 +31,7 @@ public class StoreController {
     this.storeService = storeService;
   }
 
-  @PostMapping
+  @PostMapping("/stores")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -43,19 +43,19 @@ public class StoreController {
         .body(ApiResponse.OK(ResBasicCode.CREATED));
   }
 
-  @GetMapping("/{storeId}")
+  @GetMapping("/stores/{storeId}")
   public ResponseEntity<ApiResponse<StoreGetResponseDto>> getStoreById(@PathVariable UUID storeId) {
     StoreGetResponseDto store = storeService.getStoreById(storeId);
     return ResponseEntity.ok(ApiResponse.OK(store, ResBasicCode.OK));
   }
 
-  @GetMapping
+  @GetMapping("/stores/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores() {
     List<StoreGetResponseDto> stores = storeService.getAllStores();
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 
-  @PutMapping("/{storeId}")
+  @PutMapping("/stores/{storeId}")
   public ResponseEntity<ApiResponse<Void>> updateStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
@@ -67,7 +67,7 @@ public class StoreController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
-  @DeleteMapping("/{storeId}")
+  @DeleteMapping("/stores/{storeId}")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {
@@ -78,7 +78,7 @@ public class StoreController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
-  @GetMapping("/search")
+  @GetMapping("/stores/search")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> searchStores(
       @RequestParam String keyword) {
     List<StoreGetResponseDto> stores = storeService.searchStores(keyword);

@@ -80,7 +80,6 @@ public class StoreService {
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
 
     store.setDeletionStatus(DeletionStatus.DELETED);
-    storeRepository.save(store);
   }
 
   @Transactional(readOnly = true)

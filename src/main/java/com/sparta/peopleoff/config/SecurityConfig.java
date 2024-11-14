@@ -6,6 +6,7 @@ import com.sparta.peopleoff.security.UserDetailsServiceImpl;
 import com.sparta.peopleoff.security.filter.JwtAuthenticationFilter;
 import com.sparta.peopleoff.security.filter.JwtAuthorizationFilter;
 import com.sparta.peopleoff.security.handler.CustomAccessDeniedHandler;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,13 @@ public class SecurityConfig {
   private final CustomAccessDeniedHandler accessDeniedHandler;
   private final UserDetailsServiceImpl userDetailsService;
   private final AuthenticationConfiguration authenticationConfiguration;
+
+  // SWAGGER는 들어 갈 수 있게 제외한다.
+  private final List<String> SWAGGER = List.of(
+      "/swagger-ui.html",
+      "/swagger-ui/**",
+      "/v3/api-docs/**"
+  );
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -77,6 +85,8 @@ public class SecurityConfig {
             .requestMatchers("/").permitAll()
             .requestMatchers("/api/v1/users/signup", "/api/v1/users/login",
                 "/api/v1/users/check/refreshtoken").permitAll()
+            .requestMatchers(SWAGGER.toArray(new String[0]))
+            .permitAll()  // TODO 관리자만 들어갈 수 있게 수정해야됨
             .requestMatchers("/admin/v1/**").hasAnyRole("ADMIN", "MANAGER")
             .anyRequest().authenticated()
     );

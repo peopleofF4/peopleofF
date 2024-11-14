@@ -1,14 +1,11 @@
 package com.sparta.peopleoff.domain.store.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
-import com.sparta.peopleoff.common.rescode.ForbiddenErrorCode;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.service.StoreService;
-import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
-import com.sparta.peopleoff.exception.CustomApiException;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
@@ -40,9 +37,6 @@ public class StoreController {
       @RequestBody StorePostRequestDto storeRequestDto) {
 
     // 권한 체크: OWNER만 접근 가능
-    if (!userDetails.getUser().getRole().equals(UserRole.OWNER)) {
-      throw new CustomApiException(ForbiddenErrorCode.FORBIDDEN_OWNER, "사장님만 접근 가능합니다.");
-    }
 
     storeService.registerStore(storeRequestDto, userDetails.getUser());
     return ResponseEntity.status(ResBasicCode.CREATED.getHttpStatusCode())
@@ -68,9 +62,6 @@ public class StoreController {
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
 
     // 권한 체크: OWNER만 접근 가능
-    if (!userDetails.getUser().getRole().equals(UserRole.OWNER)) {
-      throw new CustomApiException(ForbiddenErrorCode.FORBIDDEN_OWNER, "사장님만 접근 가능합니다.");
-    }
 
     storeService.updateStore(storeId, storeUpdateRequestDto);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
@@ -82,9 +73,6 @@ public class StoreController {
       @PathVariable UUID storeId) {
 
     // 권한 체크: OWNER만 접근 가능
-    if (!userDetails.getUser().getRole().equals(UserRole.OWNER)) {
-      throw new CustomApiException(ForbiddenErrorCode.FORBIDDEN_OWNER, "사장님만 접근 가능합니다.");
-    }
 
     storeService.deleteStore(storeId);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));

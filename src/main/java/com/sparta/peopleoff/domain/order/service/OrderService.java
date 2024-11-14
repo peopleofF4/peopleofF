@@ -4,7 +4,9 @@ import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
+import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
+import com.sparta.peopleoff.domain.order.entity.enums.OrderType;
 import com.sparta.peopleoff.domain.order.repository.OrderRepository;
 import com.sparta.peopleoff.domain.orderdetail.entity.OrderDetailEntity;
 import com.sparta.peopleoff.domain.orderdetail.repository.OrderDetailRepository;
@@ -18,7 +20,11 @@ import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +36,30 @@ public class OrderService {
   private final OrderDetailRepository orderDetailRepository;
   private final StoreRepository storeRepository;
   private final PaymentRepository paymentRepository;
+
+  @Transactional(readOnly = true)
+  public Page<OrderSearchResponseDto> searchOrder(UUID storeId, UserDetailsImpl user,
+      OrderType orderType, UUID menuId, int page, int size) {
+
+    StoreEntity store = findStoreEntity(storeId);
+    if (!user.getUser().getRole().equals(UserRole.OWNER)
+        && !user.getUser().getId().equals(store.getUser().getId())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 조회할 권한이 없습니다.");
+    }
+
+    Pageable pageable = PageRequest.of(page, size);
+    Page<OrderEntity> orderEntities = orderRepository.searchOrder(orderType, menuId, pageable);
+
+    return orderEntities.map(orderEntity -> {
+      OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
+
+      List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
+          .map(this::mapToMenuItemDto)
+          .collect(Collectors.toList());
+
+      return new OrderSearchResponseDto(orderDto, menuItems);
+    });
+  }
 
   @Transactional
   public void createOrder(OrderPostRequestDto reqDto, UUID storeId, UserDetailsImpl user) {
@@ -122,15 +152,27 @@ public class OrderService {
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 주문번호가 존재하지 않습니다"));
   }
 
-  private OrderDetailEntity findOrderDetailEntity(UUID orderDetailId) {
-    return orderDetailRepository.findById(orderDetailId).orElseThrow(
-        () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 주문 정보가 존재하지 않습니다."));
-  }
-
   private StoreEntity findStoreEntity(UUID storeId) {
     return storeRepository.findById(storeId)
         .orElseThrow(() -> new CustomApiException(
             ResBasicCode.BAD_REQUEST, "입력한 가게의 정보가 존재하지 않습니다"));
+  }
+
+  private OrderSearchResponseDto.Order mapToOrderDto(OrderEntity orderEntity) {
+    return new OrderSearchResponseDto.Order(
+        orderEntity.getId(),
+        orderEntity.getUser().getId(),
+        orderEntity.getOrderRequest(),
+        orderEntity.getDeliveryAddress(),
+        orderEntity.getTotalPrice()
+    );
+  }
+
+  private OrderSearchResponseDto.MenuItem mapToMenuItemDto(OrderDetailEntity orderDetailEntity) {
+    return new OrderSearchResponseDto.MenuItem(
+        orderDetailEntity.getMenu().getId(),
+        orderDetailEntity.getMenuCount()
+    );
   }
 }
 

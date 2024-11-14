@@ -10,6 +10,7 @@ import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,11 +33,10 @@ public class StoreController {
   }
 
   @PostMapping("/stores")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
-
-    // 권한 체크: OWNER만 접근 가능
 
     storeService.registerStore(storeRequestDto, userDetails.getUser());
     return ResponseEntity.status(ResBasicCode.CREATED.getHttpStatusCode())
@@ -56,23 +56,21 @@ public class StoreController {
   }
 
   @PutMapping("/stores/{storeId}")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
-
-    // 권한 체크: OWNER만 접근 가능
 
     storeService.updateStore(storeId, storeUpdateRequestDto);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
   @DeleteMapping("/stores/{storeId}")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {
-
-    // 권한 체크: OWNER만 접근 가능
 
     storeService.deleteStore(storeId);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));

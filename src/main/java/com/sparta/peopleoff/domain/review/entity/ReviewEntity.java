@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "p_reviews")
+@Table(name = "p_review")
 public class ReviewEntity {
 
   @Id

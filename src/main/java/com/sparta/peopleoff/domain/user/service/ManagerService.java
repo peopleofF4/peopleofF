@@ -1,17 +1,17 @@
 package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
+import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +28,14 @@ public class ManagerService {
 
 
     @Transactional
-    public void deleteUser(Long userIdToDelete, User user) {
+    public void deleteUser(Long userIdToDelete, UserEntity user) {
         // [예외1] - 존재하지 않는 사용자
         UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
         // [예외2] - Admin 권한 체크
-//        checkAdminAuthority(user);
+        checkManagerOrMasterAuthority(user);
 
-        // Todo: 삭제처리 하려고 userEntity에 @Setter추가 했는데 논의하기
         userToDelete.setDeletionStatus(DeletionStatus.DELETED);
 
         userRepository.save(userToDelete);
@@ -44,12 +43,14 @@ public class ManagerService {
 
     /**
      * 유저 검색
+     *
      * @param userName
+     * @param loginUser
      * @return
      */
-    public List<UserResponseDto> searchUser(String userName) {
+    public List<UserResponseDto> searchUser(String userName, UserEntity loginUser) {
         // [예외1] - Admin 권한 체크
-//        checkAdminAuthority(user);
+        checkManagerOrMasterAuthority(loginUser);
 
         List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
 
@@ -74,12 +75,15 @@ public class ManagerService {
 
     /**
      * 유저 권한 수정
+     *
      * @param userId
+     * @param loginUser
+     * @param userRoleRequestDto
      */
     @Transactional
-    public void updateUserRole(Long userId/*, User user*/, UserRoleRequestDto userRoleRequestDto) {
+    public void updateUserRole(Long userId, UserEntity loginUser, UserRoleRequestDto userRoleRequestDto) {
         // [예외1] - Admin 권한 체크
-//        checkAdminAuthority(user);
+        checkManagerOrMasterAuthority(loginUser);
 
         // [예외2] - 없는 사용자
         UserEntity user = userRepository.findById(userId).orElseThrow(()
@@ -93,50 +97,67 @@ public class ManagerService {
     /**
      * 가게 등록 승인 / 거부
      *
+     * @param user
      * @param storeId
-     * @param registrationStatus
+     * @param managerApproveRequestDto
      */
     @Transactional
-    public void updateStoreRegist(UUID storeId, RegistrationStatus registrationStatus) {
+    public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
         // [예외1] - Admin 권한 체크
-//        checkAdminAuthority(user);
+        checkManagerOrMasterAuthority(user);
 
-        // [예외2] - 이전과 같은 상태
-
-        // [예외3] - 존재하지 않는 가게
+        // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
                 new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
 
-        store.setRegistrationStatus(registrationStatus);
+        // [예외3] - 이전과 같은 상태
+        checkApproveStatusSame(store, managerApproveRequestDto);
+
+        store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
         storeRepository.save(store);
     }
+
 
     /**
      * 가게 삭제 승인 / 거부
+     *
+     * @param user
      * @param storeId
-     * @param deletionStatus
+     * @param managerApproveRequestDto
      */
-    public void updateStoreDelete(UUID storeId, DeletionStatus deletionStatus) {
+    public void updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
         // [예외1] - Admin 권한 체크
-//        checkAdminAuthority(user);
+        checkManagerOrMasterAuthority(user);
 
-        // [예외2] - 이전과 같은 상태
-
-        // [예외3] - 존재하지 않는 가게
+        // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
                 new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
 
-        store.setDeletionStatus(deletionStatus);
+        // [예외3] - 이전과 같은 상태
+        checkDeleteStatusSame(store, managerApproveRequestDto);
+
+        store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
 
         storeRepository.save(store);
     }
 
-//    private void checkAdminAuthority(User user) {
-//        private void checkAdminAuthority(User user) {
-//            if (!"ADMIN".equals(user.getUserRole())) { // Todo: ADMIN은 나중에 Enum으로 유저role 생기면 바꾸기
-//                throw new CustomApiException(ResBasicCode.BAD_REQUEST, "Admin권한으로 접근할 수 있읍니다.");
-//            }
-//        }
-//    }
+    private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
+        if(!store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
+            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
+        }
+    }
+
+    private void checkApproveStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
+        if(!store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
+            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
+        }
+    }
+
+    private void checkManagerOrMasterAuthority(UserEntity user) {
+        if (!(UserRole.MASTER).equals(user.getRole()) || (UserRole.MANAGER).equals(user.getRole())) {
+            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "Admin 권한으로 접근할 수 있읍니다.");
+        }
+    }
+
 }

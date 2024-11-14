@@ -31,7 +31,7 @@ public class OrderDetailEntity {
   @Column(nullable = false)
   private int menuCount;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "order_id", nullable = false)
   private OrderEntity order;
 

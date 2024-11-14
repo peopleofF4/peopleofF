@@ -1,8 +1,6 @@
 package com.sparta.peopleoff.domain.user.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
-import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;

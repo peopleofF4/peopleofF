@@ -1,7 +1,7 @@
 package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
-import com.sparta.peopleoff.domain.store.entity.enums.RegistrationStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

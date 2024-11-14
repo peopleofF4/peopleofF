@@ -5,6 +5,7 @@ import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
+import com.sparta.peopleoff.domain.user.dto.UpdateResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -79,9 +80,10 @@ public class ManagerService {
      * @param userId
      * @param loginUser
      * @param userRoleRequestDto
+     * @return
      */
     @Transactional
-    public void updateUserRole(Long userId, UserEntity loginUser, UserRoleRequestDto userRoleRequestDto) {
+    public UpdateResponseDto updateUserRole(Long userId, UserEntity loginUser, UserRoleRequestDto userRoleRequestDto) {
         // [예외1] - Admin 권한 체크
         checkManagerOrMasterAuthority(loginUser);
 
@@ -92,6 +94,8 @@ public class ManagerService {
         user.setRole(userRoleRequestDto.getUserRole());
 
         userRepository.save(user);
+
+        return new UpdateResponseDto(user);
     }
 
     /**
@@ -100,9 +104,10 @@ public class ManagerService {
      * @param user
      * @param storeId
      * @param managerApproveRequestDto
+     * @return
      */
     @Transactional
-    public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public UpdateResponseDto updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
         // [예외1] - Admin 권한 체크
         checkManagerOrMasterAuthority(user);
 
@@ -116,6 +121,7 @@ public class ManagerService {
         store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
         storeRepository.save(store);
+        return new UpdateResponseDto(user);
     }
 
 
@@ -125,8 +131,9 @@ public class ManagerService {
      * @param user
      * @param storeId
      * @param managerApproveRequestDto
+     * @return
      */
-    public void updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public UpdateResponseDto updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
         // [예외1] - Admin 권한 체크
         checkManagerOrMasterAuthority(user);
 
@@ -140,6 +147,9 @@ public class ManagerService {
         store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
 
         storeRepository.save(store);
+
+
+        return new UpdateResponseDto(user);
     }
 
     private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {

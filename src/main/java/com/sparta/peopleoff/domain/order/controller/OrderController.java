@@ -58,10 +58,10 @@ public class OrderController {
 
   // 주문 조회
   @GetMapping("/api/v1/users/{userId}/orders")
-  public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getOrders(
+  public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getCustomerOrderList(
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
-    List<OrderSearchResponseDto> res = orderService.getOrders(user);
+    List<OrderSearchResponseDto> res = orderService.getCustomerOrderList(user);
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 

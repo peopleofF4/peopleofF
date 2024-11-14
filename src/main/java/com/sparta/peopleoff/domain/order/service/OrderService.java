@@ -34,7 +34,7 @@ public interface OrderService {
    * @param user user
    * @return List 주문 내역 조히
    */
-  List<OrderSearchResponseDto> getOrders(UserDetailsImpl user);
+  List<OrderSearchResponseDto> getCustomerOrderList(UserDetailsImpl user);
 
   /**
    * 주문 생성 메서드

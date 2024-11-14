@@ -44,8 +44,8 @@ public class OrderServiceImpl implements OrderService {
       OrderType orderType, UUID menuId, int page, int size) {
 
     StoreEntity store = findStoreEntity(storeId);
-    if (!user.getUser().getRole().equals(UserRole.OWNER)
-        && !user.getUser().getId().equals(store.getUser().getId())) {
+
+    if (!user.getUser().getId().equals(store.getUser().getId())) {
       throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 조회할 권한이 없습니다.");
     }
 
@@ -56,8 +56,7 @@ public class OrderServiceImpl implements OrderService {
       OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
 
       List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
-          .map(this::mapToMenuItemDto)
-          .collect(Collectors.toList());
+          .map(this::mapToMenuItemDto).collect(Collectors.toList());
 
       return new OrderSearchResponseDto(orderDto, menuItems);
     });
@@ -65,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<OrderSearchResponseDto> getOrders(UserDetailsImpl user) {
+  public List<OrderSearchResponseDto> getCustomerOrderList(UserDetailsImpl user) {
 
     List<OrderEntity> orderEntities = orderRepository.findAllByUserId(user.getUser().getId());
     List<OrderSearchResponseDto> responseDtos = new ArrayList<>();
@@ -74,8 +73,7 @@ public class OrderServiceImpl implements OrderService {
       OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
 
       List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
-          .map(this::mapToMenuItemDto)
-          .collect(Collectors.toList());
+          .map(this::mapToMenuItemDto).collect(Collectors.toList());
 
       responseDtos.add(new OrderSearchResponseDto(orderDto, menuItems));
     }
@@ -101,13 +99,11 @@ public class OrderServiceImpl implements OrderService {
 
     for (OrderPostRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
       MenuEntity menu = store.getMenuList().stream()
-          .filter(m -> m.getId().equals(menuItem.getMenuId()))
-          .findFirst()
-          .orElseThrow(() -> new CustomApiException
-              (ResBasicCode.BAD_REQUEST, "입력한 메뉴 '" + menuItem.getMenuId() + "'가 존재하지 않습니다"));
+          .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst().orElseThrow(
+              () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
-      OrderDetailEntity orderDetailEntity
-          = OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+      OrderDetailEntity orderDetailEntity = OrderDetailEntity.toEntity(menu, orderEntity,
+          menuItem.getMenuCount());
       orderEntity.addOrderDetail(orderDetailEntity);
     }
     orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
@@ -116,8 +112,8 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
-  public void updateOffLineOrder(OrderPatchRequestDto reqDto, UUID storeId,
-      UUID orderId, UserDetailsImpl user) {
+  public void updateOffLineOrder(OrderPatchRequestDto reqDto, UUID storeId, UUID orderId,
+      UserDetailsImpl user) {
 
     StoreEntity store = findStoreEntity(storeId);
     OrderEntity orderEntity = findOrderEntity(orderId);
@@ -133,13 +129,11 @@ public class OrderServiceImpl implements OrderService {
 
     for (OrderPatchRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
       MenuEntity menu = store.getMenuList().stream()
-          .filter(m -> m.getId().equals(menuItem.getMenuId()))
-          .findFirst()
-          .orElseThrow(() -> new CustomApiException
-              (ResBasicCode.BAD_REQUEST, "입력한 메뉴 '" + menuItem.getMenuId() + "'가 존재하지 않습니다"));
+          .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst()
+          .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
-      OrderDetailEntity orderDetailEntity
-          = OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+      OrderDetailEntity orderDetailEntity = OrderDetailEntity.toEntity(menu, orderEntity,
+          menuItem.getMenuCount());
       orderEntity.addOrderDetail(orderDetailEntity);
     }
 
@@ -165,7 +159,7 @@ public class OrderServiceImpl implements OrderService {
 
     order.cancel();
 
-    List<OrderDetailEntity> orderDetails = orderDetailRepository.findByOrderId(orderId);
+    List<OrderDetailEntity> orderDetails = order.getOrderDetailList().stream().toList();
     for (OrderDetailEntity orderDetail : orderDetails) {
       orderDetail.cancel();
     }
@@ -180,28 +174,21 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public StoreEntity findStoreEntity(UUID storeId) {
-    return storeRepository.findById(storeId)
-        .orElseThrow(() -> new CustomApiException(
-            ResBasicCode.BAD_REQUEST, "입력한 가게의 정보가 존재하지 않습니다"));
+    return storeRepository.findById(storeId).orElseThrow(
+        () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 가게의 정보가 존재하지 않습니다"));
   }
 
   @Override
   public OrderSearchResponseDto.Order mapToOrderDto(OrderEntity orderEntity) {
-    return new OrderSearchResponseDto.Order(
-        orderEntity.getId(),
-        orderEntity.getUser().getId(),
-        orderEntity.getOrderRequest(),
-        orderEntity.getDeliveryAddress(),
-        orderEntity.getTotalPrice()
-    );
+    return new OrderSearchResponseDto.Order(orderEntity.getId(), orderEntity.getUser().getId(),
+        orderEntity.getOrderRequest(), orderEntity.getDeliveryAddress(),
+        orderEntity.getTotalPrice());
   }
 
   @Override
   public OrderSearchResponseDto.MenuItem mapToMenuItemDto(OrderDetailEntity orderDetailEntity) {
-    return new OrderSearchResponseDto.MenuItem(
-        orderDetailEntity.getMenu().getId(),
-        orderDetailEntity.getMenuCount()
-    );
+    return new OrderSearchResponseDto.MenuItem(orderDetailEntity.getMenu().getId(),
+        orderDetailEntity.getMenuCount());
   }
 }
 

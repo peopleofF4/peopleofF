@@ -6,7 +6,7 @@ import com.sparta.peopleoff.domain.user.dto.UserChangePasswordDto;
 import com.sparta.peopleoff.domain.user.dto.UserInfoResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
-import com.sparta.peopleoff.domain.user.service.UserService;
+import com.sparta.peopleoff.domain.user.service.UserServiceImpl;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class UserController {
 
-  private final UserService userService;
+  private final UserServiceImpl userServiceImpl;
 
   /**
    * 회원 가입 API
@@ -40,7 +40,7 @@ public class UserController {
       @Valid
       @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
 
-    userService.signUp(userSignUpRequestDto);
+    userServiceImpl.signUp(userSignUpRequestDto);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -58,7 +58,7 @@ public class UserController {
   public ResponseEntity<ApiResponse<UserInfoResponseDto>> getUserInfo(
       @AuthenticationPrincipal UserDetailsImpl user) {
 
-    UserInfoResponseDto response = userService.getUserInfo(user);
+    UserInfoResponseDto response = userServiceImpl.getUserInfo(user);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -76,7 +76,7 @@ public class UserController {
   public ResponseEntity<ApiResponse<Void>> updateUserInfo(@PathVariable Long userId,
       @Valid @RequestBody UserUpdateRequestDto userUpdateInfoDto) {
 
-    userService.updateUserInfo(userId, userUpdateInfoDto);
+    userServiceImpl.updateUserInfo(userId, userUpdateInfoDto);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -93,7 +93,7 @@ public class UserController {
   @DeleteMapping("/users/{userId}")
   public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
 
-    userService.deleteUser(userId);
+    userServiceImpl.deleteUser(userId);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -112,7 +112,7 @@ public class UserController {
       @RequestBody @Valid UserChangePasswordDto userChangePasswordDto
       , @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    userService.changePassword(userChangePasswordDto, userDetails);
+    userServiceImpl.changePassword(userChangePasswordDto, userDetails);
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));

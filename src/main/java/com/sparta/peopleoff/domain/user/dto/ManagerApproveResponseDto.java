@@ -9,4 +9,8 @@ public class ManagerApproveResponseDto {
     private Long id;
     private Timestamp updateAt;
     private String updateBy;
+
+    public ManagerApproveResponseDto(Long userId) {
+        this.id = userId;
+    }
 }

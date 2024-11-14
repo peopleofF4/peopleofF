@@ -1,6 +1,11 @@
 package com.sparta.peopleoff.security.filter;
 
-import com.sparta.peopleoff.jwt.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.peopleoff.common.apiresponse.ApiResponse;
+import com.sparta.peopleoff.common.rescode.ResSuccessCode;
+import com.sparta.peopleoff.jwt.JwtTokenProvider;
+import com.sparta.peopleoff.jwt.JwtTokenValidator;
+import com.sparta.peopleoff.jwt.refreshtoken.service.RefreshTokenService;
 import com.sparta.peopleoff.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -10,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -22,7 +28,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-  private final JwtUtil jwtUtil;
+  private final RefreshTokenService refreshTokenService;
+  private final JwtTokenValidator jwtTokenValidator;
   private final UserDetailsServiceImpl userDetailsService;
 
   @Override
@@ -30,15 +37,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
       throws ServletException, IOException {
 
-    String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(req);
+    String refreshToken = jwtTokenValidator.getJwtRefreshTokenFromHeader(req);
 
-    if (StringUtils.hasText(refreshToken)) {
-
-      if (jwtUtil.validateToken(refreshToken, res)) {
-        checkRefreshTokenAndReIssueAccessToken(res, refreshToken);
-        return;
-      }
-
+    if (StringUtils.hasText(refreshToken) && jwtTokenValidator.validateToken(refreshToken, res)) {
+      checkRefreshTokenAndReIssueAccessToken(res, refreshToken);
+      return;
     }
 
     checkAccessTokenAndAuthentication(req, res, filterChain);
@@ -62,15 +65,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   private void checkAccessTokenAndAuthentication(HttpServletRequest request,
       HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-    String accessToken = jwtUtil.getJwtAccessTokenFromHeader(request);
+    String accessToken = jwtTokenValidator.getJwtAccessTokenFromHeader(request);
 
-    if (StringUtils.hasText(accessToken)) {
+    if (StringUtils.hasText(accessToken) && jwtTokenValidator.validateToken(accessToken,
+        response)) {
 
-      if (jwtUtil.validateToken(accessToken, response)) {
-        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+      Claims claims = JwtTokenProvider.getUserInfoFromToken(accessToken);
 
-        setAuthentication(claims.getSubject());
-      }
+      setAuthentication(claims.getSubject());
 
     }
 
@@ -80,6 +82,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response,
       String refreshToken) throws IOException {
 
-    jwtUtil.reIssueAccessToken(response, refreshToken);
+    refreshTokenService.reIssueAccessToken(response, refreshToken);
+
+    ApiResponse<Void> commonResponse = ApiResponse.OK(ResSuccessCode.ACCESS_TOKEN_GENERATED);
+
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+    new ObjectMapper().writeValue(response.getOutputStream(), commonResponse);
   }
 }

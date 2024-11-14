@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RegistrationStatus {
   PENDING("보류"),
-  ACCEPTED("승인"),
+  ACCEPTED("수락"),
   REJECTED("거절"),
   NONE("없음");
 

@@ -15,8 +15,9 @@ public class AiResponseDto {
 
     private String menuName;
 
-    public AiResponseDto(UUID id, String aiResponse) {
+    public AiResponseDto(UUID id, String aiResponse, String menuName) {
         this.id = id;
         this.aiResponse = aiResponse;
+        this.menuName = menuName;
     }
 }

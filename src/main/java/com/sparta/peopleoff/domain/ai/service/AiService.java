@@ -37,9 +37,7 @@ public class AiService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
-    public AiResponseDto getContents(UUID menuId, String prompt, UserEntity user) {
-        // [예외 1] - 권한 OWNER
-        checkOwnerAuthority(user);
+    public AiResponseDto getContents(UUID menuId, String prompt) {
 
         // Gemini에 요청 전송
         String requestUrl = apiUrl + "?key=" + geminiApiKey;
@@ -56,7 +54,7 @@ public class AiService {
 
         aiRepository.save(aiEntity);
 
-        AiResponseDto aiResponseDto = new AiResponseDto(aiEntity.getId(), aiEntity.getAiResponse());
+        AiResponseDto aiResponseDto = new AiResponseDto(aiEntity.getId(), aiEntity.getAiResponse(), menu.getMenuName());
 
         return aiResponseDto;
     }

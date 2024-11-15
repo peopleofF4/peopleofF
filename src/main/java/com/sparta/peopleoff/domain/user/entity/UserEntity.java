@@ -2,6 +2,8 @@ package com.sparta.peopleoff.domain.user.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
@@ -16,6 +18,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import lombok.Setter;
 
 @DynamicUpdate
 @Entity
@@ -52,7 +55,8 @@ public class UserEntity extends SoftDeleteEntity {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private RegistrationStatus registrationStatus = RegistrationStatus.NONE;
+  @Setter
+  private RegistrationStatus managerRegistrationStatus = RegistrationStatus.NONE;
 
   public UserEntity(UserSignUpRequestDto userSignUpRequestDto) {
     this.userName = userSignUpRequestDto.getUserName();
@@ -74,4 +78,7 @@ public class UserEntity extends SoftDeleteEntity {
     this.password = newPassword;
   }
 
+  public void setRole(UserRole role) {
+    this.role = role;
+  }
 }

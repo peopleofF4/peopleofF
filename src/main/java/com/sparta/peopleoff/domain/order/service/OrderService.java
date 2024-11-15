@@ -23,10 +23,11 @@ public interface OrderService {
    * @param menuId    menuId로 조회 가능
    * @param page      10
    * @param size      size
+   * @param sortBy    sortBy
    * @return page 주문 목록 조회
    */
   Page<OrderSearchResponseDto> searchOrder(UUID storeId, UserDetailsImpl user, OrderType orderType,
-      UUID menuId, int page, int size);
+      UUID menuId, int page, int size, String sortBy);
 
   /**
    * CUSTOMER의 주문 내역 조회

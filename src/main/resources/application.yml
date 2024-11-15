@@ -1,9 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery
-    username: woojin
-    password: 1359ki
+    username: ${DB_ID}
+    password: ${DB_PW}
     driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      location: ${LOCATION}
 
   jpa:
     hibernate:
@@ -23,3 +26,8 @@ jwt:
   refresh:
     expiration: 900
     #header: Authorization-refresh
+
+gemini:
+  api:
+    url: ${GEMINI_URL}
+    key: ${GEMINI_KEY}

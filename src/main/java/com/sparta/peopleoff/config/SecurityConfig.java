@@ -1,15 +1,18 @@
 package com.sparta.peopleoff.config;
 
-import com.sparta.peopleoff.jwt.JwtUtil;
+import com.sparta.peopleoff.jwt.JwtTokenValidator;
+import com.sparta.peopleoff.jwt.refreshtoken.service.RefreshTokenService;
 import com.sparta.peopleoff.security.UserDetailsServiceImpl;
 import com.sparta.peopleoff.security.filter.JwtAuthenticationFilter;
 import com.sparta.peopleoff.security.filter.JwtAuthorizationFilter;
+import com.sparta.peopleoff.security.handler.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,10 +24,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtUtil jwtUtil;
+  private final RefreshTokenService refreshTokenService;
+  private final JwtTokenValidator jwtTokenValidator;
+  private final CustomAccessDeniedHandler accessDeniedHandler;
   private final UserDetailsServiceImpl userDetailsService;
   private final AuthenticationConfiguration authenticationConfiguration;
 
@@ -41,14 +47,14 @@ public class SecurityConfig {
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-    JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+    JwtAuthenticationFilter filter = new JwtAuthenticationFilter(refreshTokenService);
     filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
     return filter;
   }
 
   @Bean
   public JwtAuthorizationFilter jwtAuthorizationFilter() {
-    return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+    return new JwtAuthorizationFilter(refreshTokenService, jwtTokenValidator, userDetailsService);
   }
 
   @Bean
@@ -74,8 +80,9 @@ public class SecurityConfig {
             .requestMatchers("/admin/v1/**").hasAnyRole("ADMIN", "MANAGER")
             .anyRequest().authenticated()
     );
-//    http.logout(logout
-//        -> logout.invalidateHttpSession(true));
+
+    http.exceptionHandling((exception) ->
+        exception.accessDeniedHandler(accessDeniedHandler));
 
     // 필터 관리
     http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

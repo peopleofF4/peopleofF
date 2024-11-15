@@ -1,8 +1,11 @@
 package com.sparta.peopleoff.domain.user.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
-import com.sparta.peopleoff.domain.user.entity.enums.ManagerApproveRegistrationStatus;
+import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,13 +17,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import lombok.Setter;
 
+@DynamicUpdate
 @Entity
 @Table(name = "p_user")
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class UserEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +48,6 @@ public class UserEntity {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  @Setter
   private UserRole role = UserRole.CUSTOMER; // 기본값 설정
 
   @Column(nullable = false, length = 255)
@@ -51,12 +55,8 @@ public class UserEntity {
 
   @Column
   @Enumerated(EnumType.STRING)
-  private ManagerApproveRegistrationStatus managerRegistrationStatus = ManagerApproveRegistrationStatus.NONE;
-
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
   @Setter
-  private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
+  private RegistrationStatus managerRegistrationStatus = RegistrationStatus.NONE;
 
   public UserEntity(UserSignUpRequestDto userSignUpRequestDto) {
     this.userName = userSignUpRequestDto.getUserName();
@@ -67,4 +67,18 @@ public class UserEntity {
     this.address = userSignUpRequestDto.getAddress();
   }
 
+  public void updateUser(UserUpdateRequestDto userUpdateRequestDto) {
+    this.userName = userUpdateRequestDto.getUserName();
+    this.nickName = userUpdateRequestDto.getNickName();
+    this.phoneNumber = userUpdateRequestDto.getPhoneNumber();
+    this.address = userUpdateRequestDto.getAddress();
+  }
+
+  public void updatePassword(String newPassword) {
+    this.password = newPassword;
+  }
+
+  public void setRole(UserRole role) {
+    this.role = role;
+  }
 }

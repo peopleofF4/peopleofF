@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.order.service;
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   @Transactional(readOnly = true)
   public Page<OrderSearchResponseDto> searchOrder(UUID storeId, UserDetailsImpl user,
-      OrderType orderType, UUID menuId, int page, int size) {
+      OrderType orderType, UUID menuId, int page, int size, String sortBy) {
 
     StoreEntity store = findStoreEntity(storeId);
 
@@ -49,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
       throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 조회할 권한이 없습니다.");
     }
 
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
     Page<OrderEntity> orderEntities = orderRepository.searchOrder(orderType, menuId, pageable);
 
     return orderEntities.map(orderEntity -> {
@@ -161,8 +163,9 @@ public class OrderServiceImpl implements OrderService {
 
     List<OrderDetailEntity> orderDetails = order.getOrderDetailList().stream().toList();
     for (OrderDetailEntity orderDetail : orderDetails) {
-      orderDetail.cancel();
+      orderDetail.setDeletionStatus(DeletionStatus.DELETED);
     }
+
     paymentRepository.findByOrderId(orderId).cancel();
   }
 

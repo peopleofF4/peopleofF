@@ -1,34 +1,24 @@
 package com.sparta.peopleoff.domain.store.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.List;
-import java.util.UUID;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "p_store")
 @Getter
 @NoArgsConstructor
-public class StoreEntity {
+public class StoreEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,15 +39,9 @@ public class StoreEntity {
   @Column(nullable = false)
   private int minimumOrderPrice;
 
-  @Setter
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  @Setter
-  private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
 
   @Column
   private int totalRating;
@@ -96,5 +80,14 @@ public class StoreEntity {
     this.businessNumber = dto.getBusinessNumber();
     this.minimumOrderPrice = dto.getMinimumOrderPrice();
     this.category = category;
+  }
+
+  public void delete() {
+    this.setDeletionStatus(DeletionStatus.DELETED);
+  }
+
+  public void setRegistrationStatus(
+      RegistrationStatus registrationStatus) {
+    this.registrationStatus = registrationStatus;
   }
 }

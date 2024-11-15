@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_store")
@@ -49,7 +50,6 @@ public class StoreEntity extends SoftDeleteEntity {
   @Column(nullable = false)
   private int minimumOrderPrice;
 
-  @Setter
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
@@ -95,5 +95,9 @@ public class StoreEntity extends SoftDeleteEntity {
 
   public void delete() {
     this.setDeletionStatus(DeletionStatus.DELETED);
+  }
+
+  public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+    this.registrationStatus = registrationStatus;
   }
 }

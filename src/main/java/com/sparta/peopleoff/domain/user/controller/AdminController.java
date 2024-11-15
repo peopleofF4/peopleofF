@@ -106,16 +106,14 @@ public class AdminController {
 
     /**
      * 가게 삭제 승인 / 거부
-     * @param userDetails
      * @param storeId
      * @param managerApproveRequestDto
      * @return
      */
     @PutMapping("/stores/{storeId}/delete")
-    private ResponseEntity<ApiResponse<Void>> updateStoreDelete(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                             @PathVariable UUID storeId,
-                                                                             @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-        adminService.updateStoreDelete(userDetails.getUser(), storeId, managerApproveRequestDto);
+    private ResponseEntity<ApiResponse<Void>> updateStoreDelete(@PathVariable UUID storeId,
+                                                                @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
+        adminService.updateStoreDelete(storeId, managerApproveRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_DELETION_UPDTAED));
     }
 }

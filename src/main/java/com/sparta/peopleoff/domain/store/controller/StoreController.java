@@ -33,7 +33,7 @@ public class StoreController {
   }
 
   @PostMapping("/stores")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -64,9 +64,8 @@ public class StoreController {
   }
 
   @PutMapping("/stores/{storeId}")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
 
@@ -75,9 +74,8 @@ public class StoreController {
   }
 
   @DeleteMapping("/stores/{storeId}")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {
 
     storeService.deleteStore(storeId);

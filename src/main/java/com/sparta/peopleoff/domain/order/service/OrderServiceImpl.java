@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.order.service;
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
@@ -161,8 +162,9 @@ public class OrderServiceImpl implements OrderService {
 
     List<OrderDetailEntity> orderDetails = order.getOrderDetailList().stream().toList();
     for (OrderDetailEntity orderDetail : orderDetails) {
-      orderDetail.cancel();
+      orderDetail.setDeletionStatus(DeletionStatus.DELETED);
     }
+
     paymentRepository.findByOrderId(orderId).cancel();
   }
 

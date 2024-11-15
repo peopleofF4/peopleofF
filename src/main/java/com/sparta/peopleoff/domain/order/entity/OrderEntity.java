@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.order.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderStatus;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderType;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_order")
-public class OrderEntity {
+public class OrderEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -66,10 +67,6 @@ public class OrderEntity {
 
   private String deliveryAddress;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private DeletionStatus deletionStatus;
-
   public void addOrderDetail(OrderDetailEntity orderDetail) {
     this.orderDetailList.add(orderDetail);
     orderDetail.setOrder(this);
@@ -90,18 +87,19 @@ public class OrderEntity {
     this.orderStatus = OrderStatus.PLACED;
     this.orderType = OrderType.ON_LINE;
     this.expiredAt = LocalDateTime.now().plusMinutes(5);
-    this.deletionStatus = DeletionStatus.ACTIVE;
   }
 
   public void updateOrder(int updateTotalPrice) {
     this.totalPrice = updateTotalPrice;
   }
+
   public void updateOffLine(StoreEntity store) {
     this.deliveryAddress = store.getStoreAddress();
     this.orderType = OrderType.OFF_LINE;
   }
+
   public void cancel() {
     this.orderStatus = OrderStatus.CANCELED;
-    this.deletionStatus = DeletionStatus.DELETED;
+    this.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

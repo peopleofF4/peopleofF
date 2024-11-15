@@ -87,7 +87,7 @@ public class SecurityConfig {
                 "/api/v1/users/check/refreshtoken").permitAll()
             .requestMatchers(SWAGGER.toArray(new String[0]))
             .permitAll()  // TODO 관리자만 들어갈 수 있게 수정해야됨
-            .requestMatchers("/admin/v1/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers("/admin/v1/**").hasAnyRole("MASTER", "MANAGER")
             .anyRequest().authenticated()
     );
 

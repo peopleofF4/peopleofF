@@ -3,7 +3,6 @@ package com.sparta.peopleoff.domain.user.controller;
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
-import com.sparta.peopleoff.domain.user.dto.UpdateResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.service.AdminService;
@@ -83,11 +82,11 @@ public class AdminController {
      * @return
      */
     @PutMapping("/user/{userId}/role/update")
-    private ResponseEntity<ApiResponse<UpdateResponseDto>> updateUserRole(@PathVariable Long userId,
+    private ResponseEntity<ApiResponse<Void>> updateUserRole(@PathVariable Long userId,
                                                                           @RequestBody UserRoleRequestDto userRoleRequestDto
     ) {
-        UpdateResponseDto updateResponseDto = adminService.updateUserRole(userId, userRoleRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(updateResponseDto));
+        adminService.updateUserRole(userId, userRoleRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_ROLE_UPDATED));
     }
 
     /**
@@ -98,11 +97,11 @@ public class AdminController {
      * @return
      */
     @PutMapping("/store/{storeId}/regist")
-    private ResponseEntity<ApiResponse<UpdateResponseDto>> updateStoreRegist(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    private ResponseEntity<ApiResponse<Void>> updateStoreRegist(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                              @PathVariable UUID storeId,
                                                                              @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-        UpdateResponseDto updateResponseDto = adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(updateResponseDto));
+        adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_REGISTRATION_UPDTAED));
     }
 
     /**
@@ -113,10 +112,10 @@ public class AdminController {
      * @return
      */
     @PutMapping("/store/{storeId}/delete")
-    private ResponseEntity<ApiResponse<UpdateResponseDto>> updateStoreDelete(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    private ResponseEntity<ApiResponse<Void>> updateStoreDelete(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                              @PathVariable UUID storeId,
                                                                              @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-        UpdateResponseDto updateResponseDto = adminService.updateStoreDelete(userDetails.getUser(), storeId, managerApproveRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(updateResponseDto));
+        adminService.updateStoreDelete(userDetails.getUser(), storeId, managerApproveRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_DELETION_UPDTAED));
     }
 }

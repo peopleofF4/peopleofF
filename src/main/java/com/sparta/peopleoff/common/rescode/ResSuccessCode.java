@@ -19,6 +19,9 @@ public enum ResSuccessCode implements ResCodeIfs {
   ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated"),
 
   // ADMIN
+  USER_ROLE_UPDATED(HttpStatus.OK.value(), "200", "user role successfully updated"),
+  STORE_REGISTRATION_UPDTAED(HttpStatus.OK.value(), "200", "store registration updated"),
+  STORE_DELETION_UPDTAED(HttpStatus.OK.value(), "200", "store deletion updated"),
   MANAGER_APPROVE(HttpStatus.OK.value(), "200", "Manager Approve Success");
 
   private final Integer httpStatusCode;   // 아래와 상응하는 HttpStatusCode

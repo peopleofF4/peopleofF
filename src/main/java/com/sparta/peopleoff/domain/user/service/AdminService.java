@@ -6,7 +6,6 @@ import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
-import com.sparta.peopleoff.domain.user.dto.UpdateResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -129,7 +128,7 @@ public class AdminService {
      * @return
      */
     @org.springframework.transaction.annotation.Transactional
-    public UpdateResponseDto updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
+    public void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
 
         // [예외2] - 없는 사용자
         UserEntity user = userRepository.findById(userId).orElseThrow(()
@@ -138,8 +137,6 @@ public class AdminService {
         user.setRole(userRoleRequestDto.getUserRole());
 
         userRepository.save(user);
-
-        return new UpdateResponseDto(user);
     }
 
     /**
@@ -151,7 +148,7 @@ public class AdminService {
      * @return
      */
     @org.springframework.transaction.annotation.Transactional
-    public UpdateResponseDto updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -163,7 +160,6 @@ public class AdminService {
         store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
         storeRepository.save(store);
-        return new UpdateResponseDto(user);
     }
 
 
@@ -175,7 +171,7 @@ public class AdminService {
      * @param managerApproveRequestDto
      * @return
      */
-    public UpdateResponseDto updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public void updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -187,9 +183,6 @@ public class AdminService {
         store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
 
         storeRepository.save(store);
-
-
-        return new UpdateResponseDto(user);
     }
 
     private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {

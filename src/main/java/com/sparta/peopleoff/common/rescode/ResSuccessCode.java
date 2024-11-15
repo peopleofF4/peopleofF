@@ -16,13 +16,16 @@ public enum ResSuccessCode implements ResCodeIfs {
   PASSWORD_UPDATED(HttpStatus.OK.value(), "200", "password successfully updated"),
 
   // TOKEN
-  ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated");
+  ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated"),
+
+  // ORDER
+  CREATE_ORDER(HttpStatus.CREATED.value(), "201", "Order successfully created"),
+  UPDATE_ORDER(HttpStatus.OK.value(), "200", "Order successfully updated"),
+  DELETE_ORDER(HttpStatus.OK.value(), "200", "Order successfully deleted");;
 
   private final Integer httpStatusCode;   // 아래와 상응하는 HttpStatusCode
 
   private final String resCode;    // Internal ErrorCode
 
   private final String description;
-
-
 }

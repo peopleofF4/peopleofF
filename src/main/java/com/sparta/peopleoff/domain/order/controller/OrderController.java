@@ -1,7 +1,7 @@
 package com.sparta.peopleoff.domain.order.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
-import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
@@ -40,10 +40,11 @@ public class OrderController {
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.createOrder(orderPostRequestDto, storeId, user);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.OK(ResBasicCode.CREATED));
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ApiResponse.OK(ResSuccessCode.CREATE_ORDER));
   }
 
-  // 주문 검색 조회 owner 사용
+  // 주문 검색 조회 OWNER 사용
   @GetMapping("/stores/{storeId}/orders/search")
   public ResponseEntity<ApiResponse<Page<OrderSearchResponseDto>>> searchOrder(
       @AuthenticationPrincipal UserDetailsImpl user,
@@ -59,7 +60,7 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 
-  // 주문 조회
+  // 주문 조회 CUSTOMER 사용
   @GetMapping("/users/{userId}/orders")
   public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getCustomerOrderList(
       @AuthenticationPrincipal UserDetailsImpl user
@@ -77,8 +78,7 @@ public class OrderController {
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.updateOffLineOrder(orderPatchRequestDto, storeId, orderId, user);
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResBasicCode.OK));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.UPDATE_ORDER));
   }
 
   // 주문 취소
@@ -88,6 +88,6 @@ public class OrderController {
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.cancelOrder(orderId, user);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.OK(ResBasicCode.OK));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.DELETE_ORDER));
   }
 }

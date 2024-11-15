@@ -33,17 +33,13 @@ public class UserServiceImpl implements UserService {
     userSignUpRequestDto.setPassword(password);
 
     // 이메일 중복 여부
-    Optional.ofNullable(userRepository.findByEmail(userSignUpRequestDto.getEmail()))
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 Email이 존재합니다."));
+    checkDuplicateEmail(userSignUpRequestDto.getEmail());
 
     // 휴대폰 번호 중복 여부
-    Optional.ofNullable(userRepository.findByPhoneNumber(userSignUpRequestDto.getPhoneNumber()))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 PhoneNumber가 존재합니다."));
+    checkDuplicatePhoneNumber(userSignUpRequestDto.getPhoneNumber());
+
     // 닉네임 중복 여부
-    Optional.ofNullable(userRepository.findByNickName(userSignUpRequestDto.getNickName()))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다."));
+    checkDuplicateNickName(userSignUpRequestDto.getNickName());
 
     AuditorContext.setCurrentEmail(userSignUpRequestDto.getEmail());
 
@@ -83,13 +79,10 @@ public class UserServiceImpl implements UserService {
     }
 
     // 휴대폰 번호 중복 여부
-    Optional.ofNullable(userRepository.findByPhoneNumber(userUpdateInfoDto.getPhoneNumber()))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 PhoneNumber가 존재합니다."));
+    checkDuplicatePhoneNumber(userUpdateInfoDto.getPhoneNumber());
+
     // 닉네임 중복 여부
-    Optional.ofNullable(userRepository.findByNickName(userUpdateInfoDto.getNickName()))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다."));
+    checkDuplicateNickName(userUpdateInfoDto.getNickName());
 
     user.updateUser(userUpdateInfoDto); // 여기도 변경감지
 
@@ -117,4 +110,29 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
 
   }
+
+  // 이메일 중복 체크 메서드
+  private void checkDuplicateEmail(String email) {
+
+    Optional.ofNullable(userRepository.findByEmail(email))
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 Email이 존재합니다."));
+  }
+
+  // 휴대폰번호 중복 체크 메서드
+  private void checkDuplicatePhoneNumber(String phoneNumber) {
+
+    Optional.ofNullable(userRepository.findByPhoneNumber(phoneNumber))
+        .orElseThrow(
+            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 PhoneNumber가 존재합니다."));
+  }
+
+  // 닉네임 중복 체크 메서드
+  private void checkDuplicateNickName(String nickName) {
+
+    Optional.ofNullable(userRepository.findByNickName(nickName))
+        .orElseThrow(
+            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다."));
+  }
+
+
 }

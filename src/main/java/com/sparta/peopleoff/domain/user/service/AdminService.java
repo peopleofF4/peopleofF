@@ -3,7 +3,6 @@ package com.sparta.peopleoff.domain.user.service;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
-import com.sparta.peopleoff.domain.user.dto.ManagerApproveResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
@@ -24,7 +23,6 @@ public class AdminService {
 
     /**
      * 회원 전체 조회
-     * @param loginUser
      * @return
      */
     public List<UserResponseDto> getUsers() {
@@ -43,7 +41,7 @@ public class AdminService {
      * @return
      */
     @Transactional
-    public ManagerApproveResponseDto managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public void managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 없는 아이디
         UserEntity user = userRepository.findById(userId).orElseThrow(() ->
@@ -59,8 +57,6 @@ public class AdminService {
         }
 
         userRepository.save(user);
-
-        return new ManagerApproveResponseDto(userId);
     }
 
 

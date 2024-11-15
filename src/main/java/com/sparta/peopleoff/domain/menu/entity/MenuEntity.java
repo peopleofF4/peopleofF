@@ -1,5 +1,7 @@
 package com.sparta.peopleoff.domain.menu.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatusEnum;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import jakarta.persistence.Column;
@@ -20,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_menu")
-public class MenuEntity {
+public class MenuEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -54,5 +56,13 @@ public class MenuEntity {
     this.menuName = menuName;
     this.menuDescription = menuDescription;
     this.price = price;
+  }
+
+  public void updateMenuStatus(MenuStatusEnum menuStatus) {
+    this.menuStatus = menuStatus;
+  }
+
+  public void delete() {
+    this.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

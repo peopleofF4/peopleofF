@@ -29,13 +29,10 @@ public class ManagerService {
 
 
     @Transactional
-    public void deleteUser(Long userIdToDelete, UserEntity user) {
+    public void deleteUser(Long userIdToDelete) {
         // [예외1] - 존재하지 않는 사용자
         UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
-
-        // [예외2] - Admin 권한 체크
-        checkManagerOrMasterAuthority(user);
 
         userToDelete.setDeletionStatus(DeletionStatus.DELETED);
 
@@ -46,12 +43,9 @@ public class ManagerService {
      * 유저 검색
      *
      * @param userName
-     * @param loginUser
      * @return
      */
-    public List<UserResponseDto> searchUser(String userName, UserEntity loginUser) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(loginUser);
+    public List<UserResponseDto> searchUser(String userName) {
 
         List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
 
@@ -78,14 +72,11 @@ public class ManagerService {
      * 유저 권한 수정
      *
      * @param userId
-     * @param loginUser
      * @param userRoleRequestDto
      * @return
      */
     @Transactional
-    public UpdateResponseDto updateUserRole(Long userId, UserEntity loginUser, UserRoleRequestDto userRoleRequestDto) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(loginUser);
+    public UpdateResponseDto updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
 
         // [예외2] - 없는 사용자
         UserEntity user = userRepository.findById(userId).orElseThrow(()
@@ -108,8 +99,6 @@ public class ManagerService {
      */
     @Transactional
     public UpdateResponseDto updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(user);
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -134,8 +123,6 @@ public class ManagerService {
      * @return
      */
     public UpdateResponseDto updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(user);
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -163,11 +150,4 @@ public class ManagerService {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
         }
     }
-
-    private void checkManagerOrMasterAuthority(UserEntity user) {
-        if (!(UserRole.MASTER).equals(user.getRole()) || (UserRole.MANAGER).equals(user.getRole())) {
-            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "Admin 권한으로 접근할 수 있읍니다.");
-        }
-    }
-
 }

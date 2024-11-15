@@ -27,9 +27,7 @@ public class AdminService {
      * @param loginUser
      * @return
      */
-    public List<UserResponseDto> getUsers(UserEntity loginUser) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(loginUser);
+    public List<UserResponseDto> getUsers() {
 
         List<UserEntity> users = userRepository.findAll();
 
@@ -40,15 +38,12 @@ public class AdminService {
 
     /**
      * 매니저 등록 승인
-     * @param loginUser
      * @param userId
      * @param managerApproveRequestDto
      * @return
      */
     @Transactional
-    public ManagerApproveResponseDto managerApprove(UserEntity loginUser, Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
-        // [예외1] - Admin 권한 체크
-        checkManagerOrMasterAuthority(loginUser);
+    public ManagerApproveResponseDto managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 없는 아이디
         UserEntity user = userRepository.findById(userId).orElseThrow(() ->

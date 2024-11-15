@@ -9,6 +9,7 @@ import com.sparta.peopleoff.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,30 +26,29 @@ public class AdminController {
 
     /**
      * 회원 전체 조회
-     * @param userDetails
      * @return
      */
+    @PreAuthorize("hasAuthority('MASTER') or hasAuthority('MANAGER')")
     @GetMapping
-    private ResponseEntity<ApiResponse<List<UserResponseDto>>> getUsers (
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<UserResponseDto> userResponseDtos = adminService.getUsers(userDetails.getUser());
+    private ResponseEntity<ApiResponse<List<UserResponseDto>>> getUsers () {
+        List<UserResponseDto> userResponseDtos = adminService.getUsers();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userResponseDtos));
     }
 
     /**
      * 매니저 등록 승인
-     * @param userDetails
      * @param userId
+     * @param managerApproveRequestDto
      * @return
      */
+    @PreAuthorize("hasAuthority('MASTER') or hasAuthority('MANAGER')")
     @PutMapping("/{userId}")
     private ResponseEntity<ApiResponse<ManagerApproveResponseDto>> ManagerApprove(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long userId,
             @RequestBody ManagerApproveRequestDto managerApproveRequestDto
             ) {
         ManagerApproveResponseDto managerApproveResponseDto = adminService.
-                managerApprove(userDetails.getUser(), userId, managerApproveRequestDto);
+                managerApprove(userId, managerApproveRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(managerApproveResponseDto));
     }

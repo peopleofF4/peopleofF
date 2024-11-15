@@ -30,6 +30,12 @@ public class MenuServiceImpl implements MenuService {
     this.storeRepository = storeRepository;
   }
 
+  /**
+   * 메뉴 등록
+   *
+   * @param menuRequestDto
+   * @param storeId
+   */
   @Override
   @Transactional
   public void registerMenu(MenuPostRequestDto menuRequestDto, UUID storeId) {
@@ -46,15 +52,13 @@ public class MenuServiceImpl implements MenuService {
     menuRepository.save(newMenu);
   }
 
-  @Override
-  @Transactional(readOnly = true)
-  public MenuGetResponseDto getMenuById(UUID menuId) {
-    MenuEntity menu = menuRepository.findById(menuId)
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 메뉴 ID입니다."));
-    return new MenuGetResponseDto(menu);
-  }
-
+  /**
+   * 특정 가게의 전체 메뉴 조회
+   *
+   * @param storeId
+   * @param pageable
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public List<MenuGetResponseDto> getMenusByStoreId(UUID storeId, Pageable pageable) {
@@ -66,6 +70,28 @@ public class MenuServiceImpl implements MenuService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 특정 메뉴 조회
+   *
+   * @param menuId
+   * @return
+   */
+  @Override
+  @Transactional(readOnly = true)
+  public MenuGetResponseDto getMenuById(UUID menuId) {
+    MenuEntity menu = menuRepository.findById(menuId)
+        .orElseThrow(
+            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 메뉴 ID입니다."));
+    return new MenuGetResponseDto(menu);
+  }
+
+  /**
+   * 메뉴 수정
+   *
+   * @param menuId
+   * @param menuUpdateRequestDto
+   * @return
+   */
   @Override
   @Transactional
   public MenuGetResponseDto updateMenu(UUID menuId, MenuPutRequestDto menuUpdateRequestDto) {
@@ -77,6 +103,12 @@ public class MenuServiceImpl implements MenuService {
     return null;
   }
 
+  /**
+   * 메뉴 상태 변경
+   *
+   * @param menuId
+   * @param status
+   */
   @Override
   @Transactional
   public void updateMenuStatus(UUID menuId, MenuStatusEnum status) {
@@ -86,6 +118,11 @@ public class MenuServiceImpl implements MenuService {
     menu.updateMenuStatus(status);
   }
 
+  /**
+   * 메뉴 삭제 (soft delete)
+   *
+   * @param menuId
+   */
   @Override
   @Transactional
   public void deleteMenu(UUID menuId) {
@@ -95,6 +132,13 @@ public class MenuServiceImpl implements MenuService {
     menu.delete();
   }
 
+  /**
+   * 메뉴 검색
+   *
+   * @param keyword
+   * @param pageable
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public List<MenuGetResponseDto> searchMenus(String keyword, Pageable pageable) {

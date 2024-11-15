@@ -35,6 +35,13 @@ public class MenuController {
     this.menuService = menuService;
   }
 
+  /**
+   * 메뉴 등록
+   *
+   * @param storeId
+   * @param requestDto
+   * @return
+   */
   @PostMapping("/stores/{storeId}/menu")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> registerMenu(
@@ -45,6 +52,16 @@ public class MenuController {
         .body(ApiResponse.OK(ResBasicCode.CREATED));
   }
 
+  /**
+   * 특정 가게의 전체 메뉴 조회
+   *
+   * @param storeId
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
   @GetMapping("/stores/{storeId}/menu")
   public ResponseEntity<ApiResponse<List<MenuGetResponseDto>>> getAllMenusByStore(
       @PathVariable UUID storeId,
@@ -68,12 +85,25 @@ public class MenuController {
     return ResponseEntity.ok(ApiResponse.OK(menus, ResBasicCode.OK));
   }
 
+  /**
+   * 특정 메뉴 조회
+   *
+   * @param menuId
+   * @return
+   */
   @GetMapping("/menu/{menuId}")
   public ResponseEntity<ApiResponse<MenuGetResponseDto>> getMenuById(@PathVariable UUID menuId) {
     MenuGetResponseDto menu = menuService.getMenuById(menuId);
     return ResponseEntity.ok(ApiResponse.OK(menu, ResBasicCode.OK));
   }
 
+  /**
+   * 메뉴 수정
+   *
+   * @param menuId
+   * @param requestDto
+   * @return
+   */
   @PutMapping("/menu/{menuId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<MenuGetResponseDto>> updateMenu(
@@ -83,6 +113,13 @@ public class MenuController {
     return ResponseEntity.ok(ApiResponse.OK(menu, ResBasicCode.OK));
   }
 
+  /**
+   * 메뉴 상태 변경
+   *
+   * @param menuId
+   * @param status
+   * @return
+   */
   @PatchMapping("/menu/{menuId}/status")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateMenuStatus(
@@ -92,6 +129,12 @@ public class MenuController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
+  /**
+   * 메뉴 삭제 (soft delete)
+   *
+   * @param menuId
+   * @return
+   */
   @DeleteMapping("/menu/{menuId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteMenu(@PathVariable UUID menuId) {
@@ -99,6 +142,16 @@ public class MenuController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
+  /**
+   * 메뉴 검색
+   *
+   * @param keyword
+   * @param pageSize
+   * @param page
+   * @param sortBy
+   * @param sortDirection
+   * @return
+   */
   @GetMapping("/menu/search")
   public ResponseEntity<ApiResponse<List<MenuGetResponseDto>>> searchMenus(
       @RequestParam String keyword,

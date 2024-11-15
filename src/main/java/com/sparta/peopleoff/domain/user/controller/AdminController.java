@@ -41,7 +41,7 @@ public class AdminController {
      * @param managerApproveRequestDto
      * @return
      */
-    @PreAuthorize("hasAuthority('MASTER') or hasAuthority('MANAGER')")
+    @PreAuthorize("hasAuthority('MASTER')")
     @PutMapping("/{userId}")
     private ResponseEntity<ApiResponse<ManagerApproveResponseDto>> ManagerApprove(
             @PathVariable Long userId,

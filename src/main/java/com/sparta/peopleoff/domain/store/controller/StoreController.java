@@ -50,8 +50,16 @@ public class StoreController {
   }
 
   @GetMapping("/stores")
-  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores() {
-    List<StoreGetResponseDto> stores = storeService.getAllStores();
+  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores(
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String sortDirection,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "0") int page) {
+
+    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+
+    List<StoreGetResponseDto> stores = storeService.getAllStores(sortBy, sortDirection, pageSize,
+        page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 
@@ -78,8 +86,15 @@ public class StoreController {
 
   @GetMapping("/stores/search")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> searchStores(
-      @RequestParam String keyword) {
-    List<StoreGetResponseDto> stores = storeService.searchStores(keyword);
+      @RequestParam String keyword,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String sortDirection,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "0") int page) {
+
+    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    List<StoreGetResponseDto> stores = storeService.searchStores(keyword, sortBy, sortDirection,
+        pageSize, page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 }

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/admins")
+@RequestMapping("/admin/v1")
 public class AdminController {
 
     private AdminService adminService;

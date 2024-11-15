@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.store.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
@@ -22,13 +23,12 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "p_store")
 @Getter
 @NoArgsConstructor
-public class StoreEntity {
+public class StoreEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -53,11 +53,6 @@ public class StoreEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  @Setter
-  private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
 
   @Column
   private int totalRating;
@@ -96,5 +91,9 @@ public class StoreEntity {
     this.businessNumber = dto.getBusinessNumber();
     this.minimumOrderPrice = dto.getMinimumOrderPrice();
     this.category = category;
+  }
+
+  public void delete() {
+    this.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

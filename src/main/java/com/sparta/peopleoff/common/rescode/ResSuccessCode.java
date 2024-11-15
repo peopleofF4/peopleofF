@@ -18,6 +18,12 @@ public enum ResSuccessCode implements ResCodeIfs {
   // TOKEN
   ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated"),
 
+  // ADMIN
+  USER_ROLE_UPDATED(HttpStatus.OK.value(), "200", "user role successfully updated"),
+  STORE_REGISTRATION_UPDTAED(HttpStatus.OK.value(), "200", "store registration updated"),
+  STORE_DELETION_UPDTAED(HttpStatus.OK.value(), "200", "store deletion updated"),
+  MANAGER_APPROVE(HttpStatus.OK.value(), "200", "Manager Approve Success"),
+
   // ORDER
   CREATE_ORDER(HttpStatus.CREATED.value(), "201", "Order successfully created"),
   UPDATE_ORDER(HttpStatus.OK.value(), "200", "Order successfully updated"),

@@ -65,6 +65,7 @@ public class OrderEntity extends SoftDeleteEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
+  @Column(nullable = false, length = 255)
   private String deliveryAddress;
 
   public void addOrderDetail(OrderDetailEntity orderDetail) {

@@ -18,6 +18,10 @@ public enum ResSuccessCode implements ResCodeIfs {
   // TOKEN
   ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated"),
 
+  // CATEGORY
+  CATEGORY_CREATED(HttpStatus.OK.value(), "200", "Category Created"),
+  CATEGORY_UPDATED(HttpStatus.OK.value(), "200", "Category Updated"),
+
   // ADMIN
   USER_ROLE_UPDATED(HttpStatus.OK.value(), "200", "user role successfully updated"),
   STORE_REGISTRATION_UPDTAED(HttpStatus.OK.value(), "200", "store registration updated"),

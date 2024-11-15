@@ -30,7 +30,7 @@ public class AdminService {
     /**
      * 회원 전체 조회
      * @return
-     */
+     */ //page //readonly
     public List<UserResponseDto> getUsers() {
 
         List<UserEntity> users = userRepository.findAll();
@@ -58,7 +58,7 @@ public class AdminService {
 
         user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
-        if(user.getManagerRegistrationStatus().equals(RegistrationStatus.ACCEPTED)) {
+        if(user.getManagerRegistrationStatus()==(RegistrationStatus.ACCEPTED)) {
             user.setRole(UserRole.MANAGER);
         }
 

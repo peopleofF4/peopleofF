@@ -12,9 +12,9 @@ import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public class AdminService {
     /**
      * 회원 전체 조회
      * @return
-     */
+     */ //page //readonly
     public List<UserResponseDto> getUsers() {
 
         List<UserEntity> users = userRepository.findAll();
@@ -58,31 +58,12 @@ public class AdminService {
 
         user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
-        if(user.getManagerRegistrationStatus().equals(RegistrationStatus.ACCEPTED)) {
+        if(user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
             user.setRole(UserRole.MANAGER);
         }
-
-        userRepository.save(user);
     }
 
-
-    /**
-     * UserEntity -> UserResponseDto
-     * @param userEntity
-     * @return
-     */
-    private UserResponseDto convertToDto(UserEntity userEntity) {
-        // UserResponseDto 객체 생성 및 UserEntity의 값을 이용해 초기화
-        return new UserResponseDto(
-                userEntity.getId(),
-                userEntity.getNickName(),
-                userEntity.getEmail(),
-                userEntity.getPhoneNumber(),
-                userEntity.getAddress(),
-                userEntity.getRole());
-    }
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void deleteUser(Long userIdToDelete) {
         // [예외1] - 존재하지 않는 사용자
         UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
@@ -97,6 +78,7 @@ public class AdminService {
      * @param userName
      * @return
      */
+    @Transactional(readOnly = true)
     public List<UserResponseDto> searchUser(String userName) {
 
         List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
@@ -117,7 +99,6 @@ public class AdminService {
                         user.getRole()
                 ))
                 .collect(Collectors.toList());
-
     }
 
     /**
@@ -127,7 +108,7 @@ public class AdminService {
      * @param userRoleRequestDto
      * @return
      */
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
 
         // [예외2] - 없는 사용자
@@ -135,8 +116,6 @@ public class AdminService {
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
         user.setRole(userRoleRequestDto.getUserRole());
-
-        userRepository.save(user);
     }
 
     /**
@@ -147,7 +126,7 @@ public class AdminService {
      * @param managerApproveRequestDto
      * @return
      */
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
@@ -158,20 +137,18 @@ public class AdminService {
         checkApproveStatusSame(store, managerApproveRequestDto);
 
         store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
-
-        storeRepository.save(store);
     }
 
 
     /**
      * 가게 삭제 승인 / 거부
      *
-     * @param user
      * @param storeId
      * @param managerApproveRequestDto
      * @return
      */
-    public void updateStoreDelete(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    @Transactional
+    public void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -181,8 +158,6 @@ public class AdminService {
         checkDeleteStatusSame(store, managerApproveRequestDto);
 
         store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
-
-        storeRepository.save(store);
     }
 
     private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
@@ -198,8 +173,24 @@ public class AdminService {
     }
 
     private void checkManagerRole(UserEntity user) {
-        if(UserRole.MANAGER.equals(user.getRole())) {
+        if(UserRole.MANAGER == user.getRole()) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "이미 매니저 권한입니다.");
         }
+    }
+
+    /**
+     * UserEntity -> UserResponseDto
+     * @param userEntity
+     * @return
+     */
+    private UserResponseDto convertToDto(UserEntity userEntity) {
+        // UserResponseDto 객체 생성 및 UserEntity의 값을 이용해 초기화
+        return new UserResponseDto(
+                userEntity.getId(),
+                userEntity.getNickName(),
+                userEntity.getEmail(),
+                userEntity.getPhoneNumber(),
+                userEntity.getAddress(),
+                userEntity.getRole());
     }
 }

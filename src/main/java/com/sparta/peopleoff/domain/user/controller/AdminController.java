@@ -81,7 +81,7 @@ public class AdminController {
      * @param userId
      * @return
      */
-    @PutMapping("/users/{userId}/roles/update")
+    @PutMapping("/users/{userId}/role/update")
     private ResponseEntity<ApiResponse<Void>> updateUserRole(@PathVariable Long userId,
                                                                           @RequestBody UserRoleRequestDto userRoleRequestDto
     ) {

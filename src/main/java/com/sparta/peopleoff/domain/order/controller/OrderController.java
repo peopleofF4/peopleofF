@@ -1,7 +1,7 @@
 package com.sparta.peopleoff.domain.order.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
-import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
@@ -21,43 +21,47 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class OrderController {
 
   private final OrderService orderService;
 
   // 주문 생성
-  @PostMapping("/api/v1/stores/{storeId}/orders")
+  @PostMapping("/stores/{storeId}/orders")
   public ResponseEntity<ApiResponse<Void>> createOrder(
       @RequestBody OrderPostRequestDto orderPostRequestDto,
       @PathVariable("storeId") UUID storeId,
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.createOrder(orderPostRequestDto, storeId, user);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.OK(ResBasicCode.CREATED));
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ApiResponse.OK(ResSuccessCode.CREATE_ORDER));
   }
 
-  // 주문 검색 조회 owner 사용
-  @GetMapping("/api/v1/stores/{storeId}/orders/search")
+  // 주문 검색 조회 OWNER 사용
+  @GetMapping("/stores/{storeId}/orders/search")
   public ResponseEntity<ApiResponse<Page<OrderSearchResponseDto>>> searchOrder(
       @AuthenticationPrincipal UserDetailsImpl user,
       @PathVariable("storeId") UUID storeId,
       @RequestParam(value = "orderType", required = false) OrderType orderType,
       @RequestParam(value = "menuId", required = false) UUID menuId,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "size", defaultValue = "10") int size
+      @RequestParam(value = "size", defaultValue = "10") int size,
+      @RequestParam(value = "sortBy", defaultValue = "created_At") String sortBy
   ) {
     Page<OrderSearchResponseDto> res =
-        orderService.searchOrder(storeId, user, orderType, menuId, page - 1, size);
+        orderService.searchOrder(storeId, user, orderType, menuId, page - 1, size, sortBy);
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 
-  // 주문 조회
-  @GetMapping("/api/v1/users/{userId}/orders")
+  // 주문 조회 CUSTOMER 사용
+  @GetMapping("/users/{userId}/orders")
   public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getCustomerOrderList(
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
@@ -66,7 +70,7 @@ public class OrderController {
   }
 
   // 대면 주문 수정
-  @PatchMapping("/api/v1/stores/{storeId}/orders/{orderId}")
+  @PatchMapping("/stores/{storeId}/orders/{orderId}")
   public ResponseEntity<ApiResponse<Void>> updateOffLineOrder(
       @RequestBody OrderPatchRequestDto orderPatchRequestDto,
       @PathVariable("storeId") UUID storeId,
@@ -74,17 +78,16 @@ public class OrderController {
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.updateOffLineOrder(orderPatchRequestDto, storeId, orderId, user);
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResBasicCode.OK));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.UPDATE_ORDER));
   }
 
   // 주문 취소
-  @DeleteMapping("/api/v1/orders/{orderId}")
+  @DeleteMapping("/orders/{orderId}")
   public ResponseEntity<ApiResponse<Void>> cancelOrder(
       @PathVariable UUID orderId,
       @AuthenticationPrincipal UserDetailsImpl user
   ) {
     orderService.cancelOrder(orderId, user);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.OK(ResBasicCode.OK));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.DELETE_ORDER));
   }
 }

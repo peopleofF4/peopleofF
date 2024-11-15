@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.payment.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.payment.entity.enums.PaymentStatus;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_payment")
-public class PaymentEntity {
+public class PaymentEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,15 +40,10 @@ public class PaymentEntity {
   @JoinColumn(name = "order_id", nullable = false)
   private OrderEntity order;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private DeletionStatus deletionStatus;
-
   private PaymentEntity(int totalPayment, OrderEntity order) {
     this.paymentStatus = PaymentStatus.SUCCESS;
     this.totalPayment = totalPayment;
     this.order = order;
-    this.deletionStatus = DeletionStatus.ACTIVE;
   }
 
   public static PaymentEntity toEntity(int totalPayment, OrderEntity order) {
@@ -60,6 +56,6 @@ public class PaymentEntity {
 
   public void cancel() {
     this.paymentStatus = PaymentStatus.FAILED;
-    this.deletionStatus = DeletionStatus.DELETED;
+    this.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

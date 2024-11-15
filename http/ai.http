@@ -1,0 +1,20 @@
+POST https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
+content-Type: application/json
+x-goog-api-key: {gemini.api.key}
+
+{
+  "contents": [{
+    "parts":[{
+      "text": "서울 맛집을 추천해줘"
+    }]
+  }]
+}
+
+###
+POST http://localhost:8080/menu/{menuId}/ai/chat
+Content-Type: application/json
+
+{
+  "ai_request": "안녕 너는 누구야?"
+}
+

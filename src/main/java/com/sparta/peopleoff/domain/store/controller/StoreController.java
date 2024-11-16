@@ -78,7 +78,7 @@ public class StoreController {
       @RequestParam(defaultValue = "10") int pageSize,
       @RequestParam(defaultValue = "0") int page) {
 
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    pageSize = validatePageSize(pageSize);
 
     List<StoreGetResponseDto> stores = storeService.getAllStores(sortBy, sortDirection, pageSize,
         page);
@@ -99,7 +99,6 @@ public class StoreController {
     List<StoreGetResponseDto> stores = storeService.getStoresByOwner(userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
-
 
   /**
    * 가게 수정
@@ -151,7 +150,8 @@ public class StoreController {
       @RequestParam(defaultValue = "10") int pageSize,
       @RequestParam(defaultValue = "0") int page) {
 
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    pageSize = validatePageSize(pageSize);
+
     List<StoreGetResponseDto> stores = storeService.searchStores(keyword, sortBy, sortDirection,
         pageSize, page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
@@ -167,5 +167,10 @@ public class StoreController {
   public ResponseEntity<ApiResponse<Double>> getAverageRating(@PathVariable UUID storeId) {
     double averageRating = storeService.getAverageRating(storeId);
     return ResponseEntity.ok(ApiResponse.OK(averageRating, ResBasicCode.OK));
+  }
+
+
+  private int validatePageSize(int pageSize) {
+    return (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
   }
 }

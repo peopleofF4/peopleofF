@@ -2,7 +2,6 @@ package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
-import com.sparta.peopleoff.common.rescode.ResErrorCode;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -163,12 +162,15 @@ public class StoreServiceImpl implements StoreService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 사장님 본인 가게 조회
+   *
+   * @param owner
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
-    if (!owner.getRole().name().equals("OWNER")) {
-      throw new CustomApiException(ResErrorCode.FORBIDDEN, "사장님 권한이 필요합니다.");
-    }
 
     List<StoreEntity> stores = storeRepository.findByUser(owner);
     return stores.stream()

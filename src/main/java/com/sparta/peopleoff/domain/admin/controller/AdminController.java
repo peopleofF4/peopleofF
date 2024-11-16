@@ -5,7 +5,7 @@ import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.admin.dto.ManagerApproveRequestDto;
 import com.sparta.peopleoff.domain.admin.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.admin.dto.UserRoleRequestDto;
-import com.sparta.peopleoff.domain.admin.service.AdminServiceImpl;
+import com.sparta.peopleoff.domain.admin.service.AdminService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/v1")
 public class AdminController {
 
-  private final AdminServiceImpl adminServiceImpl;
+  private final AdminService adminServiceImpl;
 
   /**
    * 회원 전체 조회
@@ -95,7 +95,7 @@ public class AdminController {
   }
 
   /**
-   * 가게 등록 승인 / 거부
+   * 로직 수정해야됨 가게 등록 승인 / 거부
    *
    * @param userDetails
    * @param storeId
@@ -113,7 +113,7 @@ public class AdminController {
   }
 
   /**
-   * 가게 삭제 승인 / 거부
+   * 로직 수정해야됨 가게 삭제 승인 / 거부
    *
    * @param storeId
    * @param managerApproveRequestDto

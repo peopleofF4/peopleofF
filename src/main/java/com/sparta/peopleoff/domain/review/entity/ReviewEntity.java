@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.review.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -53,5 +54,9 @@ public class ReviewEntity extends SoftDeleteEntity {
     this.store = store;
     this.user = user;
     this.order = order;
+  }
+
+  public void delete() {
+    this.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

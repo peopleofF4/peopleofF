@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -114,5 +115,17 @@ public class ReviewController {
 
     List<ReviewGetResponseDto> reviews = reviewService.getReviewsByUser(userId, pageable);
     return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
+  }
+
+  /**
+   * 리뷰 삭제 (soft-delete)
+   *
+   * @param reviewId
+   * @return
+   */
+  @DeleteMapping("/reviews/{reviewId}")
+  public ResponseEntity<ApiResponse<Void>> deleteReview(@PathVariable UUID reviewId) {
+    reviewService.deleteReview(reviewId);
+    return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 }

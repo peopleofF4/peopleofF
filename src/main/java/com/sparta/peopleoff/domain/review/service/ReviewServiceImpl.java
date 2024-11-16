@@ -112,5 +112,19 @@ public class ReviewServiceImpl implements ReviewService {
         .map(ReviewGetResponseDto::new)
         .collect(Collectors.toList());
   }
+
+  /**
+   * 리뷰 삭제 (soft-delete)
+   *
+   * @param reviewId
+   */
+  @Transactional
+  @Override
+  public void deleteReview(UUID reviewId) {
+    ReviewEntity review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+
+    review.delete();
+  }
 }
 

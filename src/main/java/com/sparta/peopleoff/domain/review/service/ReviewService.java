@@ -16,4 +16,6 @@ public interface ReviewService {
   List<ReviewGetResponseDto> getReviewsByUser(Long userId, Pageable pageable);
 
   ReviewGetResponseDto getReviewById(UUID reviewId);
+
+  void deleteReview(UUID reviewId);
 }

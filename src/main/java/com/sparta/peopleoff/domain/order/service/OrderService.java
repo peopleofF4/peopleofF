@@ -3,10 +3,7 @@ package com.sparta.peopleoff.domain.order.service;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
-import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.order.entity.enums.OrderType;
-import com.sparta.peopleoff.domain.orderdetail.entity.OrderDetailEntity;
-import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
@@ -64,36 +61,4 @@ public interface OrderService {
    * @param user    user
    */
   void cancelOrder(UUID orderId, UserDetailsImpl user);
-
-  /**
-   * OrderEntity 가져오기
-   *
-   * @param orderId orderId
-   * @return OrderEntity
-   */
-  OrderEntity findOrderEntity(UUID orderId);
-
-  /**
-   * StoreEntity 가져오기
-   *
-   * @param storeId storeId
-   * @return StoreEntity
-   */
-  StoreEntity findStoreEntity(UUID storeId);
-
-  /**
-   * response에 매핑하기 위해 생성한 메서드
-   *
-   * @param orderEntity
-   * @return OrderSearchResponseDto.Order
-   */
-  OrderSearchResponseDto.Order mapToOrderDto(OrderEntity orderEntity);
-
-  /**
-   * response에 매핑하기 위해 생성한 메서드
-   *
-   * @param orderDetailEntity
-   * @return OrderSearchResponseDto.MenuItem
-   */
-  OrderSearchResponseDto.MenuItem mapToMenuItemDto(OrderDetailEntity orderDetailEntity);
 }

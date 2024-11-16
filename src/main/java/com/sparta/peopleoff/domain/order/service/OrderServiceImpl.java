@@ -47,9 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     StoreEntity store = findStoreEntity(storeId);
 
-    if (!user.getUser().getId().equals(store.getUser().getId())) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 조회할 권한이 없습니다.");
-    }
+    validateUserAuthorization(user, store);
 
     Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
     Page<OrderEntity> orderEntities = orderRepository.searchOrder(orderType, menuId, pageable);
@@ -79,7 +77,6 @@ public class OrderServiceImpl implements OrderService {
 
       responseDtos.add(new OrderSearchResponseDto(orderDto, menuItems));
     }
-
     return responseDtos;
   }
 
@@ -90,22 +87,16 @@ public class OrderServiceImpl implements OrderService {
     StoreEntity store = findStoreEntity(storeId);
     OrderEntity orderEntity = reqDto.getOrder().toEntity(store, user.getUser());
 
-    if (orderEntity.getUser().getRole() == UserRole.CUSTOMER) {
-      orderRepository.save(orderEntity);
-    } else if (orderEntity.getUser().getRole() == UserRole.OWNER) {
-      orderRepository.save(orderEntity);
-      orderEntity.updateOffLine(store);
-    } else {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "잘못된 사용자 권한입니다.");
-    }
+    validateAndSaveOrder(orderEntity, store);
 
     for (OrderPostRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
       MenuEntity menu = store.getMenuList().stream()
           .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst().orElseThrow(
               () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
-      OrderDetailEntity orderDetailEntity = OrderDetailEntity.toEntity(menu, orderEntity,
-          menuItem.getMenuCount());
+      OrderDetailEntity orderDetailEntity =
+          OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+
       orderEntity.addOrderDetail(orderDetailEntity);
     }
     orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
@@ -120,9 +111,7 @@ public class OrderServiceImpl implements OrderService {
     StoreEntity store = findStoreEntity(storeId);
     OrderEntity orderEntity = findOrderEntity(orderId);
 
-    if (!orderEntity.getUser().getId().equals(user.getUser().getId())) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 수정할 권한이 없습니다.");
-    }
+    validateUserPermission(orderEntity, user);
 
     orderDetailRepository.deleteAll(orderEntity.getOrderDetailList());
     orderEntity.getOrderDetailList().clear();
@@ -134,8 +123,9 @@ public class OrderServiceImpl implements OrderService {
           .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst()
           .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
-      OrderDetailEntity orderDetailEntity = OrderDetailEntity.toEntity(menu, orderEntity,
-          menuItem.getMenuCount());
+      OrderDetailEntity orderDetailEntity =
+          OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
+
       orderEntity.addOrderDetail(orderDetailEntity);
     }
 
@@ -151,13 +141,8 @@ public class OrderServiceImpl implements OrderService {
 
     OrderEntity order = findOrderEntity(orderId);
 
-    if (!order.getUser().getId().equals(user.getUser().getId())) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 삭제할 권한이 없습니다.");
-    }
-
-    if (LocalDateTime.now().isAfter(order.getExpiredAt())) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문은 생성 후 5분이 초과하여 삭제할 수 없습니다.");
-    }
+    validateUserPermission(order, user);
+    validateOrderCancellationTime(order);
 
     order.cancel();
 
@@ -169,27 +154,52 @@ public class OrderServiceImpl implements OrderService {
     paymentRepository.findByOrderId(orderId).cancel();
   }
 
-  @Override
-  public OrderEntity findOrderEntity(UUID orderId) {
+  private OrderEntity findOrderEntity(UUID orderId) {
     return orderRepository.findById(orderId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 주문번호가 존재하지 않습니다"));
   }
 
-  @Override
-  public StoreEntity findStoreEntity(UUID storeId) {
+  private StoreEntity findStoreEntity(UUID storeId) {
     return storeRepository.findById(storeId).orElseThrow(
         () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 가게의 정보가 존재하지 않습니다"));
   }
 
-  @Override
-  public OrderSearchResponseDto.Order mapToOrderDto(OrderEntity orderEntity) {
+  private void validateUserAuthorization(UserDetailsImpl user, StoreEntity store) {
+    if (!user.getUser().getId().equals(store.getUser().getId())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문을 조회할 권한이 없습니다.");
+    }
+  }
+
+  private void validateUserPermission(OrderEntity order, UserDetailsImpl user) {
+    if (!order.getUser().getId().equals(user.getUser().getId())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "권한이 없습니다.");
+    }
+  }
+
+  private void validateOrderCancellationTime(OrderEntity order) {
+    if (LocalDateTime.now().isAfter(order.getExpiredAt())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "주문은 생성 후 5분이 초과하여 삭제할 수 없습니다.");
+    }
+  }
+
+  private void validateAndSaveOrder(OrderEntity orderEntity, StoreEntity store) {
+    if (orderEntity.getUser().getRole() == UserRole.CUSTOMER) {
+      orderRepository.save(orderEntity);
+    } else if (orderEntity.getUser().getRole() == UserRole.OWNER) {
+      orderRepository.save(orderEntity);
+      orderEntity.updateOffLine(store);
+    } else {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "잘못된 사용자 권한입니다.");
+    }
+  }
+
+  private OrderSearchResponseDto.Order mapToOrderDto(OrderEntity orderEntity) {
     return new OrderSearchResponseDto.Order(orderEntity.getId(), orderEntity.getUser().getId(),
         orderEntity.getOrderRequest(), orderEntity.getDeliveryAddress(),
         orderEntity.getTotalPrice());
   }
 
-  @Override
-  public OrderSearchResponseDto.MenuItem mapToMenuItemDto(OrderDetailEntity orderDetailEntity) {
+  private OrderSearchResponseDto.MenuItem mapToMenuItemDto(OrderDetailEntity orderDetailEntity) {
     return new OrderSearchResponseDto.MenuItem(orderDetailEntity.getMenu().getId(),
         orderDetailEntity.getMenuCount());
   }

@@ -40,7 +40,7 @@ public class StoreController {
    * @return
    */
   @PostMapping("/stores")
-  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -84,6 +84,22 @@ public class StoreController {
         page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
+
+  /**
+   * 사장님 본인 가게 조회
+   *
+   * @param userDetails
+   * @return
+   */
+  @GetMapping("/stores/my")
+  @PreAuthorize("hasRole('OWNER')")
+  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getMyStores(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    List<StoreGetResponseDto> stores = storeService.getStoresByOwner(userDetails.getUser());
+    return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
+  }
+
 
   /**
    * 가게 수정

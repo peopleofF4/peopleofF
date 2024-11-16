@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.rescode.ResErrorCode;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -37,11 +38,10 @@ public class StoreServiceImpl implements StoreService {
    *
    * @param storeRequestDto
    * @param user
-   * @return
    */
   @Override
   @Transactional
-  public StoreEntity registerStore(StorePostRequestDto storeRequestDto, UserEntity user) {
+  public void registerStore(StorePostRequestDto storeRequestDto, UserEntity user) {
     CategoryEntity category = categoryRepository.findByCategoryName(
             storeRequestDto.getCategoryName())
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 카테고리 이름입니다."));
@@ -56,7 +56,7 @@ public class StoreServiceImpl implements StoreService {
         category
     );
 
-    return storeRepository.save(newStore);
+    storeRepository.save(newStore);
   }
 
   /**
@@ -163,6 +163,25 @@ public class StoreServiceImpl implements StoreService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
+    if (!owner.getRole().name().equals("OWNER")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "사장님 권한이 필요합니다.");
+    }
+
+    List<StoreEntity> stores = storeRepository.findByUser(owner);
+    return stores.stream()
+        .map(StoreGetResponseDto::new)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 가게별 리뷰 평점 평균값 반환
+   *
+   * @param storeId
+   * @return
+   */
   @Override
   public double getAverageRating(UUID storeId) {
 

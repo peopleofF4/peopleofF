@@ -152,6 +152,7 @@ public class ReviewServiceImpl implements ReviewService {
       throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "작성자 본인만 수정 가능합니다.");
     }
 
+    review.getStore().removeRating(review.getRating());
     review.delete();
   }
 }

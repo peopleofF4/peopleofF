@@ -108,4 +108,9 @@ public class StoreEntity extends SoftDeleteEntity {
   public void updateRating(int previousRating, int newRating) {
     this.totalRating = this.totalRating - previousRating + newRating;
   }
+
+  public void removeRating(int rating) {
+    this.totalRating -= rating;
+    this.ratingCount = Math.max(this.ratingCount - 1, 0); // 최소 0으로 유지
+  }
 }

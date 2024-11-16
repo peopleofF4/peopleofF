@@ -100,8 +100,12 @@ public class StoreEntity extends SoftDeleteEntity {
     this.registrationStatus = registrationStatus;
   }
 
-  public void updateRating(int newRating) {
+  public void addRating(int newRating) {
     this.totalRating += newRating;
     this.ratingCount += 1;
+  }
+
+  public void updateRating(int previousRating, int newRating) {
+    this.totalRating = this.totalRating - previousRating + newRating;
   }
 }

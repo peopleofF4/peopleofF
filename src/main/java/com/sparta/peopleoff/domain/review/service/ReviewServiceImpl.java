@@ -7,10 +7,12 @@ import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.order.repository.OrderRepository;
 import com.sparta.peopleoff.domain.review.dto.ReviewGetResponseDto;
 import com.sparta.peopleoff.domain.review.dto.ReviewPostRequestDto;
+import com.sparta.peopleoff.domain.review.dto.ReviewPutRequestDto;
 import com.sparta.peopleoff.domain.review.entity.ReviewEntity;
 import com.sparta.peopleoff.domain.review.repository.ReviewRepository;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.exception.CustomApiException;
 import java.util.List;
 import java.util.UUID;
@@ -41,15 +43,14 @@ public class ReviewServiceImpl implements ReviewService {
   @Transactional
   public void registerReview(ReviewPostRequestDto requestDto, UserEntity user) {
     OrderEntity order = orderRepository.findById(requestDto.getOrderId())
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 주문 ID입니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "주문 내역을 찾을 수 없습니다."));
 
-    if (!order.getUser().getId().equals(user.getId())) {
-      throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "Unauthorized access");
+    if (user.getRole() == UserRole.CUSTOMER && !order.getUser().getId().equals(user.getId())) {
+      throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "해당 건 주문자만 작성 가능합니다.");
     }
-
     StoreEntity store = order.getStore();
     if (store == null) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 스토어입니다.");
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다.");
     }
 
     ReviewEntity review = new ReviewEntity(
@@ -61,7 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
     );
 
     reviewRepository.save(review);
-    store.updateRating(requestDto.getRating());
+    store.addRating(requestDto.getRating());
   }
 
 
@@ -114,15 +115,42 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   /**
+   * 리뷰 수정
+   *
+   * @param reviewId
+   * @param requestDto
+   * @param user
+   */
+  @Transactional
+  @Override
+  public void updateReview(UUID reviewId, ReviewPutRequestDto requestDto, UserEntity user) {
+    ReviewEntity review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+
+    if (user.getRole() == UserRole.CUSTOMER && !review.getUser().getId().equals(user.getId())) {
+      throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "작성자 본인만 수정 가능합니다.");
+    }
+
+    int previousRating = review.getRating(); // 기존 평점 저장
+    review.update(requestDto.getComment(), requestDto.getRating());
+
+    review.getStore().updateRating(previousRating, requestDto.getRating());
+  }
+
+  /**
    * 리뷰 삭제 (soft-delete)
    *
    * @param reviewId
    */
   @Transactional
   @Override
-  public void deleteReview(UUID reviewId) {
+  public void deleteReview(UUID reviewId, UserEntity user) {
     ReviewEntity review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+
+    if (user.getRole() == UserRole.CUSTOMER && !review.getUser().getId().equals(user.getId())) {
+      throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "작성자 본인만 수정 가능합니다.");
+    }
 
     review.delete();
   }

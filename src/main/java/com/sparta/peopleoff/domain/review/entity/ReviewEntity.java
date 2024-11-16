@@ -15,6 +15,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,5 +62,10 @@ public class ReviewEntity extends SoftDeleteEntity {
 
   public void delete() {
     this.setDeletionStatus(DeletionStatus.DELETED);
+  }
+
+  public void update(@NotBlank String comment, @NotNull @Min(1) @Max(5) int rating) {
+    this.comment = comment;
+    this.rating = rating;
   }
 }

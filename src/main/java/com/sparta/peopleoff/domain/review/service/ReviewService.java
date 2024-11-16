@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.review.service;
 
 import com.sparta.peopleoff.domain.review.dto.ReviewGetResponseDto;
 import com.sparta.peopleoff.domain.review.dto.ReviewPostRequestDto;
+import com.sparta.peopleoff.domain.review.dto.ReviewPutRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
@@ -17,5 +18,7 @@ public interface ReviewService {
 
   ReviewGetResponseDto getReviewById(UUID reviewId);
 
-  void deleteReview(UUID reviewId);
+  void updateReview(UUID reviewId, ReviewPutRequestDto requestDto, UserEntity user);
+
+  void deleteReview(UUID reviewId, UserEntity user);
 }

@@ -23,4 +23,6 @@ public interface StoreService {
 
   List<StoreGetResponseDto> searchStores(String keyword, String sortBy, String sortDirection,
       int pageSize, int page);
+
+  double getAverageRating(UUID storeId);
 }

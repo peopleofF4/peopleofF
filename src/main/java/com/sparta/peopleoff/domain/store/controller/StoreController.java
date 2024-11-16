@@ -140,4 +140,16 @@ public class StoreController {
         pageSize, page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
+
+  /**
+   * 가게별 리뷰 평점 평균값 반환
+   *
+   * @param storeId
+   * @return
+   */
+  @GetMapping("/stores/{storeId}/reviews/avg")
+  public ResponseEntity<ApiResponse<Double>> getAverageRating(@PathVariable UUID storeId) {
+    double averageRating = storeService.getAverageRating(storeId);
+    return ResponseEntity.ok(ApiResponse.OK(averageRating, ResBasicCode.OK));
+  }
 }

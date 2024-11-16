@@ -14,4 +14,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, UUID> {
 
   Page<ReviewEntity> findByUserIdAndDeletionStatus(Long user_id, DeletionStatus deletionStatus,
       Pageable pageable);
+
+  Page<ReviewEntity> findByCommentContainingAndDeletionStatus(
+      String keyword, DeletionStatus deletionStatus, Pageable pageable);
 }

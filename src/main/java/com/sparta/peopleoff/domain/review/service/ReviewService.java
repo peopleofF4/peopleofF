@@ -21,4 +21,6 @@ public interface ReviewService {
   void updateReview(UUID reviewId, ReviewPutRequestDto requestDto, UserEntity user);
 
   void deleteReview(UUID reviewId, UserEntity user);
+
+  List<ReviewGetResponseDto> searchReviews(String keyword, Pageable pageable);
 }

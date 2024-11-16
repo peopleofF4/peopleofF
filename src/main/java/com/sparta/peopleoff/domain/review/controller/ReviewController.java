@@ -149,4 +149,31 @@ public class ReviewController {
     reviewService.deleteReview(reviewId, userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
+
+  /**
+   * 리뷰 검색
+   *
+   * @param keyword
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
+  @GetMapping("/reviews/search")
+  public ResponseEntity<ApiResponse<List<ReviewGetResponseDto>>> searchReviews(
+      @RequestParam String keyword,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String sortDirection,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "0") int page) {
+
+    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    Sort.Direction direction =
+        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, sortBy));
+
+    List<ReviewGetResponseDto> reviews = reviewService.searchReviews(keyword, pageable);
+    return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
+  }
 }

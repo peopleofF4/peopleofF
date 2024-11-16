@@ -104,8 +104,8 @@ public class ReviewServiceImpl implements ReviewService {
    * @param pageable
    * @return
    */
-  @Override
   @Transactional(readOnly = true)
+  @Override
   public List<ReviewGetResponseDto> getReviewsByUser(Long userId, Pageable pageable) {
     Page<ReviewEntity> reviews = reviewRepository.findByUserIdAndDeletionStatus(userId,
         DeletionStatus.ACTIVE, pageable);
@@ -154,6 +154,25 @@ public class ReviewServiceImpl implements ReviewService {
 
     review.getStore().removeRating(review.getRating());
     review.delete();
+  }
+
+  /**
+   * 리뷰 검색
+   *
+   * @param keyword
+   * @param pageable
+   * @return
+   */
+  @Transactional(readOnly = true)
+  @Override
+  public List<ReviewGetResponseDto> searchReviews(String keyword, Pageable pageable) {
+
+    Page<ReviewEntity> reviewPage = reviewRepository.findByCommentContainingAndDeletionStatus(
+        keyword, DeletionStatus.ACTIVE, pageable);
+
+    return reviewPage.stream()
+        .map(ReviewGetResponseDto::new)
+        .collect(Collectors.toList());
   }
 }
 

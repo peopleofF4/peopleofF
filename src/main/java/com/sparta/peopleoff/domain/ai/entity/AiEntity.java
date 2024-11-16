@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.ai.entity;
 
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_ai")
-public class AiEntity {
+public class AiEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

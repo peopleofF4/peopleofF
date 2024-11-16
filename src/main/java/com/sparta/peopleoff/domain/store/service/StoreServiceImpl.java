@@ -162,4 +162,16 @@ public class StoreServiceImpl implements StoreService {
         .map(StoreGetResponseDto::new)
         .collect(Collectors.toList());
   }
+
+  @Override
+  public double getAverageRating(UUID storeId) {
+
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 스토어를 찾을 수 없습니다."));
+
+    // 평균 평점 계산
+    long totalReviews = store.getRatingCount();
+    int totalRating = store.getTotalRating();
+    return totalReviews > 0 ? (double) totalRating / totalReviews : 0.0;
+  }
 }

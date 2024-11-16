@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +44,7 @@ public class ReviewController {
    * @return
    */
   @PostMapping("/reviews")
+  @PreAuthorize("hasAnyRole('CUSTOMER')")
   public ResponseEntity<ApiResponse<Void>> registerReview(
       @Valid @RequestBody ReviewPostRequestDto requestDto,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -128,6 +130,7 @@ public class ReviewController {
    * @return
    */
   @PutMapping("/reviews/{reviewId}")
+  @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateReview(
       @PathVariable UUID reviewId,
       @RequestBody @Valid ReviewPutRequestDto requestDto,
@@ -143,6 +146,7 @@ public class ReviewController {
    * @return
    */
   @DeleteMapping("/reviews/{reviewId}")
+  @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteReview(
       @PathVariable UUID reviewId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {

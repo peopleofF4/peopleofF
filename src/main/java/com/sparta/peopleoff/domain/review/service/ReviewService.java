@@ -14,4 +14,6 @@ public interface ReviewService {
   List<ReviewGetResponseDto> getReviewsByStore(UUID storeId, Pageable pageable);
 
   List<ReviewGetResponseDto> getReviewsByUser(Long userId, Pageable pageable);
+
+  ReviewGetResponseDto getReviewById(UUID reviewId);
 }

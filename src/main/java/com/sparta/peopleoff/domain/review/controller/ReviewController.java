@@ -59,7 +59,7 @@ public class ReviewController {
    * @param page
    * @return
    */
-  @GetMapping("/store/{storeId}/reviews")
+  @GetMapping("/stores/{storeId}/reviews")
   public ResponseEntity<ApiResponse<List<ReviewGetResponseDto>>> getReviewsByStore(
       @PathVariable UUID storeId,
       @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -74,6 +74,19 @@ public class ReviewController {
 
     List<ReviewGetResponseDto> reviews = reviewService.getReviewsByStore(storeId, pageable);
     return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
+  }
+
+  /**
+   * 특정 리뷰 조회
+   *
+   * @param reviewId
+   * @return
+   */
+  @GetMapping("/reviews/{reviewId}")
+  public ResponseEntity<ApiResponse<ReviewGetResponseDto>> getReviewById(
+      @PathVariable UUID reviewId) {
+    ReviewGetResponseDto review = reviewService.getReviewById(reviewId);
+    return ResponseEntity.ok(ApiResponse.OK(review, ResBasicCode.OK));
   }
 
   /**

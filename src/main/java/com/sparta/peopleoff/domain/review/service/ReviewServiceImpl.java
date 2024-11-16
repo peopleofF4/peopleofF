@@ -64,6 +64,21 @@ public class ReviewServiceImpl implements ReviewService {
     store.updateRating(requestDto.getRating());
   }
 
+
+  /**
+   * 특정 리뷰 조회
+   *
+   * @param reviewId
+   * @return
+   */
+  @Override
+  @Transactional(readOnly = true)
+  public ReviewGetResponseDto getReviewById(UUID reviewId) {
+    ReviewEntity review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+    return new ReviewGetResponseDto(review);
+  }
+
   /**
    * 특정 가게의 리뷰 및 평점 전체 조회
    *

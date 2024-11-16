@@ -13,6 +13,8 @@ import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +32,13 @@ public class AdminService {
     /**
      * 회원 전체 조회
      * @return
-     */ //page //readonly
-    public List<UserResponseDto> getUsers() {
+     */
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getUsers(Pageable pageable) {
 
-        List<UserEntity> users = userRepository.findAll();
+        Page<UserEntity> users = userRepository.findAll(pageable);
 
-        return users.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return users.map(this::convertToDto);
     }
 
     /**

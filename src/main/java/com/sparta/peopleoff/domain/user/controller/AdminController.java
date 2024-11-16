@@ -28,6 +28,8 @@ public class AdminController {
 
     /**
      * 회원 전체 조회
+     * @param page
+     * @param size
      * @return
      */
     @GetMapping("/users")
@@ -71,13 +73,17 @@ public class AdminController {
     /**
      * 유저 검색
      * @param userName
+     * @param page
+     * @param size
      * @return
      */
     @GetMapping("/users/search")
-    public ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
-            @RequestParam String userName
+    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUser(
+            @RequestParam String userName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<UserResponseDto> responseDtos = adminService.searchUser(userName);
+        Page<UserResponseDto> responseDtos = adminService.searchUser(userName, PageRequest.of(page, size));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
     }
 

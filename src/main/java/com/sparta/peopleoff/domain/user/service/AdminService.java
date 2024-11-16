@@ -14,6 +14,7 @@ import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class AdminService {
 
     /**
      * 회원 전체 조회
+     * @param pageable
      * @return
      */
     @Transactional(readOnly = true)
@@ -75,22 +77,21 @@ public class AdminService {
 
     /**
      * 유저 검색
-     *
      * @param userName
+     * @param pageable
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserResponseDto> searchUser(String userName) {
+    public Page<UserResponseDto> searchUser(String userName, Pageable pageable) {
 
-        List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
+        Page<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName, pageable);
 
         // [예외2] - 검색결과가 없음
         if (searchUsers.isEmpty()) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
         }
 
-        return searchUsers.stream()
-                .map(user -> new UserResponseDto(
+        return searchUsers.map(user -> new UserResponseDto(
                         user.getId(),
                         user.getUserName(),
                         user.getNickName(),
@@ -98,8 +99,7 @@ public class AdminService {
                         user.getPhoneNumber(),
                         user.getAddress(),
                         user.getRole()
-                ))
-                .collect(Collectors.toList());
+                ));
     }
 
     /**

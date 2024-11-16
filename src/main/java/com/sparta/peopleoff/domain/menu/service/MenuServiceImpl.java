@@ -6,7 +6,7 @@ import com.sparta.peopleoff.domain.menu.dto.MenuGetResponseDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPostRequestDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPutRequestDto;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
-import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatusEnum;
+import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatus;
 import com.sparta.peopleoff.domain.menu.repository.MenuRepository;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
@@ -109,9 +109,9 @@ public class MenuServiceImpl implements MenuService {
    * @param menuId
    * @param status
    */
-  @Override
   @Transactional
-  public void updateMenuStatus(UUID menuId, MenuStatusEnum status) {
+  @Override
+  public void updateMenuStatus(UUID menuId, MenuStatus status) {
     MenuEntity menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴를 찾을 수 없습니다."));
 

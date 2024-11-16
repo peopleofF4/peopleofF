@@ -5,7 +5,7 @@ import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.dto.MenuGetResponseDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPostRequestDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPutRequestDto;
-import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatusEnum;
+import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatus;
 import com.sparta.peopleoff.domain.menu.service.MenuService;
 import java.util.List;
 import java.util.UUID;
@@ -124,7 +124,7 @@ public class MenuController {
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateMenuStatus(
       @PathVariable UUID menuId,
-      @RequestParam MenuStatusEnum status) {
+      @RequestParam MenuStatus status) {
     menuService.updateMenuStatus(menuId, status);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }

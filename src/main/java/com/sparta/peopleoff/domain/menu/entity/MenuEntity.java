@@ -2,7 +2,7 @@ package com.sparta.peopleoff.domain.menu.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatusEnum;
+import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatus;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +39,7 @@ public class MenuEntity extends SoftDeleteEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 50)
-  private MenuStatusEnum menuStatus = MenuStatusEnum.ON_SALE;
+  private MenuStatus menuStatus = MenuStatus.ON_SALE;
 
   @ManyToOne
   @JoinColumn(name = "store_id", nullable = false)
@@ -58,7 +58,7 @@ public class MenuEntity extends SoftDeleteEntity {
     this.price = price;
   }
 
-  public void updateMenuStatus(MenuStatusEnum menuStatus) {
+  public void updateMenuStatus(MenuStatus menuStatus) {
     this.menuStatus = menuStatus;
   }
 

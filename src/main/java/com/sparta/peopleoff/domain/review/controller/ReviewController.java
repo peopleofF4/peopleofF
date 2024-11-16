@@ -44,7 +44,7 @@ public class ReviewController {
    * @return
    */
   @PostMapping("/reviews")
-  @PreAuthorize("hasAnyRole('CUSTOMER')")
+  @PreAuthorize("hasRole('CUSTOMER')")
   public ResponseEntity<ApiResponse<Void>> registerReview(
       @Valid @RequestBody ReviewPostRequestDto requestDto,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {

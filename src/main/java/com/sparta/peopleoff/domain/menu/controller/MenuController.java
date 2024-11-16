@@ -106,11 +106,11 @@ public class MenuController {
    */
   @PutMapping("/menu/{menuId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
-  public ResponseEntity<ApiResponse<MenuGetResponseDto>> updateMenu(
+  public ResponseEntity<ApiResponse<Void>> updateMenu(
       @PathVariable UUID menuId,
       @RequestBody MenuPutRequestDto requestDto) {
-    MenuGetResponseDto menu = menuService.updateMenu(menuId, requestDto);
-    return ResponseEntity.ok(ApiResponse.OK(menu, ResBasicCode.OK));
+    menuService.updateMenu(menuId, requestDto);
+    return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
   /**

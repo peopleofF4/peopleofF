@@ -14,21 +14,18 @@ import com.sparta.peopleoff.exception.CustomApiException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
 
   private final MenuRepository menuRepository;
   private final StoreRepository storeRepository;
-
-  public MenuServiceImpl(MenuRepository menuRepository, StoreRepository storeRepository) {
-    this.menuRepository = menuRepository;
-    this.storeRepository = storeRepository;
-  }
 
   /**
    * 메뉴 등록
@@ -90,17 +87,15 @@ public class MenuServiceImpl implements MenuService {
    *
    * @param menuId
    * @param menuUpdateRequestDto
-   * @return
    */
   @Override
   @Transactional
-  public MenuGetResponseDto updateMenu(UUID menuId, MenuPutRequestDto menuUpdateRequestDto) {
+  public void updateMenu(UUID menuId, MenuPutRequestDto menuUpdateRequestDto) {
     MenuEntity menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴를 찾을 수 없습니다."));
 
     menu.update(menuUpdateRequestDto.getMenuName(), menuUpdateRequestDto.getMenuDescription(),
         menuUpdateRequestDto.getPrice());
-    return null;
   }
 
   /**

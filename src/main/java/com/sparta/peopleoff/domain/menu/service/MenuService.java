@@ -16,7 +16,7 @@ public interface MenuService {
 
   List<MenuGetResponseDto> getMenusByStoreId(UUID storeId, Pageable pageable);
 
-  MenuGetResponseDto updateMenu(UUID menuId, MenuPutRequestDto requestDto);
+  void updateMenu(UUID menuId, MenuPutRequestDto requestDto);
 
   void updateMenuStatus(UUID menuId, MenuStatus status);
 

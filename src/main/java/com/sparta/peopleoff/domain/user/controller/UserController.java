@@ -60,9 +60,7 @@ public class UserController {
 
     UserInfoResponseDto response = userService.getUserInfo(user);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(response));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(response));
   }
 
   /**
@@ -78,9 +76,7 @@ public class UserController {
 
     userService.updateUserInfo(userId, userUpdateInfoDto);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
   }
 
 
@@ -95,9 +91,7 @@ public class UserController {
 
     userService.deleteUser(userId);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
   }
 
   /**
@@ -116,6 +110,20 @@ public class UserController {
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
+  }
+
+  /**
+   * Manager 신청 API
+   *
+   * @param userId
+   * @return
+   */
+  @PostMapping("/users/{userId}/apply-manager")
+  public ResponseEntity<ApiResponse<Void>> applyManager(@PathVariable Long userId) {
+
+    userService.applyManager(userId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.MANAGER_APPLY));
   }
 
 }

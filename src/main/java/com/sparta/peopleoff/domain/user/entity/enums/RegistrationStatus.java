@@ -1,4 +1,4 @@
-package com.sparta.peopleoff.common.enums;
+package com.sparta.peopleoff.domain.user.entity.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,11 +1,10 @@
 package com.sparta.peopleoff.domain.store.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
-import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +49,7 @@ public class StoreEntity extends SoftDeleteEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
+  private StoreStatus storeStatus = StoreStatus.REGISTRATION_PENDING;
 
   @Column
   private int totalRating;
@@ -92,12 +91,12 @@ public class StoreEntity extends SoftDeleteEntity {
   }
 
   public void delete() {
-    this.setDeletionStatus(DeletionStatus.DELETED);
+    this.storeStatus = StoreStatus.DELETED_PENDING;
   }
 
-  public void setRegistrationStatus(
-      RegistrationStatus registrationStatus) {
-    this.registrationStatus = registrationStatus;
+  public void setStoreStatus(
+      StoreStatus storeStatus) {
+    this.storeStatus = storeStatus;
   }
 
   public void addRating(int newRating) {

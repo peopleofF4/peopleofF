@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.store.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.util.PaginationUtils;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
@@ -9,6 +10,7 @@ import com.sparta.peopleoff.domain.store.service.StoreService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +46,6 @@ public class StoreController {
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
-
     storeService.registerStore(storeRequestDto, userDetails.getUser());
     return ResponseEntity.status(ResBasicCode.CREATED.getHttpStatusCode())
         .body(ApiResponse.OK(ResBasicCode.CREATED));
@@ -73,15 +74,13 @@ public class StoreController {
    */
   @GetMapping("/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores(
+      @RequestParam String keyword,
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "0") int page) {
-
-    pageSize = validatePageSize(pageSize);
-
-    List<StoreGetResponseDto> stores = storeService.getAllStores(sortBy, sortDirection, pageSize,
-        page);
+      @RequestParam(defaultValue = "1") int page) {
+    Pageable pageable = PaginationUtils.createPageable(sortBy, sortDirection, pageSize, page);
+    List<StoreGetResponseDto> stores = storeService.getAllStores(pageable);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 
@@ -95,7 +94,6 @@ public class StoreController {
   @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getMyStores(
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
     List<StoreGetResponseDto> stores = storeService.getStoresByOwner(userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
@@ -113,7 +111,6 @@ public class StoreController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
-
     storeService.updateStore(storeId, storeUpdateRequestDto);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
@@ -129,7 +126,6 @@ public class StoreController {
   public ResponseEntity<ApiResponse<Void>> deleteStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {
-
     storeService.deleteStore(storeId);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
@@ -150,12 +146,9 @@ public class StoreController {
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "0") int page) {
-
-    pageSize = validatePageSize(pageSize);
-
-    List<StoreGetResponseDto> stores = storeService.searchStores(keyword, sortBy, sortDirection,
-        pageSize, page);
+      @RequestParam(defaultValue = "1") int page) {
+    Pageable pageable = PaginationUtils.createPageable(sortBy, sortDirection, pageSize, page);
+    List<StoreGetResponseDto> stores = storeService.searchStores(keyword, pageable);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 
@@ -169,10 +162,5 @@ public class StoreController {
   public ResponseEntity<ApiResponse<Double>> getAverageRating(@PathVariable UUID storeId) {
     double averageRating = storeService.getAverageRating(storeId);
     return ResponseEntity.ok(ApiResponse.OK(averageRating, ResBasicCode.OK));
-  }
-
-
-  private int validatePageSize(int pageSize) {
-    return (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
   }
 }

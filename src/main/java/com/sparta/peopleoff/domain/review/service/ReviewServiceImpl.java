@@ -3,6 +3,7 @@ package com.sparta.peopleoff.domain.review.service;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.rescode.ResErrorCode;
+import com.sparta.peopleoff.common.util.DeletionValidator;
 import com.sparta.peopleoff.domain.order.entity.OrderEntity;
 import com.sparta.peopleoff.domain.order.repository.OrderRepository;
 import com.sparta.peopleoff.domain.review.dto.ReviewGetResponseDto;
@@ -43,15 +44,18 @@ public class ReviewServiceImpl implements ReviewService {
   @Transactional
   public void registerReview(ReviewPostRequestDto requestDto, UserEntity user) {
     OrderEntity order = orderRepository.findById(requestDto.getOrderId())
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "주문 내역을 찾을 수 없습니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "주문 내역이 존재하지 않습니다."));
+    DeletionValidator.validateActive(order.getDeletionStatus(), "주문 내역");
 
     if (user.getRole() == UserRole.CUSTOMER && !order.getUser().getId().equals(user.getId())) {
       throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "해당 건 주문자만 작성 가능합니다.");
     }
+
     StoreEntity store = order.getStore();
     if (store == null) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다.");
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게가 존재하지 않습니다.");
     }
+    DeletionValidator.validateActive(store.getDeletionStatus(), "가게");
 
     ReviewEntity review = new ReviewEntity(
         requestDto.getComment(),
@@ -75,8 +79,7 @@ public class ReviewServiceImpl implements ReviewService {
   @Override
   @Transactional(readOnly = true)
   public ReviewGetResponseDto getReviewById(UUID reviewId) {
-    ReviewEntity review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+    ReviewEntity review = findActiveReviewById(reviewId);
     return new ReviewGetResponseDto(review);
   }
 
@@ -124,8 +127,7 @@ public class ReviewServiceImpl implements ReviewService {
   @Transactional
   @Override
   public void updateReview(UUID reviewId, ReviewPutRequestDto requestDto, UserEntity user) {
-    ReviewEntity review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+    ReviewEntity review = findActiveReviewById(reviewId);
 
     if (user.getRole() == UserRole.CUSTOMER && !review.getUser().getId().equals(user.getId())) {
       throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "작성자 본인만 수정 가능합니다.");
@@ -145,8 +147,7 @@ public class ReviewServiceImpl implements ReviewService {
   @Transactional
   @Override
   public void deleteReview(UUID reviewId, UserEntity user) {
-    ReviewEntity review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "리뷰를 찾을 수 없습니다."));
+    ReviewEntity review = findActiveReviewById(reviewId);
 
     if (user.getRole() == UserRole.CUSTOMER && !review.getUser().getId().equals(user.getId())) {
       throw new CustomApiException(ResErrorCode.REVIEW_UNAUTHORIZED, "작성자 본인만 수정 가능합니다.");
@@ -173,6 +174,13 @@ public class ReviewServiceImpl implements ReviewService {
     return reviewPage.stream()
         .map(ReviewGetResponseDto::new)
         .collect(Collectors.toList());
+  }
+
+  private ReviewEntity findActiveReviewById(UUID reviewId) {
+    ReviewEntity review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 리뷰가 존재하지 않습니다."));
+    DeletionValidator.validateActive(review.getDeletionStatus(), "리뷰");
+    return review;
   }
 }
 

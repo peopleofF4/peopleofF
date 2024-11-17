@@ -14,10 +14,9 @@ import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class AdminServiceImpl implements AdminService {
    */
   @Override
   @Transactional(readOnly = true)
-  public List<UserResponseDto> getUsers(String userName, Pageable pageable) {
+  public Page<UserResponseDto> getUsers(String userName, Pageable pageable) {
 
     int pageSize = pageable.getPageSize();
 
@@ -47,15 +46,14 @@ public class AdminServiceImpl implements AdminService {
         pageable.getSort());
 
     if (userName == null || userName.isEmpty()) {
-      return userRepository.findAll(pageable).stream()
+      return userRepository.findAll(pageable)
           .map(this::convertToDto)
-          .collect(Collectors.toList())
           ;
     }
 
-    return userRepository.findByUserNameContaining(userName, pageable).stream()
+    return userRepository.findByUserNameContaining(userName, pageable)
         .map(this::convertToDto)
-        .collect(Collectors.toList());
+        ;
   }
 
   /**
@@ -83,27 +81,6 @@ public class AdminServiceImpl implements AdminService {
     user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
   }
 
-  /**
-   * 유저 검색
-   *
-   * @param userName
-   * @return
-   */
-//  @Override
-//  @Transactional(readOnly = true)
-//  public List<UserResponseDto> searchUser(String userName) {
-//
-//    List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
-//
-//    // [예외2] - 검색결과가 없음
-//    if (searchUsers.isEmpty()) {
-//      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
-//    }
-//
-//    return searchUsers.stream()
-//        .map(this::convertToDto)
-//        .collect(Collectors.toList());
-//  }
 
   /**
    * 유저 권한 수정
@@ -181,13 +158,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
   }
-
-//  private void checkDeleteStatusSame(StoreEntity store,
-//      StoreApproveRequestDto storeApproveRequestDto) {
-//    if (store.getStoreStatus().equals(storeApproveRequestDto.getStoreStatus())) {
-//      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
-//    }
-//  }
 
   private void checkApproveStatusSame(StoreEntity store,
       StoreApproveRequestDto storeApproveRequestDto) {

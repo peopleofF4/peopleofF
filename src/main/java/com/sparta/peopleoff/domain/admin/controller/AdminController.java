@@ -8,9 +8,9 @@ import com.sparta.peopleoff.domain.admin.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.admin.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.admin.service.AdminService;
 import com.sparta.peopleoff.security.UserDetailsImpl;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -39,9 +39,9 @@ public class AdminController {
    * @return
    */
   @GetMapping("/users")
-  public ResponseEntity<ApiResponse<List<UserResponseDto>>> getUsers(@RequestParam String userName,
+  public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getUsers(@RequestParam String userName,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-    List<UserResponseDto> userResponseDtos = adminService.getUsers(userName, pageable);
+    Page<UserResponseDto> userResponseDtos = adminService.getUsers(userName, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userResponseDtos));
   }
 
@@ -63,20 +63,6 @@ public class AdminController {
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.MANAGER_APPROVE));
   }
-
-  /**
-   * 유저 검색
-   *
-   * @param userName
-   * @return
-   */
-//  @GetMapping("/users/search")
-//  public ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
-//      @RequestParam String userName
-//  ) {
-//    //List<UserResponseDto> responseDtos = adminService.searchUser(userName);
-//    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
-//  }
 
   /**
    * 유저 권한 수정

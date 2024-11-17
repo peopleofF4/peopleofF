@@ -9,6 +9,7 @@ import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -16,7 +17,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

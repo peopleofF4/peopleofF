@@ -29,6 +29,7 @@ out/
 **/application.properties
 *.yaml
 *.yml
+*.http
 
 ### NetBeans ###
 /nbproject/private/

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,9 +31,10 @@ public class AdminServiceImpl implements AdminService {
    * 회원 전체 조회
    *
    * @return
-   */ //page //readonly
+   */
+  @Override
   @Transactional(readOnly = true)
-  public Page<UserResponseDto> getUsers(Pageable pageable) {
+  public List<UserResponseDto> getUsers(String userName, Pageable pageable) {
 
     int pageSize = pageable.getPageSize();
 
@@ -43,9 +43,16 @@ public class AdminServiceImpl implements AdminService {
     Pageable updatedPageable = PageRequest.of(pageable.getPageNumber(), pageSize,
         pageable.getSort());
 
-    return userRepository.findAll(pageable)
+    if (userName == null || userName.isEmpty()) {
+      return userRepository.findAll(pageable).stream()
+          .map(this::convertToDto)
+          .collect(Collectors.toList())
+          ;
+    }
+
+    return userRepository.findByUserNameContaining(userName, pageable).stream()
         .map(this::convertToDto)
-        ;
+        .collect(Collectors.toList());
   }
 
   /**
@@ -55,6 +62,7 @@ public class AdminServiceImpl implements AdminService {
    * @param managerApproveRequestDto
    * @return
    */
+  @Override
   @Transactional
   public void managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
 
@@ -67,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
 
     user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
-    if (user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
+    if (user.getManagerRegistrationStatus() == RegistrationStatus.ACCEPTED) {
       user.setRole(UserRole.MANAGER);
     }
   }
@@ -78,28 +86,21 @@ public class AdminServiceImpl implements AdminService {
    * @param userName
    * @return
    */
-  @Transactional(readOnly = true)
-  public List<UserResponseDto> searchUser(String userName) {
-
-    List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
-
-    // [예외2] - 검색결과가 없음
-    if (searchUsers.isEmpty()) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
-    }
-
-    return searchUsers.stream()
-        .map(user -> new UserResponseDto(
-            user.getId(),
-            user.getUserName(),
-            user.getNickName(),
-            user.getEmail(),
-            user.getPhoneNumber(),
-            user.getAddress(),
-            user.getRole()
-        ))
-        .collect(Collectors.toList());
-  }
+//  @Override
+//  @Transactional(readOnly = true)
+//  public List<UserResponseDto> searchUser(String userName) {
+//
+//    List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
+//
+//    // [예외2] - 검색결과가 없음
+//    if (searchUsers.isEmpty()) {
+//      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
+//    }
+//
+//    return searchUsers.stream()
+//        .map(this::convertToDto)
+//        .collect(Collectors.toList());
+//  }
 
   /**
    * 유저 권한 수정
@@ -108,6 +109,7 @@ public class AdminServiceImpl implements AdminService {
    * @param userRoleRequestDto
    * @return
    */
+  @Override
   @Transactional
   public void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
 
@@ -126,6 +128,7 @@ public class AdminServiceImpl implements AdminService {
    * @param managerApproveRequestDto
    * @return
    */
+  @Override
   @Transactional
   public void updateStoreRegist(UserEntity user, UUID storeId,
       ManagerApproveRequestDto managerApproveRequestDto) {
@@ -136,6 +139,14 @@ public class AdminServiceImpl implements AdminService {
 
     // [예외3] - 이전과 같은 상태
     checkApproveStatusSame(store, managerApproveRequestDto);
+
+    // 가게 등록 승인시 Customer 권한이면 OWNER 권한으로 변경
+    if (managerApproveRequestDto.getRegistrationStatus() == RegistrationStatus.ACCEPTED
+        && user.getRole() == UserRole.CUSTOMER) {
+
+      user.setRole(UserRole.OWNER);
+      userRepository.save(user);
+    }
 
     store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
   }
@@ -148,6 +159,7 @@ public class AdminServiceImpl implements AdminService {
    * @param managerApproveRequestDto
    * @return
    */
+  @Override
   @Transactional
   public void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 

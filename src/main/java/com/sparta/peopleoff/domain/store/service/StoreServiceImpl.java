@@ -32,9 +32,15 @@ public class StoreServiceImpl implements StoreService {
     this.categoryRepository = categoryRepository;
   }
 
+  /**
+   * 가게 등록
+   *
+   * @param storeRequestDto
+   * @param user
+   */
   @Override
   @Transactional
-  public StoreEntity registerStore(StorePostRequestDto storeRequestDto, UserEntity user) {
+  public void registerStore(StorePostRequestDto storeRequestDto, UserEntity user) {
     CategoryEntity category = categoryRepository.findByCategoryName(
             storeRequestDto.getCategoryName())
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 카테고리 이름입니다."));
@@ -49,9 +55,15 @@ public class StoreServiceImpl implements StoreService {
         category
     );
 
-    return storeRepository.save(newStore);
+    storeRepository.save(newStore);
   }
 
+  /**
+   * 가게 단건 조회
+   *
+   * @param storeId
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public StoreGetResponseDto getStoreById(UUID storeId) {
@@ -61,6 +73,15 @@ public class StoreServiceImpl implements StoreService {
     return new StoreGetResponseDto(store);
   }
 
+  /**
+   * 가게 전체 조회
+   *
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> getAllStores(String sortBy, String sortDirection, int pageSize,
@@ -79,6 +100,12 @@ public class StoreServiceImpl implements StoreService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 가게 수정
+   *
+   * @param storeId
+   * @param storeUpdateRequestDto
+   */
   @Override
   @Transactional
   public void updateStore(UUID storeId, StorePutRequestDto storeUpdateRequestDto) {
@@ -92,6 +119,11 @@ public class StoreServiceImpl implements StoreService {
     store.update(storeUpdateRequestDto, category);
   }
 
+  /**
+   * 가게 삭제 (soft-delete)
+   *
+   * @param storeId
+   */
   @Override
   @Transactional
   public void deleteStore(UUID storeId) {
@@ -101,6 +133,16 @@ public class StoreServiceImpl implements StoreService {
     store.delete();
   }
 
+  /**
+   * 가게 검색
+   *
+   * @param keyword
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> searchStores(String keyword, String sortBy, String sortDirection,
@@ -118,5 +160,39 @@ public class StoreServiceImpl implements StoreService {
     return storesPage.stream()
         .map(StoreGetResponseDto::new)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * 사장님 본인 가게 조회
+   *
+   * @param owner
+   * @return
+   */
+  @Override
+  @Transactional(readOnly = true)
+  public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
+
+    List<StoreEntity> stores = storeRepository.findByUser(owner);
+    return stores.stream()
+        .map(StoreGetResponseDto::new)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 가게별 리뷰 평점 평균값 반환
+   *
+   * @param storeId
+   * @return
+   */
+  @Override
+  public double getAverageRating(UUID storeId) {
+
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 스토어를 찾을 수 없습니다."));
+
+    // 평균 평점 계산
+    long totalReviews = store.getRatingCount();
+    int totalRating = store.getTotalRating();
+    return totalReviews > 0 ? (double) totalRating / totalReviews : 0.0;
   }
 }

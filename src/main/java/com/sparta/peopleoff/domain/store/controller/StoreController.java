@@ -32,8 +32,15 @@ public class StoreController {
     this.storeService = storeService;
   }
 
+  /**
+   * 가게 등록
+   *
+   * @param userDetails
+   * @param storeRequestDto
+   * @return
+   */
   @PostMapping("/stores")
-  @PreAuthorize("hasAnyRole('MASTER', 'MANAGER','OWNER')")
+  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -43,12 +50,27 @@ public class StoreController {
         .body(ApiResponse.OK(ResBasicCode.CREATED));
   }
 
+  /**
+   * 가게 단건 조회
+   *
+   * @param storeId
+   * @return
+   */
   @GetMapping("/stores/{storeId}")
   public ResponseEntity<ApiResponse<StoreGetResponseDto>> getStoreById(@PathVariable UUID storeId) {
     StoreGetResponseDto store = storeService.getStoreById(storeId);
     return ResponseEntity.ok(ApiResponse.OK(store, ResBasicCode.OK));
   }
 
+  /**
+   * 가게 전체 조회
+   *
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
   @GetMapping("/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores(
       @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -56,15 +78,37 @@ public class StoreController {
       @RequestParam(defaultValue = "10") int pageSize,
       @RequestParam(defaultValue = "0") int page) {
 
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    pageSize = validatePageSize(pageSize);
 
     List<StoreGetResponseDto> stores = storeService.getAllStores(sortBy, sortDirection, pageSize,
         page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
   }
 
+  /**
+   * 사장님 본인 가게 조회
+   *
+   * @param userDetails
+   * @return
+   */
+  @GetMapping("/stores/my")
+  @PreAuthorize("hasRole('OWNER')")
+  public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getMyStores(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    List<StoreGetResponseDto> stores = storeService.getStoresByOwner(userDetails.getUser());
+    return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
+  }
+
+  /**
+   * 가게 수정
+   *
+   * @param storeId
+   * @param storeUpdateRequestDto
+   * @return
+   */
   @PutMapping("/stores/{storeId}")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
@@ -74,6 +118,12 @@ public class StoreController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
+  /**
+   * 가게 삭제 (soft-delete)
+   *
+   * @param storeId
+   * @return
+   */
   @DeleteMapping("/stores/{storeId}")
   @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
@@ -84,6 +134,16 @@ public class StoreController {
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));
   }
 
+  /**
+   * 가게 검색
+   *
+   * @param keyword
+   * @param sortBy
+   * @param sortDirection
+   * @param pageSize
+   * @param page
+   * @return
+   */
   @GetMapping("/stores/search")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> searchStores(
       @RequestParam String keyword,
@@ -92,9 +152,27 @@ public class StoreController {
       @RequestParam(defaultValue = "10") int pageSize,
       @RequestParam(defaultValue = "0") int page) {
 
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
+    pageSize = validatePageSize(pageSize);
+
     List<StoreGetResponseDto> stores = storeService.searchStores(keyword, sortBy, sortDirection,
         pageSize, page);
     return ResponseEntity.ok(ApiResponse.OK(stores, ResBasicCode.OK));
+  }
+
+  /**
+   * 가게별 리뷰 평점 평균값 반환
+   *
+   * @param storeId
+   * @return
+   */
+  @GetMapping("/stores/{storeId}/reviews/avg")
+  public ResponseEntity<ApiResponse<Double>> getAverageRating(@PathVariable UUID storeId) {
+    double averageRating = storeService.getAverageRating(storeId);
+    return ResponseEntity.ok(ApiResponse.OK(averageRating, ResBasicCode.OK));
+  }
+
+
+  private int validatePageSize(int pageSize) {
+    return (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
   }
 }

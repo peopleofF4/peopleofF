@@ -32,7 +32,14 @@ public class OrderController {
 
   private final OrderService orderService;
 
-  // 주문 생성
+  /**
+   * 주문 생성 api
+   *
+   * @param orderPostRequestDto 입력 받을 주문 생성 데이터
+   * @param storeId             storeId
+   * @param user                요청한 유저
+   * @return response
+   */
   @PostMapping("/stores/{storeId}/orders")
   public ResponseEntity<ApiResponse<Void>> createOrder(
       @RequestBody OrderPostRequestDto orderPostRequestDto,
@@ -44,7 +51,18 @@ public class OrderController {
         .body(ApiResponse.OK(ResSuccessCode.CREATE_ORDER));
   }
 
-  // 주문 검색 조회 OWNER 사용
+  /**
+   * 주문 검색 조회 api OWNER 사용
+   *
+   * @param user      owner
+   * @param storeId   storeId
+   * @param orderType ON_LINE / OFF_LINE
+   * @param menuId    menuId
+   * @param page      defaultValue = "1"
+   * @param size      defaultValue = "10"
+   * @param sortBy    created_At/updated_At
+   * @return response
+   */
   @GetMapping("/stores/{storeId}/orders/search")
   public ResponseEntity<ApiResponse<Page<OrderSearchResponseDto>>> searchOrder(
       @AuthenticationPrincipal UserDetailsImpl user,
@@ -60,7 +78,12 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 
-  // 주문 조회 CUSTOMER 사용
+  /**
+   * 주문 조회 api CUSTOMER 사용
+   *
+   * @param user CUSTOMER
+   * @return response
+   */
   @GetMapping("/users/{userId}/orders")
   public ResponseEntity<ApiResponse<List<OrderSearchResponseDto>>> getCustomerOrderList(
       @AuthenticationPrincipal UserDetailsImpl user
@@ -69,7 +92,15 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(res));
   }
 
-  // 대면 주문 수정
+  /**
+   * 대면 주문 수정 api OWNER 사용
+   *
+   * @param orderPatchRequestDto 주문 수정 데이터
+   * @param storeId              storeId
+   * @param orderId              orderId
+   * @param user                 OWNER
+   * @return response
+   */
   @PatchMapping("/stores/{storeId}/orders/{orderId}")
   public ResponseEntity<ApiResponse<Void>> updateOffLineOrder(
       @RequestBody OrderPatchRequestDto orderPatchRequestDto,
@@ -81,7 +112,13 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.UPDATE_ORDER));
   }
 
-  // 주문 취소
+  /**
+   * 주문 취소 api
+   *
+   * @param orderId orderId
+   * @param user    user
+   * @return response
+   */
   @DeleteMapping("/orders/{orderId}")
   public ResponseEntity<ApiResponse<Void>> cancelOrder(
       @PathVariable UUID orderId,

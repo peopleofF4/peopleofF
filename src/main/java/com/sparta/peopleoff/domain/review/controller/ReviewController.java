@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.review.controller;
 
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.util.PaginationUtils;
 import com.sparta.peopleoff.domain.review.dto.ReviewGetResponseDto;
 import com.sparta.peopleoff.domain.review.dto.ReviewPostRequestDto;
 import com.sparta.peopleoff.domain.review.dto.ReviewPutRequestDto;
@@ -10,9 +11,7 @@ import com.sparta.peopleoff.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -48,7 +47,6 @@ public class ReviewController {
   public ResponseEntity<ApiResponse<Void>> registerReview(
       @Valid @RequestBody ReviewPostRequestDto requestDto,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
     reviewService.registerReview(requestDto, userDetails.getUser());
     return ResponseEntity.status(ResBasicCode.CREATED.getHttpStatusCode())
         .body(ApiResponse.OK(ResBasicCode.CREATED));
@@ -70,13 +68,8 @@ public class ReviewController {
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "0") int page) {
-
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
-    Sort.Direction direction =
-        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, sortBy));
-
+      @RequestParam(defaultValue = "1") int page) {
+    Pageable pageable = PaginationUtils.createPageable(sortBy, sortDirection, pageSize, page);
     List<ReviewGetResponseDto> reviews = reviewService.getReviewsByStore(storeId, pageable);
     return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
   }
@@ -110,13 +103,8 @@ public class ReviewController {
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "0") int page) {
-
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
-    Sort.Direction direction =
-        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, sortBy));
-
+      @RequestParam(defaultValue = "1") int page) {
+    Pageable pageable = PaginationUtils.createPageable(sortBy, sortDirection, pageSize, page);
     List<ReviewGetResponseDto> reviews = reviewService.getReviewsByUser(userId, pageable);
     return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
   }
@@ -170,13 +158,9 @@ public class ReviewController {
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "0") int page) {
+      @RequestParam(defaultValue = "1") int page) {
 
-    pageSize = (pageSize == 10 || pageSize == 30 || pageSize == 50) ? pageSize : 10;
-    Sort.Direction direction =
-        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, sortBy));
-
+    Pageable pageable = PaginationUtils.createPageable(sortBy, sortDirection, pageSize, page);
     List<ReviewGetResponseDto> reviews = reviewService.searchReviews(keyword, pageable);
     return ResponseEntity.ok(ApiResponse.OK(reviews, ResBasicCode.OK));
   }

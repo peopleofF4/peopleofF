@@ -1,7 +1,7 @@
 package com.sparta.peopleoff.domain.admin.dto;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import lombok.Getter;
 
 @Getter

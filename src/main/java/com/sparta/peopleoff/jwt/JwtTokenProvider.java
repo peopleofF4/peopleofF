@@ -23,6 +23,8 @@ public class JwtTokenProvider {
   public static final String REFRESH_HEADER = "Authorization-refresh";
   // 사용자 권한 값의 KEY
   public static final String AUTHORIZATION_KEY = "auth";
+
+  public static final String REFRESH_TOKEN = "refreshToken";
   // Token 식별자
   public static final String BEARER_PREFIX = "Bearer ";
 
@@ -70,6 +72,7 @@ public class JwtTokenProvider {
         Jwts.builder()
             .setSubject(username) // 사용자 식별자값(email)
             .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+            .claim(REFRESH_HEADER, REFRESH_TOKEN)
             .setExpiration(
                 new Date(
                     System.currentTimeMillis() + refreshTokenValidate)) // 만료 시간

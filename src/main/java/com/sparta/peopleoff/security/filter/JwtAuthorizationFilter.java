@@ -3,6 +3,7 @@ package com.sparta.peopleoff.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
+import com.sparta.peopleoff.common.rescode.TokenErrorCode;
 import com.sparta.peopleoff.jwt.JwtTokenProvider;
 import com.sparta.peopleoff.jwt.JwtTokenValidator;
 import com.sparta.peopleoff.jwt.refreshtoken.service.RefreshTokenService;
@@ -72,6 +73,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
       Claims claims = JwtTokenProvider.getUserInfoFromToken(accessToken);
 
+      if (claims.get(JwtTokenProvider.REFRESH_HEADER) != null) {
+        putRefreshTokenInAuthorization(response);
+      }
+
       setAuthentication(claims.getSubject());
 
     }
@@ -91,4 +96,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     new ObjectMapper().writeValue(response.getOutputStream(), commonResponse);
   }
+
+  private void putRefreshTokenInAuthorization(HttpServletResponse response) throws IOException {
+    ApiResponse<Object> errorResponse = ApiResponse.ERROR(TokenErrorCode.NOT_ACCESS_TOKEN);
+
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+    new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
+
+  }
 }
+
+
+

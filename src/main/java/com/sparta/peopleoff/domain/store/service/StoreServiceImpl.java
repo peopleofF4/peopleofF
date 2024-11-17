@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.rescode.ResErrorCode;
 import com.sparta.peopleoff.common.util.DeletionValidator;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
@@ -9,7 +10,6 @@ import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
-import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,6 +144,9 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
+    if (!owner.getRole().name().equals("OWNER")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "사장님 권한이 필요합니다.");
+    }
 
     List<StoreEntity> stores = storeRepository.findByUserAndDeletionStatus(owner,
         DeletionStatus.ACTIVE);

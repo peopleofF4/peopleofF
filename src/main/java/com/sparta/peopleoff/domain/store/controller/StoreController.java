@@ -42,7 +42,6 @@ public class StoreController {
    * @return
    */
   @PostMapping("/stores")
-  @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -107,7 +106,6 @@ public class StoreController {
   @PutMapping("/stores/{storeId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
     storeService.updateStore(storeId, storeUpdateRequestDto);

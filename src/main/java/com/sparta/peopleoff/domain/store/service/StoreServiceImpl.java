@@ -68,8 +68,8 @@ public class StoreServiceImpl implements StoreService {
   @Transactional(readOnly = true)
   public StoreGetResponseDto getStoreById(UUID storeId) {
     StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 ID의 가게가 존재하지 않습니다."));
+        .orElseThrow(() ->
+            new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 ID의 가게가 존재하지 않습니다."));
     return new StoreGetResponseDto(store);
   }
 

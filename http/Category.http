@@ -7,7 +7,7 @@ Authorization: {{Authorization}}
 Content-Type: application/json
 
 {
-  "categoryName": "중식"
+  "categoryName": "일식"
 }
 
 ### 카테고리 수정

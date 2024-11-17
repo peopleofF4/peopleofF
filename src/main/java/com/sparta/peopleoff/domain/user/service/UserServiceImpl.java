@@ -24,6 +24,12 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  /**
+   * 회원 가입 API
+   *
+   * @param userSignUpRequestDto
+   * @return
+   */
   @Override
   @Transactional
   public void signUp(UserSignUpRequestDto userSignUpRequestDto) {
@@ -47,12 +53,23 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  /**
+   * 회원 상세 조회 API
+   *
+   * @param user
+   * @return
+   */
   @Override
   public UserInfoResponseDto getUserInfo(UserDetailsImpl user) {
     UserInfoResponseDto response = new UserInfoResponseDto(user);
     return response;
   }
 
+  /**
+   * 회원 삭제 API
+   *
+   * @param userId
+   */
   @Override
   @Transactional
   public void deleteUser(Long userId) {
@@ -65,6 +82,12 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  /**
+   * 유저 수정 API
+   *
+   * @param userId
+   * @param userUpdateInfoDto
+   */
   @Override
   @Transactional
   public void updateUserInfo(Long userId, UserUpdateRequestDto userUpdateInfoDto) {
@@ -88,6 +111,12 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  /**
+   * 비밀번호 수정 API
+   *
+   * @param userChangePasswordDto
+   * @param userDetails
+   */
   @Override
   @Transactional
   public void changePassword(UserChangePasswordDto userChangePasswordDto,
@@ -111,6 +140,11 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  /**
+   * 매니저 권한 신청 API
+   *
+   * @param userId
+   */
   @Override
   @Transactional
   public void applyManager(Long userId) {

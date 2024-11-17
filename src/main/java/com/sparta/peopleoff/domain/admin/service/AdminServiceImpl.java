@@ -30,8 +30,10 @@ public class AdminServiceImpl implements AdminService {
   private final StoreRepository storeRepository;
 
   /**
-   * 회원 전체 조회
+   * 전체 회원 페이지네이션 조회 & 유저 이름을 검색
    *
+   * @param userName
+   * @param pageable
    * @return
    */
   @Override
@@ -57,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   /**
-   * 매니저 등록 승인
+   * 매니저 등록 승인 API
    *
    * @param userId
    * @param managerApproveRequestDto
@@ -83,7 +85,7 @@ public class AdminServiceImpl implements AdminService {
 
 
   /**
-   * 유저 권한 수정
+   * 유저 권한 수정 API
    *
    * @param userId
    * @param userRoleRequestDto
@@ -101,7 +103,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   /**
-   * 가게 등록 승인 / 거부
+   * 가게 등록 승인 / 거부 API
    *
    * @param user
    * @param storeId

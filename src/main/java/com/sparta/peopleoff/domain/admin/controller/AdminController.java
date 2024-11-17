@@ -34,8 +34,10 @@ public class AdminController {
   private final AdminService adminService;
 
   /**
-   * 회원 전체 조회
+   * 전체 회원 페이지네이션 조회 & 유저 이름을 검색
    *
+   * @param userName
+   * @param pageable
    * @return
    */
   @GetMapping("/users")

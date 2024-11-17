@@ -10,7 +10,6 @@ import com.sparta.peopleoff.security.UserDetailsImpl;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,13 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//@PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/v1")
 public class AdminController {
 
-  private final AdminService adminServiceImpl;
+  private final AdminService adminService;
 
   /**
    * 회원 전체 조회
@@ -40,9 +38,9 @@ public class AdminController {
    * @return
    */
   @GetMapping("/users")
-  public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getUsers(
+  public ResponseEntity<ApiResponse<List<UserResponseDto>>> getUsers(@RequestParam String userName,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<UserResponseDto> userResponseDtos = adminServiceImpl.getUsers(pageable);
+    List<UserResponseDto> userResponseDtos = adminService.getUsers(userName, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userResponseDtos));
   }
 
@@ -59,7 +57,7 @@ public class AdminController {
       @PathVariable Long userId,
       @RequestBody ManagerApproveRequestDto managerApproveRequestDto
   ) {
-    adminServiceImpl.managerApprove(userId, managerApproveRequestDto);
+    adminService.managerApprove(userId, managerApproveRequestDto);
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.MANAGER_APPROVE));
@@ -71,13 +69,13 @@ public class AdminController {
    * @param userName
    * @return
    */
-  @GetMapping("/users/search")
-  public ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
-      @RequestParam String userName
-  ) {
-    List<UserResponseDto> responseDtos = adminServiceImpl.searchUser(userName);
-    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
-  }
+//  @GetMapping("/users/search")
+//  public ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
+//      @RequestParam String userName
+//  ) {
+//    //List<UserResponseDto> responseDtos = adminService.searchUser(userName);
+//    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
+//  }
 
   /**
    * 유저 권한 수정
@@ -89,7 +87,7 @@ public class AdminController {
   public ResponseEntity<ApiResponse<Void>> updateUserRole(@PathVariable Long userId,
       @RequestBody UserRoleRequestDto userRoleRequestDto
   ) {
-    adminServiceImpl.updateUserRole(userId, userRoleRequestDto);
+    adminService.updateUserRole(userId, userRoleRequestDto);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.USER_ROLE_UPDATED));
   }
@@ -107,7 +105,7 @@ public class AdminController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-    adminServiceImpl.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
+    adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.STORE_REGISTRATION_UPDTAED));
   }
@@ -122,7 +120,7 @@ public class AdminController {
   @PutMapping("/stores/{storeId}/delete")
   public ResponseEntity<ApiResponse<Void>> updateStoreDelete(@PathVariable UUID storeId,
       @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-    adminServiceImpl.updateStoreDelete(storeId, managerApproveRequestDto);
+    adminService.updateStoreDelete(storeId, managerApproveRequestDto);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.STORE_DELETION_UPDTAED));
   }

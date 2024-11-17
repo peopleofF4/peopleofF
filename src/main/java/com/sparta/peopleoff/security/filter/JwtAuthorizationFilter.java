@@ -73,7 +73,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
       Claims claims = JwtTokenProvider.getUserInfoFromToken(accessToken);
 
-      if (claims.get(JwtTokenProvider.REFRESH_HEADER).equals(JwtTokenProvider.REFRESH_TOKEN)) {
+      if (claims.get(JwtTokenProvider.REFRESH_HEADER) != null) {
         putRefreshTokenInAuthorization(response);
       }
 

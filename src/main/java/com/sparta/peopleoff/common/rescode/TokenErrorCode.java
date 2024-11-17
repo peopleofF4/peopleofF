@@ -16,6 +16,7 @@ public enum TokenErrorCode implements ResCodeIfs {
   UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "2003", "Unsupported Token"),
   AUTHORIZATION_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "2004",
       "Authorization Token Not Found"),
+  NOT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED.value(), "2005", "Change Refresh Token to Access Token"),
   ;
 
   // 변형이 일어나면 안되니 모두 final로 선언해 변경되지 않는 값으로 초기화.

@@ -6,6 +6,7 @@ import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 
 public interface StoreService {
 
@@ -13,15 +14,13 @@ public interface StoreService {
 
   StoreGetResponseDto getStoreById(UUID storeId);
 
-  List<StoreGetResponseDto> getAllStores(String sortBy, String sortDirection, int pageSize,
-      int page);
+  List<StoreGetResponseDto> getAllStores(Pageable pageable);
 
   void updateStore(UUID storeId, StorePutRequestDto storeUpdateRequestDto);
 
   void deleteStore(UUID storeId);
 
-  List<StoreGetResponseDto> searchStores(String keyword, String sortBy, String sortDirection,
-      int pageSize, int page);
+  List<StoreGetResponseDto> searchStores(String keyword, Pageable pageable);
 
   double getAverageRating(UUID storeId);
 

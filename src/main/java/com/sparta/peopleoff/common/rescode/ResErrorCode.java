@@ -18,7 +18,10 @@ public enum ResErrorCode implements ResCodeIfs {
   REVIEW_UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(), "401", "Unauthorized access"),
 
   // 스토어 권한 에러 (사장님만)
-  FORBIDDEN(HttpStatus.FORBIDDEN.value(), "403", "Forbidden access");
+  FORBIDDEN(HttpStatus.FORBIDDEN.value(), "403", "Forbidden access"),
+
+  // 삭제(soft-delete)된 리소스 에러코드
+  RESOURCE_DELETED(HttpStatus.FORBIDDEN.value(), "403", "Deleted Resource");
 
   private final Integer httpStatusCode;   // 아래와 상응하는 HttpStatusCode
 

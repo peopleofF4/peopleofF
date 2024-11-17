@@ -23,5 +23,5 @@ public interface StoreRepository extends JpaRepository<StoreEntity, UUID> {
 
   Page<StoreEntity> findByDeletionStatus(DeletionStatus deletionStatus, Pageable pageable);
 
-  List<StoreEntity> findByUser(UserEntity user);
+  List<StoreEntity> findByUserAndDeletionStatus(UserEntity owner, DeletionStatus deletionStatus);
 }

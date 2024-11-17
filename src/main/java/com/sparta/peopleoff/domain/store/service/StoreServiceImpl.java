@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.store.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.util.DeletionValidator;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.category.repository.CategoryRepository;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
@@ -15,9 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,34 +66,21 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional(readOnly = true)
   public StoreGetResponseDto getStoreById(UUID storeId) {
-    StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 ID의 가게가 존재하지 않습니다."));
+    StoreEntity store = findActiveStoreById(storeId);
     return new StoreGetResponseDto(store);
   }
 
   /**
    * 가게 전체 조회
    *
-   * @param sortBy
-   * @param sortDirection
-   * @param pageSize
-   * @param page
+   * @param pageable
    * @return
    */
   @Override
   @Transactional(readOnly = true)
-  public List<StoreGetResponseDto> getAllStores(String sortBy, String sortDirection, int pageSize,
-      int page) {
-    Sort.Direction direction =
-        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-
-    Pageable pageable = PageRequest.of(page, pageSize,
-        Sort.by(direction, sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"));
-
+  public List<StoreGetResponseDto> getAllStores(Pageable pageable) {
     Page<StoreEntity> storePage = storeRepository.findByDeletionStatus(DeletionStatus.ACTIVE,
         pageable);
-
     return storePage.stream()
         .map(StoreGetResponseDto::new)
         .collect(Collectors.toList());
@@ -109,8 +95,7 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional
   public void updateStore(UUID storeId, StorePutRequestDto storeUpdateRequestDto) {
-    StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
+    StoreEntity store = findActiveStoreById(storeId);
 
     CategoryEntity category = categoryRepository.findByCategoryName(
             storeUpdateRequestDto.getCategoryName())
@@ -127,9 +112,7 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional
   public void deleteStore(UUID storeId) {
-    StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
-
+    StoreEntity store = findActiveStoreById(storeId);
     store.delete();
   }
 
@@ -137,25 +120,14 @@ public class StoreServiceImpl implements StoreService {
    * 가게 검색
    *
    * @param keyword
-   * @param sortBy
-   * @param sortDirection
-   * @param pageSize
-   * @param page
+   * @param pageable
    * @return
    */
   @Override
   @Transactional(readOnly = true)
-  public List<StoreGetResponseDto> searchStores(String keyword, String sortBy, String sortDirection,
-      int pageSize, int page) {
-    Sort.Direction direction =
-        sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-
-    Pageable pageable = PageRequest.of(page, pageSize,
-        Sort.by(direction, sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"));
-
+  public List<StoreGetResponseDto> searchStores(String keyword, Pageable pageable) {
     Page<StoreEntity> storesPage = storeRepository.findByDeletionStatusAndStoreNameContainingOrCategory_CategoryNameContainingOrStoreAddressContainingOrStorePhoneNumberContaining(
-        DeletionStatus.ACTIVE, keyword, keyword, keyword, keyword, pageable
-    );
+        DeletionStatus.ACTIVE, keyword, keyword, keyword, keyword, pageable);
 
     return storesPage.stream()
         .map(StoreGetResponseDto::new)
@@ -171,8 +143,8 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
-
-    List<StoreEntity> stores = storeRepository.findByUser(owner);
+    List<StoreEntity> stores = storeRepository.findByUserAndDeletionStatus(owner,
+        DeletionStatus.ACTIVE);
     return stores.stream()
         .map(StoreGetResponseDto::new)
         .collect(Collectors.toList());
@@ -186,13 +158,18 @@ public class StoreServiceImpl implements StoreService {
    */
   @Override
   public double getAverageRating(UUID storeId) {
+    StoreEntity store = findActiveStoreById(storeId);
 
-    StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 스토어를 찾을 수 없습니다."));
-
-    // 평균 평점 계산
     long totalReviews = store.getRatingCount();
     int totalRating = store.getTotalRating();
     return totalReviews > 0 ? (double) totalRating / totalReviews : 0.0;
+  }
+
+  // 활성화된 가게 ID 조회 메서드
+  private StoreEntity findActiveStoreById(UUID storeId) {
+    StoreEntity store = storeRepository.findById(storeId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게가 존재하지 않습니다."));
+    DeletionValidator.validateActive(store.getDeletionStatus(), "가게");
+    return store;
   }
 }

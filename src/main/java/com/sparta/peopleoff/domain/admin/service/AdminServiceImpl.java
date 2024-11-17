@@ -76,11 +76,11 @@ public class AdminServiceImpl implements AdminService {
     // [예외3] - 이미 manager 권한일 경우
     checkManagerRole(user);
 
-    user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
-
-    if (user.getManagerRegistrationStatus() == RegistrationStatus.ACCEPTED) {
+    if (managerApproveRequestDto.getRegistrationStatus() == RegistrationStatus.ACCEPTED) {
       user.setRole(UserRole.MANAGER);
     }
+
+    user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
   }
 
   /**

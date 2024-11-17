@@ -1,6 +1,6 @@
 ### 변수
-@userId = 11
-@userName =
+@userId = 24
+@userName = customer
 @storeId = 8c36236c-635d-485f-aafa-e1071a55f6f6
 
 ### 회원 전체 조회
@@ -30,7 +30,7 @@ Authorization: {{Authorization}}
 Content-Type: application/json
 
 {
-  "userRole": "COSTOMER"
+  "userRole": "OWNER"
 }
 
 ### 가게 등록 승인 / 거부

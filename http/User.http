@@ -3,12 +3,12 @@ POST localhost:8080/api/v1/users/signup
 Content-Type: application/json
 
 {
-  "userName": "master2",
-  "password": "password2",
-  "nickName": "mst2",
-  "email": "master2@example.com",
-  "phoneNumber": "010-1234-0022",
-  "address": "주소22"
+  "userName": "user1",
+  "password": "password1",
+  "nickName": "nick1",
+  "email": "dnwls@example.com",
+  "phoneNumber": "010-1234-0111",
+  "address": "주소"
 }
 
 ### 유저 로그인(매니저)
@@ -34,6 +34,22 @@ Content-Type: application/json
 {
   "email" : "owner2@example.com",
   "password" : "password2"
+}
+
+> {%
+    client.log(response.headers.valueOf("Authorization"));
+    client.log(response.headers.valueOf("Authorization-refresh"));
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+    client.global.set("Authorization-refresh", response.headers.valueOf("Authorization-refresh"));
+%}
+
+### 유저 로그인(마스터)
+POST localhost:8080/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email" : "master1@example.com",
+  "password" : "password1"
 }
 
 > {%

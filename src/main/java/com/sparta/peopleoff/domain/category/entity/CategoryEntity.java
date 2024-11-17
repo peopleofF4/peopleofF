@@ -24,7 +24,7 @@ public class CategoryEntity extends SoftDeleteEntity {
   private UUID id;
 
   @Setter
-  @Column(nullable = false, length = 100)
+  @Column(nullable = false, length = 100, unique = true)
   private String categoryName;
 
   public CategoryEntity(CategoryRequestDto categoryRequestDto) {

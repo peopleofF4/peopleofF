@@ -21,7 +21,7 @@ public enum ResErrorCode implements ResCodeIfs {
   FORBIDDEN(HttpStatus.FORBIDDEN.value(), "403", "Forbidden access"),
 
   // 삭제(soft-delete)된 리소스 에러코드
-  RESOURCE_DELETED(HttpStatus.FORBIDDEN.value(), "403", "Deleted Resource");
+  RESOURCE_DELETED(HttpStatus.BAD_REQUEST.value(), "400", "Deleted Resource");
 
   private final Integer httpStatusCode;   // 아래와 상응하는 HttpStatusCode
 

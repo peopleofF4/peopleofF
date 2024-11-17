@@ -99,6 +99,16 @@ public class AdminServiceImpl implements AdminService {
     UserEntity user = userRepository.findById(userId).orElseThrow(()
         -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
+    // 현재 권한 체크
+    if (userRoleRequestDto.getUserRole() == user.getRole()) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "현재 같은 권한 입니다.");
+    }
+
+    // Manager 권한으로 수정하면 ACCEPTED로 수정
+    if (userRoleRequestDto.getUserRole() == UserRole.MANAGER) {
+      user.setManagerRegistrationStatus(RegistrationStatus.ACCEPTED);
+    }
+
     user.setRole(userRoleRequestDto.getUserRole());
   }
 
@@ -151,6 +161,11 @@ public class AdminServiceImpl implements AdminService {
 
     // [예외3] - 이전과 같은 상태
     checkApproveStatusSame(store, storeApproveRequestDto);
+
+    // 잘못 눌렀을시 다시 가게 생성해야된다.
+    if (store.getStoreStatus() == StoreStatus.DELETED_ACCEPTED) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "이미 삭제된 가게입니다");
+    }
 
     store.setStoreStatus(storeApproveRequestDto.getStoreStatus());
 

@@ -3,6 +3,7 @@ package com.sparta.peopleoff.common.apiresponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.peopleoff.common.rescode.ResCodeIfs;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,12 @@ public class ApiResponse<T> {
   }
 
   public static ApiResponse<Object> ERROR(ResCodeIfs resCodeIfs, String errorDescription) {
+    ApiResponse<Object> apiResponse = new ApiResponse<>();
+    apiResponse.result = Result.ERROR(resCodeIfs, errorDescription);
+    return apiResponse;
+  }
+
+  public static ApiResponse<Object> ERROR(ResCodeIfs resCodeIfs, List<String> errorDescription) {
     ApiResponse<Object> apiResponse = new ApiResponse<>();
     apiResponse.result = Result.ERROR(resCodeIfs, errorDescription);
     return apiResponse;

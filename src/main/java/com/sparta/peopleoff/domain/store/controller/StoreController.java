@@ -108,6 +108,7 @@ public class StoreController {
   @PutMapping("/stores/{storeId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
     storeService.updateStore(storeId, storeUpdateRequestDto);
@@ -123,6 +124,7 @@ public class StoreController {
   @DeleteMapping("/stores/{storeId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {
     storeService.deleteStore(storeId);
     return ResponseEntity.ok(ApiResponse.OK(ResBasicCode.OK));

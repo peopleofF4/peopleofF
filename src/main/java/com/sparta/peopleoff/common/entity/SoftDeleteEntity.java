@@ -26,7 +26,7 @@ public abstract class SoftDeleteEntity extends BaseEntity {
   @Column(name = "deleted_by")
   private String deletedBy;
 
-  @Column
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private DeletionStatus deletionStatus = DeletionStatus.ACTIVE;
 

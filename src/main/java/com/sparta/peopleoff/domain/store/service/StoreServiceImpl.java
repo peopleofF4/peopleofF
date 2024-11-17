@@ -9,6 +9,7 @@ import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -143,8 +144,8 @@ public class StoreServiceImpl implements StoreService {
   @Override
   @Transactional(readOnly = true)
   public List<StoreGetResponseDto> getStoresByOwner(UserEntity owner) {
-    List<StoreEntity> stores = storeRepository.findByUserAndDeletionStatus(owner,
-        DeletionStatus.ACTIVE);
+
+    List<StoreEntity> stores = storeRepository.findByUser(owner);
     return stores.stream()
         .map(StoreGetResponseDto::new)
         .collect(Collectors.toList());
@@ -160,6 +161,7 @@ public class StoreServiceImpl implements StoreService {
   public double getAverageRating(UUID storeId) {
     StoreEntity store = findActiveStoreById(storeId);
 
+    // 평균 평점 계산
     long totalReviews = store.getRatingCount();
     int totalRating = store.getTotalRating();
     return totalReviews > 0 ? (double) totalRating / totalReviews : 0.0;

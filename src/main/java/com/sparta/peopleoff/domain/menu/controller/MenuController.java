@@ -42,7 +42,7 @@ public class MenuController {
    * @return
    */
   @PostMapping("/stores/{storeId}/menu")
-  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
+  @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerMenu(
       @PathVariable UUID storeId,
       @RequestBody MenuPostRequestDto requestDto) {

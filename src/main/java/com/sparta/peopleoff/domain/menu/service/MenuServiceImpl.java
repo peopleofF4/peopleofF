@@ -123,6 +123,7 @@ public class MenuServiceImpl implements MenuService {
     MenuEntity menu = findActiveMenuById(menuId);
 
     menu.delete();
+    menu.updateMenuStatus(MenuStatus.HIDING);
   }
 
   /**

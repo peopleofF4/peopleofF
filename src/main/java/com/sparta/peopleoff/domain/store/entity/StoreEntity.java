@@ -6,7 +6,6 @@ import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -101,4 +100,17 @@ public class StoreEntity extends SoftDeleteEntity {
     this.registrationStatus = registrationStatus;
   }
 
+  public void addRating(int newRating) {
+    this.totalRating += newRating;
+    this.ratingCount += 1;
+  }
+
+  public void updateRating(int previousRating, int newRating) {
+    this.totalRating = this.totalRating - previousRating + newRating;
+  }
+
+  public void removeRating(int rating) {
+    this.totalRating -= rating;
+    this.ratingCount = Math.max(this.ratingCount - 1, 0); // 최소 0으로 유지
+  }
 }

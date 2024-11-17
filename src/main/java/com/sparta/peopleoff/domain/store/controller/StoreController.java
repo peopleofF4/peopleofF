@@ -40,7 +40,7 @@ public class StoreController {
    * @return
    */
   @PostMapping("/stores")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {
@@ -52,7 +52,6 @@ public class StoreController {
 
   /**
    * 가게 단건 조회
-   *
    * @param storeId
    * @return
    */

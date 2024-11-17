@@ -3,14 +3,13 @@ package com.sparta.peopleoff.domain.store.service;
 import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
-import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
 
 public interface StoreService {
 
-  StoreEntity registerStore(StorePostRequestDto storeRequestDto, UserEntity user);
+  void registerStore(StorePostRequestDto storeRequestDto, UserEntity user);
 
   StoreGetResponseDto getStoreById(UUID storeId);
 
@@ -23,4 +22,8 @@ public interface StoreService {
 
   List<StoreGetResponseDto> searchStores(String keyword, String sortBy, String sortDirection,
       int pageSize, int page);
+
+  double getAverageRating(UUID storeId);
+
+  List<StoreGetResponseDto> getStoresByOwner(UserEntity owner);
 }

@@ -6,6 +6,7 @@ import com.sparta.peopleoff.domain.category.dto.CategoryRequestDto;
 import com.sparta.peopleoff.domain.category.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
-@PreAuthorize("hasAuthority('MASTER') or hasAuthority('MANAGER')")
+@PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -28,7 +29,7 @@ public class CategoryController {
      * @return
      */
     @PostMapping("/category")
-    private ResponseEntity<ApiResponse<Void>> createCategory(
+    public ResponseEntity<ApiResponse<Void>> createCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         categoryService.createCategory(categoryRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.CATEGORY_CREATED));
@@ -42,7 +43,7 @@ public class CategoryController {
      * @return
      */
     @PutMapping("/category/{categoryId}")
-    private ResponseEntity<ApiResponse<Void>> updateCategory(
+    public ResponseEntity<ApiResponse<Void>> updateCategory(
             @PathVariable UUID categoryId,
             @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         categoryService.updateCategory(categoryId, categoryRequestDto);

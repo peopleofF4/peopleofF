@@ -33,7 +33,7 @@ public class StoreController {
   }
 
   @PostMapping("/stores")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('MASTER', 'MANAGER','OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {

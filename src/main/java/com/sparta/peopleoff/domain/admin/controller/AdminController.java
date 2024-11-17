@@ -3,6 +3,7 @@ package com.sparta.peopleoff.domain.admin.controller;
 import com.sparta.peopleoff.common.apiresponse.ApiResponse;
 import com.sparta.peopleoff.common.rescode.ResSuccessCode;
 import com.sparta.peopleoff.domain.admin.dto.ManagerApproveRequestDto;
+import com.sparta.peopleoff.domain.admin.dto.StoreApproveRequestDto;
 import com.sparta.peopleoff.domain.admin.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.admin.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.admin.service.AdminService;
@@ -93,34 +94,34 @@ public class AdminController {
   }
 
   /**
-   * 로직 수정해야됨 가게 등록 승인 / 거부
+   * 가게 등록 승인 / 거부
    *
    * @param userDetails
    * @param storeId
-   * @param managerApproveRequestDto
+   * @param storeApproveRequestDto
    * @return
    */
   @PutMapping("/stores/{storeId}/regist")
   public ResponseEntity<ApiResponse<Void>> updateStoreRegist(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
-      @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-    adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
+      @RequestBody StoreApproveRequestDto storeApproveRequestDto) {
+    adminService.updateStoreRegist(userDetails.getUser(), storeId, storeApproveRequestDto);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.STORE_REGISTRATION_UPDTAED));
   }
 
   /**
-   * 로직 수정해야됨 가게 삭제 승인 / 거부
+   * 가게 삭제 승인 / 거부
    *
    * @param storeId
-   * @param managerApproveRequestDto
+   * @param storeApproveRequestDto
    * @return
    */
   @PutMapping("/stores/{storeId}/delete")
   public ResponseEntity<ApiResponse<Void>> updateStoreDelete(@PathVariable UUID storeId,
-      @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-    adminService.updateStoreDelete(storeId, managerApproveRequestDto);
+      @RequestBody StoreApproveRequestDto storeApproveRequestDto) {
+    adminService.updateStoreDelete(storeId, storeApproveRequestDto);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.OK(ResSuccessCode.STORE_DELETION_UPDTAED));
   }

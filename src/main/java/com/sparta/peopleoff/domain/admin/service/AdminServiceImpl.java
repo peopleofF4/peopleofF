@@ -1,13 +1,16 @@
 package com.sparta.peopleoff.domain.admin.service;
 
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.admin.dto.ManagerApproveRequestDto;
+import com.sparta.peopleoff.domain.admin.dto.StoreApproveRequestDto;
 import com.sparta.peopleoff.domain.admin.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.admin.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -125,30 +128,30 @@ public class AdminServiceImpl implements AdminService {
    *
    * @param user
    * @param storeId
-   * @param managerApproveRequestDto
+   * @param storeApproveRequestDto
    * @return
    */
   @Override
   @Transactional
   public void updateStoreRegist(UserEntity user, UUID storeId,
-      ManagerApproveRequestDto managerApproveRequestDto) {
+      StoreApproveRequestDto storeApproveRequestDto) {
 
     // [예외2] - 존재하지 않는 가게
     StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
         new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
 
     // [예외3] - 이전과 같은 상태
-    checkApproveStatusSame(store, managerApproveRequestDto);
+    checkApproveStatusSame(store, storeApproveRequestDto);
 
     // 가게 등록 승인시 Customer 권한이면 OWNER 권한으로 변경
-    if (managerApproveRequestDto.getRegistrationStatus() == RegistrationStatus.ACCEPTED
+    if (storeApproveRequestDto.getStoreStatus() == StoreStatus.REGISTRATION_ACCEPTED
         && user.getRole() == UserRole.CUSTOMER) {
 
       user.setRole(UserRole.OWNER);
       userRepository.save(user);
     }
 
-    store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
+    store.setStoreStatus(storeApproveRequestDto.getStoreStatus());
   }
 
 
@@ -156,33 +159,39 @@ public class AdminServiceImpl implements AdminService {
    * 가게 삭제 승인 / 거부
    *
    * @param storeId
-   * @param managerApproveRequestDto
+   * @param storeApproveRequestDto
    * @return
    */
   @Override
   @Transactional
-  public void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+  public void updateStoreDelete(UUID storeId, StoreApproveRequestDto storeApproveRequestDto) {
 
     // [예외2] - 존재하지 않는 가게
     StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
         new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
 
     // [예외3] - 이전과 같은 상태
-    checkDeleteStatusSame(store, managerApproveRequestDto);
+    checkApproveStatusSame(store, storeApproveRequestDto);
 
-    store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
-  }
+    store.setStoreStatus(storeApproveRequestDto.getStoreStatus());
 
-  private void checkDeleteStatusSame(StoreEntity store,
-      ManagerApproveRequestDto managerApproveRequestDto) {
-    if (!store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
-      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
+    // 삭제 승인 일때만 DeletionStatus를 바꾼다.
+    if (storeApproveRequestDto.getStoreStatus() == StoreStatus.DELETED_ACCEPTED) {
+      store.setDeletionStatus(DeletionStatus.DELETED);
     }
+
   }
+
+//  private void checkDeleteStatusSame(StoreEntity store,
+//      StoreApproveRequestDto storeApproveRequestDto) {
+//    if (store.getStoreStatus().equals(storeApproveRequestDto.getStoreStatus())) {
+//      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
+//    }
+//  }
 
   private void checkApproveStatusSame(StoreEntity store,
-      ManagerApproveRequestDto managerApproveRequestDto) {
-    if (!store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
+      StoreApproveRequestDto storeApproveRequestDto) {
+    if (store.getStoreStatus().equals(storeApproveRequestDto.getStoreStatus())) {
       throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
     }
   }

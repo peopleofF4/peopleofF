@@ -1,6 +1,7 @@
 package com.sparta.peopleoff.domain.admin.service;
 
 import com.sparta.peopleoff.domain.admin.dto.ManagerApproveRequestDto;
+import com.sparta.peopleoff.domain.admin.dto.StoreApproveRequestDto;
 import com.sparta.peopleoff.domain.admin.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.admin.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
@@ -19,8 +20,8 @@ public interface AdminService {
   void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto);
 
   void updateStoreRegist(UserEntity user, UUID storeId,
-      ManagerApproveRequestDto managerApproveRequestDto);
+      StoreApproveRequestDto storeApproveRequestDto);
 
-  void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto);
+  void updateStoreDelete(UUID storeId, StoreApproveRequestDto storeApproveRequestDto);
 
 }

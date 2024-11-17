@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.menu.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
+import com.sparta.peopleoff.common.util.DeletionValidator;
 import com.sparta.peopleoff.domain.menu.dto.MenuGetResponseDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPostRequestDto;
 import com.sparta.peopleoff.domain.menu.dto.MenuPutRequestDto;
@@ -37,7 +38,8 @@ public class MenuServiceImpl implements MenuService {
   @Transactional
   public void registerMenu(MenuPostRequestDto menuRequestDto, UUID storeId) {
     StoreEntity store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 스토어 ID입니다."));
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게가 존재하지 않습니다."));
+    DeletionValidator.validateActive(store.getDeletionStatus(), "가게");
 
     MenuEntity newMenu = new MenuEntity(
         menuRequestDto.getMenuName(),
@@ -76,9 +78,8 @@ public class MenuServiceImpl implements MenuService {
   @Override
   @Transactional(readOnly = true)
   public MenuGetResponseDto getMenuById(UUID menuId) {
-    MenuEntity menu = menuRepository.findById(menuId)
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "유효하지 않은 메뉴 ID입니다."));
+    MenuEntity menu = findActiveMenuById(menuId);
+
     return new MenuGetResponseDto(menu);
   }
 
@@ -91,8 +92,7 @@ public class MenuServiceImpl implements MenuService {
   @Override
   @Transactional
   public void updateMenu(UUID menuId, MenuPutRequestDto menuUpdateRequestDto) {
-    MenuEntity menu = menuRepository.findById(menuId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴를 찾을 수 없습니다."));
+    MenuEntity menu = findActiveMenuById(menuId);
 
     menu.update(menuUpdateRequestDto.getMenuName(), menuUpdateRequestDto.getMenuDescription(),
         menuUpdateRequestDto.getPrice());
@@ -107,8 +107,7 @@ public class MenuServiceImpl implements MenuService {
   @Transactional
   @Override
   public void updateMenuStatus(UUID menuId, MenuStatus status) {
-    MenuEntity menu = menuRepository.findById(menuId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴를 찾을 수 없습니다."));
+    MenuEntity menu = findActiveMenuById(menuId);
 
     menu.updateMenuStatus(status);
   }
@@ -121,8 +120,7 @@ public class MenuServiceImpl implements MenuService {
   @Override
   @Transactional
   public void deleteMenu(UUID menuId) {
-    MenuEntity menu = menuRepository.findById(menuId)
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴를 찾을 수 없습니다."));
+    MenuEntity menu = findActiveMenuById(menuId);
 
     menu.delete();
   }
@@ -143,5 +141,12 @@ public class MenuServiceImpl implements MenuService {
     return menuPage.stream()
         .map(MenuGetResponseDto::new)
         .collect(Collectors.toList());
+  }
+
+  private MenuEntity findActiveMenuById(UUID menuId) {
+    MenuEntity menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 메뉴가 존재하지 않습니다."));
+    DeletionValidator.validateActive(menu.getDeletionStatus(), "메뉴");
+    return menu;
   }
 }

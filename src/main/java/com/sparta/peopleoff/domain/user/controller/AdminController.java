@@ -6,15 +6,14 @@ import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserRoleRequestDto;
 import com.sparta.peopleoff.domain.user.service.AdminService;
-import com.sparta.peopleoff.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,11 +25,16 @@ public class AdminController {
 
     /**
      * 회원 전체 조회
+     * @param page
+     * @param size
      * @return
      */
     @GetMapping("/users")
-    private ResponseEntity<ApiResponse<List<UserResponseDto>>> getUsers () {
-        List<UserResponseDto> userResponseDtos = adminService.getUsers();
+    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getUsers (
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<UserResponseDto> userResponseDtos = adminService.getUsers(PageRequest.of(page, size));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userResponseDtos));
     }
 
@@ -41,9 +45,9 @@ public class AdminController {
      * @param managerApproveRequestDto
      * @return
      */
-    @PreAuthorize("hasAuthority('MASTER')")
+    @PreAuthorize("hasRole('MASTER')")
     @PutMapping("/users/{userId}")
-    private ResponseEntity<ApiResponse<Void>> ManagerApprove(
+    public ResponseEntity<ApiResponse<Void>> ManagerApprove(
             @PathVariable Long userId,
             @RequestBody ManagerApproveRequestDto managerApproveRequestDto
             ) {
@@ -58,7 +62,7 @@ public class AdminController {
      * @return
      */
     @DeleteMapping("/users/{userId}")
-    private ResponseEntity<ApiResponse<Long>> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<Long>> deleteUser(@PathVariable Long userId) {
         adminService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(userId));
     }
@@ -66,13 +70,17 @@ public class AdminController {
     /**
      * 유저 검색
      * @param userName
+     * @param page
+     * @param size
      * @return
      */
     @GetMapping("/users/search")
-    private ResponseEntity<ApiResponse<List<UserResponseDto>>> searchUser(
-            @RequestParam String userName
+    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUser(
+            @RequestParam String userName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<UserResponseDto> responseDtos = adminService.searchUser(userName);
+        Page<UserResponseDto> responseDtos = adminService.searchUser(userName, PageRequest.of(page, size));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(responseDtos));
     }
 
@@ -82,7 +90,7 @@ public class AdminController {
      * @return
      */
     @PutMapping("/users/{userId}/role/update")
-    private ResponseEntity<ApiResponse<Void>> updateUserRole(@PathVariable Long userId,
+    public ResponseEntity<ApiResponse<Void>> updateUserRole(@PathVariable Long userId,
                                                                           @RequestBody UserRoleRequestDto userRoleRequestDto
     ) {
         adminService.updateUserRole(userId, userRoleRequestDto);
@@ -91,16 +99,14 @@ public class AdminController {
 
     /**
      * 가게 등록 승인 / 거부
-     * @param userDetails
      * @param storeId
      * @param managerApproveRequestDto
      * @return
      */
     @PutMapping("/stores/{storeId}/regist")
-    private ResponseEntity<ApiResponse<Void>> updateStoreRegist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                             @PathVariable UUID storeId,
-                                                                             @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-        adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
+    public ResponseEntity<ApiResponse<Void>> updateStoreRegist(@PathVariable UUID storeId,
+                                                               @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
+        adminService.updateStoreRegist(storeId, managerApproveRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_REGISTRATION_UPDTAED));
     }
 
@@ -111,7 +117,7 @@ public class AdminController {
      * @return
      */
     @PutMapping("/stores/{storeId}/delete")
-    private ResponseEntity<ApiResponse<Void>> updateStoreDelete(@PathVariable UUID storeId,
+    public ResponseEntity<ApiResponse<Void>> updateStoreDelete(@PathVariable UUID storeId,
                                                                 @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
         adminService.updateStoreDelete(storeId, managerApproveRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_DELETION_UPDTAED));

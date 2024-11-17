@@ -1,8 +1,8 @@
 package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
@@ -13,12 +13,12 @@ import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +29,15 @@ public class AdminService {
 
     /**
      * 회원 전체 조회
+     * @param pageable
      * @return
-     */ //page //readonly
-    public List<UserResponseDto> getUsers() {
+     */
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getUsers(Pageable pageable) {
 
-        List<UserEntity> users = userRepository.findAll();
+        Page<UserEntity> users = userRepository.findAll(pageable);
 
-        return users.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return users.map(this::convertToDto);
     }
 
     /**
@@ -58,7 +58,7 @@ public class AdminService {
 
         user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
-        if(user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
+        if (user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
             user.setRole(UserRole.MANAGER);
         }
     }
@@ -66,7 +66,7 @@ public class AdminService {
     @Transactional
     public void deleteUser(Long userIdToDelete) {
         // [예외1] - 존재하지 않는 사용자
-        UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
+        UserEntity userToDelete = userRepository.findById(userIdToDelete).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
         userToDelete.setDeletionStatus(DeletionStatus.DELETED);
@@ -74,31 +74,29 @@ public class AdminService {
 
     /**
      * 유저 검색
-     *
      * @param userName
+     * @param pageable
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserResponseDto> searchUser(String userName) {
+    public Page<UserResponseDto> searchUser(String userName, Pageable pageable) {
 
-        List<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName);
+        Page<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName, pageable);
 
         // [예외2] - 검색결과가 없음
         if (searchUsers.isEmpty()) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
         }
 
-        return searchUsers.stream()
-                .map(user -> new UserResponseDto(
-                        user.getId(),
-                        user.getUserName(),
-                        user.getNickName(),
-                        user.getEmail(),
-                        user.getPhoneNumber(),
-                        user.getAddress(),
-                        user.getRole()
-                ))
-                .collect(Collectors.toList());
+        return searchUsers.map(user -> new UserResponseDto(
+                user.getId(),
+                user.getUserName(),
+                user.getNickName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getRole()
+        ));
     }
 
     /**
@@ -120,14 +118,12 @@ public class AdminService {
 
     /**
      * 가게 등록 승인 / 거부
-     *
-     * @param user
      * @param storeId
      * @param managerApproveRequestDto
      * @return
      */
     @Transactional
-    public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public void updateStoreRegist(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
@@ -161,13 +157,13 @@ public class AdminService {
     }
 
     private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(!store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
+        if(store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
         }
     }
 
     private void checkApproveStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(!store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
+        if(store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
         }
     }
@@ -180,6 +176,7 @@ public class AdminService {
 
     /**
      * UserEntity -> UserResponseDto
+     *
      * @param userEntity
      * @return
      */

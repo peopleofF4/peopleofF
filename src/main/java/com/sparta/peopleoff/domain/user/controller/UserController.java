@@ -27,95 +27,78 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class UserController {
 
-  private final UserService userService;
+    private final UserService userService;
 
-  /**
-   * 회원 가입 API
-   *
-   * @param userSignUpRequestDto
-   * @return
-   */
-  @PostMapping("/users/signup")
-  public ResponseEntity<ApiResponse<Void>> signUp(
-      @Valid
-      @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
+    /**
+     * 회원 가입 API
+     *
+     * @param userSignUpRequestDto
+     * @return
+     */
+    @PostMapping("/users/signup")
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
 
-    userService.signUp(userSignUpRequestDto);
+        userService.signUp(userSignUpRequestDto);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.SIGNUP_SUCCESS))
-        ;
-  }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.SIGNUP_SUCCESS));
+    }
 
-  /**
-   * 회원 상세 정보 API
-   *
-   * @param user
-   * @return
-   */
-  @GetMapping("/users/info")
-  public ResponseEntity<ApiResponse<UserInfoResponseDto>> getUserInfo(
-      @AuthenticationPrincipal UserDetailsImpl user) {
+    /**
+     * 회원 상세 정보 API
+     *
+     * @param user
+     * @return
+     */
+    @GetMapping("/users/info")
+    public ResponseEntity<ApiResponse<UserInfoResponseDto>> getUserInfo(@AuthenticationPrincipal UserDetailsImpl user) {
 
-    UserInfoResponseDto response = userService.getUserInfo(user);
+        UserInfoResponseDto response = userService.getUserInfo(user);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(response));
-  }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(response));
+    }
 
-  /**
-   * 회원 정보 수정 API (정보가 null로 오는거는 없다고 가정?)
-   *
-   * @param userId
-   * @param userUpdateInfoDto
-   * @return
-   */
-  @PutMapping("users/{userId}")
-  public ResponseEntity<ApiResponse<Void>> updateUserInfo(@PathVariable Long userId,
-      @Valid @RequestBody UserUpdateRequestDto userUpdateInfoDto) {
+    /**
+     * 회원 정보 수정 API (정보가 null로 오는거는 없다고 가정?)
+     *
+     * @param userId
+     * @param userUpdateInfoDto
+     * @return
+     */
+    @PutMapping("users/{userId}")
+    public ResponseEntity<ApiResponse<Void>> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequestDto userUpdateInfoDto) {
 
-    userService.updateUserInfo(userId, userUpdateInfoDto);
+        userService.updateUserInfo(userId, userUpdateInfoDto);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
-  }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
+    }
 
 
-  /**
-   * 회원 삭제 API
-   *
-   * @param userId
-   * @return
-   */
-  @DeleteMapping("/users/{userId}")
-  public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
+    /**
+     * 회원 삭제 API
+     *
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
 
-    userService.deleteUser(userId);
+        userService.deleteUser(userId);
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
-  }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
+    }
 
-  /**
-   * // 비밀번호 변경 API
-   *
-   * @param userChangePasswordDto
-   * @param userDetails
-   * @return
-   */
-  @PutMapping("/users/change-password")
-  public ResponseEntity<ApiResponse<Void>> changePassword(
-      @RequestBody @Valid UserChangePasswordDto userChangePasswordDto
-      , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    /**
+     * 비밀번호 변경 API
+     *
+     * @param userChangePasswordDto
+     * @param userDetails
+     * @return
+     */
+    @PutMapping("/users/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody @Valid UserChangePasswordDto userChangePasswordDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    userService.changePassword(userChangePasswordDto, userDetails);
+        userService.changePassword(userChangePasswordDto, userDetails);
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
-  }
-
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
+    }
 }

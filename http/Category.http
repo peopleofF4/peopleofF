@@ -1,0 +1,20 @@
+### 변수
+@categoryId = 5c2f9ddd-7306-4a6c-93c6-7d4e07833136
+
+### 카테고리 생성
+POST localhost:8080/api/v1/category
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "categoryName": "중식"
+}
+
+### 카테고리 수정
+PUT localhost:8080/api/v1/category/{{categoryId}}
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "categoryName": "한식"
+}

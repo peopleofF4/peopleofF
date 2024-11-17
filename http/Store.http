@@ -1,0 +1,13 @@
+### 가게 생성
+POST localhost:8080/api/v1/stores
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "storeName": "김밥천국3",
+  "storeAddress": "김천3",
+  "storePhoneNumber": "010-0000-0003",
+  "businessNumber": "000003",
+  "minimumOrderPrice": 15000,
+  "categoryName": "한식"
+}

@@ -77,7 +77,7 @@ public class SecurityConfig {
             .requestMatchers("/").permitAll()
             .requestMatchers("/api/v1/users/signup", "/api/v1/users/login",
                 "/api/v1/users/check/refreshtoken").permitAll()
-            .requestMatchers("/admin/v1/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers("/admin/v1/**").hasAnyRole("MASTER", "MANAGER")
             .anyRequest().authenticated()
     );
 

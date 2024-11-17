@@ -73,7 +73,6 @@ public class StoreController {
    */
   @GetMapping("/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores(
-      @RequestParam String keyword,
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,
@@ -107,7 +106,6 @@ public class StoreController {
   @PutMapping("/stores/{storeId}")
   @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> updateStore(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId,
       @RequestBody StorePutRequestDto storeUpdateRequestDto) {
     storeService.updateStore(storeId, storeUpdateRequestDto);

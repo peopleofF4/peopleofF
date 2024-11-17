@@ -102,7 +102,6 @@ public class AdminController {
 
     /**
      * 가게 등록 승인 / 거부
-     * @param userDetails
      * @param storeId
      * @param managerApproveRequestDto
      * @return

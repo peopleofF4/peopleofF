@@ -160,13 +160,13 @@ public class AdminService {
     }
 
     private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(!store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
+        if(store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
         }
     }
 
     private void checkApproveStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(!store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
+        if(store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
             throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
         }
     }

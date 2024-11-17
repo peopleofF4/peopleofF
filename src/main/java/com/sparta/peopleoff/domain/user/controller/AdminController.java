@@ -108,10 +108,9 @@ public class AdminController {
      * @return
      */
     @PutMapping("/stores/{storeId}/regist")
-    public ResponseEntity<ApiResponse<Void>> updateStoreRegist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                             @PathVariable UUID storeId,
-                                                                             @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
-        adminService.updateStoreRegist(userDetails.getUser(), storeId, managerApproveRequestDto);
+    public ResponseEntity<ApiResponse<Void>> updateStoreRegist(@PathVariable UUID storeId,
+                                                               @RequestBody ManagerApproveRequestDto managerApproveRequestDto) {
+        adminService.updateStoreRegist(storeId, managerApproveRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.STORE_REGISTRATION_UPDTAED));
     }
 

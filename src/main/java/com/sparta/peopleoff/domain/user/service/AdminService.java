@@ -121,14 +121,12 @@ public class AdminService {
 
     /**
      * 가게 등록 승인 / 거부
-     *
-     * @param user
      * @param storeId
      * @param managerApproveRequestDto
      * @return
      */
     @Transactional
-    public void updateStoreRegist(UserEntity user, UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+    public void updateStoreRegist(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
 
         // [예외2] - 존재하지 않는 가게
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->

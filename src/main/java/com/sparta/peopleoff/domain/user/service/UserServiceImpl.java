@@ -12,7 +12,6 @@ import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import com.sparta.peopleoff.security.UserDetailsImpl;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -133,24 +132,29 @@ public class UserServiceImpl implements UserService {
   // 이메일 중복 체크 메서드
   private void checkDuplicateEmail(String email) {
 
-    Optional.ofNullable(userRepository.findByEmail(email))
-        .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 Email이 존재합니다."));
+    userRepository.findByEmail(email)
+        .ifPresent(user -> {
+          throw new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 Email이 존재합니다.");
+        });
   }
 
   // 휴대폰번호 중복 체크 메서드
   private void checkDuplicatePhoneNumber(String phoneNumber) {
 
-    Optional.ofNullable(userRepository.findByPhoneNumber(phoneNumber))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 PhoneNumber가 존재합니다."));
+    userRepository.findByPhoneNumber(phoneNumber)
+        .ifPresent(user -> {
+          throw new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 PhoneNumber가 존재합니다.");
+        });
+
   }
 
   // 닉네임 중복 체크 메서드
   private void checkDuplicateNickName(String nickName) {
 
-    Optional.ofNullable(userRepository.findByNickName(nickName))
-        .orElseThrow(
-            () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다."));
+    userRepository.findByNickName(nickName)
+        .ifPresent(user -> {
+          throw new CustomApiException(ResBasicCode.BAD_REQUEST, "중복된 NickName이 존재합니다.");
+        });
   }
 
 

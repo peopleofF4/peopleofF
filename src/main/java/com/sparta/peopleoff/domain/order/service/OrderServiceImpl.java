@@ -3,6 +3,7 @@ package com.sparta.peopleoff.domain.order.service;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.menu.entity.enums.MenuStatus;
 import com.sparta.peopleoff.domain.order.dto.OrderPatchRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderPostRequestDto;
 import com.sparta.peopleoff.domain.order.dto.OrderSearchResponseDto;
@@ -62,13 +63,11 @@ public class OrderServiceImpl implements OrderService {
     validateUserAuthorization(user, store);
 
     size = (size == 30 || size == 50) ? size : 10;
-
     Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
     Page<OrderEntity> orderEntities = orderRepository.searchOrder(orderType, menuId, pageable);
 
     return orderEntities.map(orderEntity -> {
       OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
-
       List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
           .map(this::mapToMenuItemDto).collect(Collectors.toList());
 
@@ -87,17 +86,16 @@ public class OrderServiceImpl implements OrderService {
   public List<OrderSearchResponseDto> getCustomerOrderList(UserDetailsImpl user) {
 
     List<OrderEntity> orderEntities = orderRepository.findAllByUserId(user.getUser().getId());
-    List<OrderSearchResponseDto> responseDtos = new ArrayList<>();
+    List<OrderSearchResponseDto> responseDto = new ArrayList<>();
 
     for (OrderEntity orderEntity : orderEntities) {
       OrderSearchResponseDto.Order orderDto = mapToOrderDto(orderEntity);
-
       List<OrderSearchResponseDto.MenuItem> menuItems = orderEntity.getOrderDetailList().stream()
           .map(this::mapToMenuItemDto).collect(Collectors.toList());
 
-      responseDtos.add(new OrderSearchResponseDto(orderDto, menuItems));
+      responseDto.add(new OrderSearchResponseDto(orderDto, menuItems));
     }
-    return responseDtos;
+    return responseDto;
   }
 
   /**
@@ -118,8 +116,9 @@ public class OrderServiceImpl implements OrderService {
 
     for (OrderPostRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
       MenuEntity menu = store.getMenuList().stream()
-          .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst().orElseThrow(
-              () -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
+          .filter(m -> m.getId().equals(menuItem.getMenuId()) && m.getMenuStatus().equals(MenuStatus.ON_SALE))
+          .findFirst()
+          .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
       OrderDetailEntity orderDetailEntity =
           OrderDetailEntity.toEntity(menu, orderEntity, menuItem.getMenuCount());
@@ -155,7 +154,8 @@ public class OrderServiceImpl implements OrderService {
 
     for (OrderPatchRequestDto.MenuItem menuItem : reqDto.getMenuItems()) {
       MenuEntity menu = store.getMenuList().stream()
-          .filter(m -> m.getId().equals(menuItem.getMenuId())).findFirst()
+          .filter(m -> m.getId().equals(menuItem.getMenuId()) && m.getMenuStatus().equals(MenuStatus.ON_SALE))
+          .findFirst()
           .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "입력한 메뉴가 존재하지 않습니다"));
 
       OrderDetailEntity orderDetailEntity =
@@ -163,7 +163,6 @@ public class OrderServiceImpl implements OrderService {
 
       orderEntity.addOrderDetail(orderDetailEntity);
     }
-
     orderDetailRepository.saveAll(orderEntity.getOrderDetailList());
 
     PaymentEntity payment = paymentRepository.findByOrderId(orderId);
@@ -191,7 +190,6 @@ public class OrderServiceImpl implements OrderService {
     for (OrderDetailEntity orderDetail : orderDetails) {
       orderDetail.setDeletionStatus(DeletionStatus.DELETED);
     }
-
     paymentRepository.findByOrderId(orderId).cancel();
   }
 

@@ -9,10 +9,9 @@ import com.sparta.peopleoff.domain.category.service.CategoryService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/admin/v1")
 public class CategoryController {
 
@@ -35,7 +34,7 @@ public class CategoryController {
    * @param categoryRequestDto
    * @return
    */
-  @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
+
   @PostMapping("/category")
   public ResponseEntity<ApiResponse<Void>> createCategory(
       @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
@@ -51,7 +50,7 @@ public class CategoryController {
    * @param categoryRequestDto
    * @return
    */
-  @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
+
   @PutMapping("/category/{categoryId}")
   public ResponseEntity<ApiResponse<Void>> updateCategory(
       @PathVariable UUID categoryId,

@@ -8,6 +8,7 @@ import com.sparta.peopleoff.domain.store.dto.StoreGetResponseDto;
 import com.sparta.peopleoff.domain.store.dto.StorePostRequestDto;
 import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.exception.CustomApiException;
@@ -130,6 +131,12 @@ public class StoreServiceImpl implements StoreService {
     StoreEntity store = storeRepository.findById(storeId)
         .orElseThrow(() -> new CustomApiException(ResBasicCode.BAD_REQUEST, "해당 가게를 찾을 수 없습니다."));
 
+    // 삭제된 가게 체크
+    if (store.getStoreStatus() == StoreStatus.DELETED_ACCEPTED) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "이미 삭제된 가게입니다.");
+    }
+
+    // DELETED_PENDING 상태로 변경
     store.delete();
   }
 

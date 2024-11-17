@@ -14,6 +14,7 @@ public enum ResSuccessCode implements ResCodeIfs {
   USER_DELETED(HttpStatus.OK.value(), "200", "user successfully deleted"),
   USER_UPDATED(HttpStatus.OK.value(), "200", "user successfully updated"),
   PASSWORD_UPDATED(HttpStatus.OK.value(), "200", "password successfully updated"),
+  MANAGER_APPLY(HttpStatus.OK.value(), "200", "manager apply success"),
 
   // TOKEN
   ACCESS_TOKEN_GENERATED(HttpStatus.CREATED.value(), "201", "AccessToken is generated"),

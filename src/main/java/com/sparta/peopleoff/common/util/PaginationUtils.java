@@ -19,7 +19,7 @@ public class PaginationUtils {
 
     int validatedPageSize = validatePageSize(pageSize);
 
-    return PageRequest.of(page, validatedPageSize, Sort.by(direction, sortBy));
+    return PageRequest.of(validatedPage, validatedPageSize, Sort.by(direction, sortBy));
   }
 
   private static int validatePageSize(int pageSize) {

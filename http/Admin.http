@@ -1,0 +1,52 @@
+### 변수
+@userId = 11
+@userName =
+@storeId = 8c36236c-635d-485f-aafa-e1071a55f6f6
+
+### 회원 전체 조회
+GET localhost:8080/admin/v1/users
+Authorization: {{Authorization}}
+
+### 매니저 등록 승인
+PUT localhost:8080/admin/v1/users/{{userId}}
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "registrationStatus": "ACCEPTED"
+}
+
+### 회원 삭제
+DELETE localhost:8080/admin/v1/users/{{userId}}
+Authorization: {{Authorization}}
+
+### 회원 검색
+GET localhost:8080/admin/v1/users/search?userName={{userName}}
+Authorization: {{Authorization}}
+
+### 유저 권한 수정
+PUT localhost:8080/admin/v1/users/{{userId}}/role/update
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "userRole": "COSTOMER"
+}
+
+### 가게 등록 승인 / 거부
+PUT localhost:8080/admin/v1/stores/{{storeId}}/regist
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "registrationStatus": "ACCEPTED"
+}
+
+### 가게 삭제 승인 / 거부
+PUT localhost:8080/admin/v1/stores/{{storeId}}/delete
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "deletionStatus": "ACTIVE"
+}

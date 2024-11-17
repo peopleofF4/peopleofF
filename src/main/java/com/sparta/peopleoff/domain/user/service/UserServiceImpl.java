@@ -2,13 +2,13 @@ package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.auditing.AuditorContext;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.user.dto.UserChangePasswordDto;
 import com.sparta.peopleoff.domain.user.dto.UserInfoResponseDto;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
+import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import com.sparta.peopleoff.security.UserDetailsImpl;

@@ -1,6 +1,6 @@
 package com.sparta.peopleoff.domain.user.dto;
 
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.security.UserDetailsImpl;
 import lombok.Getter;
 

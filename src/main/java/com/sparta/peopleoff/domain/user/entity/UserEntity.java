@@ -1,9 +1,9 @@
 package com.sparta.peopleoff.domain.user.entity;
 
 import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
-import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.dto.UserSignUpRequestDto;
 import com.sparta.peopleoff.domain.user.dto.UserUpdateRequestDto;
+import com.sparta.peopleoff.domain.user.entity.enums.RegistrationStatus;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

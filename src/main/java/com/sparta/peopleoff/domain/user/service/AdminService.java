@@ -12,182 +12,188 @@ import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import com.sparta.peopleoff.domain.user.entity.enums.UserRole;
 import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class AdminService {
 
-    private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
+  private final UserRepository userRepository;
+  private final StoreRepository storeRepository;
 
-    /**
-     * 회원 전체 조회
-     * @param pageable
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Page<UserResponseDto> getUsers(Pageable pageable) {
+  /**
+   * 회원 전체 조회
+   *
+   * @param pageable
+   * @return
+   */
+  @Transactional(readOnly = true)
+  public Page<UserResponseDto> getUsers(Pageable pageable) {
 
-        Page<UserEntity> users = userRepository.findAll(pageable);
+    Page<UserEntity> users = userRepository.findAll(pageable);
 
-        return users.map(this::convertToDto);
+    return users.map(this::convertToDto);
+  }
+
+  /**
+   * 매니저 등록 승인
+   *
+   * @param userId
+   * @param managerApproveRequestDto
+   * @return
+   */
+  @Transactional
+  public void managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
+
+    // [예외2] - 없는 아이디
+    UserEntity user = userRepository.findById(userId).orElseThrow(() ->
+        new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 아이디입니다."));
+
+    // [예외3] - 이미 manager 권한일 경우
+    checkManagerRole(user);
+
+    user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
+
+    if (user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
+      user.setRole(UserRole.MANAGER);
+    }
+  }
+
+
+  @Transactional
+  public void deleteUser(Long userIdToDelete) {
+    // [예외1] - 존재하지 않는 사용자
+    UserEntity userToDelete = userRepository.findById(userIdToDelete).orElseThrow(()
+        -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
+
+    userToDelete.setDeletionStatus(DeletionStatus.DELETED);
+  }
+
+  /**
+   * 유저 검색
+   *
+   * @param userName
+   * @param pageable
+   * @return
+   */
+  @Transactional(readOnly = true)
+  public Page<UserResponseDto> searchUser(String userName, Pageable pageable) {
+
+    Page<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName, pageable);
+
+    // [예외2] - 검색결과가 없음
+    if (searchUsers.isEmpty()) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
     }
 
-    /**
-     * 매니저 등록 승인
-     * @param userId
-     * @param managerApproveRequestDto
-     * @return
-     */
-    @Transactional
-    public void managerApprove(Long userId, ManagerApproveRequestDto managerApproveRequestDto) {
+    return searchUsers.map(user -> new UserResponseDto(
+        user.getId(),
+        user.getUserName(),
+        user.getNickName(),
+        user.getEmail(),
+        user.getPhoneNumber(),
+        user.getAddress(),
+        user.getRole()
+    ));
+  }
 
-        // [예외2] - 없는 아이디
-        UserEntity user = userRepository.findById(userId).orElseThrow(() ->
-                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 아이디입니다."));
+  /**
+   * 유저 권한 수정
+   *
+   * @param userId
+   * @param userRoleRequestDto
+   * @return
+   */
+  @Transactional
+  public void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
 
-        // [예외3] - 이미 manager 권한일 경우
-        checkManagerRole(user);
+    // [예외2] - 없는 사용자
+    UserEntity user = userRepository.findById(userId).orElseThrow(()
+        -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
-        user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
+    user.setRole(userRoleRequestDto.getUserRole());
+  }
 
-        if (user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
-            user.setRole(UserRole.MANAGER);
-        }
+  /**
+   * 가게 등록 승인 / 거부
+   *
+   * @param storeId
+   * @param managerApproveRequestDto
+   * @return
+   */
+  @Transactional
+  public void updateStoreRegist(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+
+    // [예외2] - 존재하지 않는 가게
+    StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
+        new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
+
+    // [예외3] - 이전과 같은 상태
+    checkApproveStatusSame(store, managerApproveRequestDto);
+
+    store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
+  }
+
+
+  /**
+   * 가게 삭제 승인 / 거부
+   *
+   * @param storeId
+   * @param managerApproveRequestDto
+   * @return
+   */
+  @Transactional
+  public void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
+
+    // [예외2] - 존재하지 않는 가게
+    StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
+        new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
+
+    // [예외3] - 이전과 같은 상태
+    checkDeleteStatusSame(store, managerApproveRequestDto);
+
+    store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
+  }
+
+  private void checkDeleteStatusSame(StoreEntity store,
+      ManagerApproveRequestDto managerApproveRequestDto) {
+    if (store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
     }
+  }
 
-    @Transactional
-    public void deleteUser(Long userIdToDelete) {
-        // [예외1] - 존재하지 않는 사용자
-        UserEntity userToDelete = userRepository.findById(userIdToDelete).orElseThrow(()
-                -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
-
-        userToDelete.setDeletionStatus(DeletionStatus.DELETED);
+  private void checkApproveStatusSame(StoreEntity store,
+      ManagerApproveRequestDto managerApproveRequestDto) {
+    if (store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
     }
+  }
 
-    /**
-     * 유저 검색
-     * @param userName
-     * @param pageable
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Page<UserResponseDto> searchUser(String userName, Pageable pageable) {
-
-        Page<UserEntity> searchUsers = userRepository.findByUserNameContaining(userName, pageable);
-
-        // [예외2] - 검색결과가 없음
-        if (searchUsers.isEmpty()) {
-            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
-        }
-
-        return searchUsers.map(user -> new UserResponseDto(
-                user.getId(),
-                user.getUserName(),
-                user.getNickName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getAddress(),
-                user.getRole()
-        ));
+  private void checkManagerRole(UserEntity user) {
+    if (UserRole.MANAGER == user.getRole()) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST, "이미 매니저 권한입니다.");
     }
+  }
 
-    /**
-     * 유저 권한 수정
-     *
-     * @param userId
-     * @param userRoleRequestDto
-     * @return
-     */
-    @Transactional
-    public void updateUserRole(Long userId, UserRoleRequestDto userRoleRequestDto) {
-
-        // [예외2] - 없는 사용자
-        UserEntity user = userRepository.findById(userId).orElseThrow(()
-                -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
-
-        user.setRole(userRoleRequestDto.getUserRole());
-    }
-
-    /**
-     * 가게 등록 승인 / 거부
-     * @param storeId
-     * @param managerApproveRequestDto
-     * @return
-     */
-    @Transactional
-    public void updateStoreRegist(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
-
-        // [예외2] - 존재하지 않는 가게
-        StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
-                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
-
-        // [예외3] - 이전과 같은 상태
-        checkApproveStatusSame(store, managerApproveRequestDto);
-
-        store.setRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
-    }
-
-
-    /**
-     * 가게 삭제 승인 / 거부
-     *
-     * @param storeId
-     * @param managerApproveRequestDto
-     * @return
-     */
-    @Transactional
-    public void updateStoreDelete(UUID storeId, ManagerApproveRequestDto managerApproveRequestDto) {
-
-        // [예외2] - 존재하지 않는 가게
-        StoreEntity store = storeRepository.findById(storeId).orElseThrow(() ->
-                new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 가게입니다."));
-
-        // [예외3] - 이전과 같은 상태
-        checkDeleteStatusSame(store, managerApproveRequestDto);
-
-        store.setDeletionStatus(managerApproveRequestDto.getDeletionStatus());
-    }
-
-    private void checkDeleteStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(store.getDeletionStatus().equals(managerApproveRequestDto.getDeletionStatus())) {
-            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
-        }
-    }
-
-    private void checkApproveStatusSame(StoreEntity store, ManagerApproveRequestDto managerApproveRequestDto) {
-        if(store.getRegistrationStatus().equals(managerApproveRequestDto.getRegistrationStatus())) {
-            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "변경할 상태값을 입력해주세요.");
-        }
-    }
-
-    private void checkManagerRole(UserEntity user) {
-        if(UserRole.MANAGER == user.getRole()) {
-            throw new CustomApiException(ResBasicCode.BAD_REQUEST, "이미 매니저 권한입니다.");
-        }
-    }
-
-    /**
-     * UserEntity -> UserResponseDto
-     *
-     * @param userEntity
-     * @return
-     */
-    private UserResponseDto convertToDto(UserEntity userEntity) {
-        // UserResponseDto 객체 생성 및 UserEntity의 값을 이용해 초기화
-        return new UserResponseDto(
-                userEntity.getId(),
-                userEntity.getNickName(),
-                userEntity.getEmail(),
-                userEntity.getPhoneNumber(),
-                userEntity.getAddress(),
-                userEntity.getRole());
-    }
+  /**
+   * UserEntity -> UserResponseDto
+   *
+   * @param userEntity
+   * @return
+   */
+  private UserResponseDto convertToDto(UserEntity userEntity) {
+    // UserResponseDto 객체 생성 및 UserEntity의 값을 이용해 초기화
+    return new UserResponseDto(
+        userEntity.getId(),
+        userEntity.getNickName(),
+        userEntity.getEmail(),
+        userEntity.getPhoneNumber(),
+        userEntity.getAddress(),
+        userEntity.getRole());
+  }
 }

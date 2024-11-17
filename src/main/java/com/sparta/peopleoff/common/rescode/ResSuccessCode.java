@@ -21,6 +21,7 @@ public enum ResSuccessCode implements ResCodeIfs {
   // CATEGORY
   CATEGORY_CREATED(HttpStatus.OK.value(), "200", "Category Created"),
   CATEGORY_UPDATED(HttpStatus.OK.value(), "200", "Category Updated"),
+  CATEGORY_DELETED(HttpStatus.OK.value(), "200", "Category Deleted"),
 
   // ADMIN
   USER_ROLE_UPDATED(HttpStatus.OK.value(), "200", "user role successfully updated"),

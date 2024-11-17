@@ -1,5 +1,6 @@
 package com.sparta.peopleoff.domain.category.service;
 
+import com.sparta.peopleoff.common.enums.DeletionStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.category.dto.CategoryRequestDto;
 import com.sparta.peopleoff.domain.category.dto.CategoryResponseDto;
@@ -46,6 +47,11 @@ public class CategoryService {
     category.setCategoryName(categoryRequestDto.getCategoryName());
   }
 
+  /**
+   * 카테고리 조회
+   *
+   * @return
+   */
   @Transactional(readOnly = true)
   public List<CategoryResponseDto> getCategory() {
 
@@ -61,5 +67,19 @@ public class CategoryService {
             category.getCategoryName()
         ))
         .collect(Collectors.toList());
+  }
+
+  /**
+   * 카테고리 삭제
+   *
+   * @param categoryId
+   */
+  @Transactional
+  public void deleteCategory(UUID categoryId) {
+    // [예외1] - 존재하지 않는 카테고리
+    CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(()
+        -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 카테고리입니다."));
+
+    category.setDeletionStatus(DeletionStatus.DELETED);
   }
 }

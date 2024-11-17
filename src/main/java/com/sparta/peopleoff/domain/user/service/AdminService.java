@@ -1,8 +1,8 @@
 package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.enums.DeletionStatus;
-import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.common.enums.RegistrationStatus;
+import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.store.entity.StoreEntity;
 import com.sparta.peopleoff.domain.store.repository.StoreRepository;
 import com.sparta.peopleoff.domain.user.dto.ManagerApproveRequestDto;
@@ -14,14 +14,11 @@ import com.sparta.peopleoff.domain.user.repository.UserRepository;
 import com.sparta.peopleoff.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +58,7 @@ public class AdminService {
 
         user.setManagerRegistrationStatus(managerApproveRequestDto.getRegistrationStatus());
 
-        if(user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
+        if (user.getManagerRegistrationStatus() == (RegistrationStatus.ACCEPTED)) {
             user.setRole(UserRole.MANAGER);
         }
     }
@@ -69,7 +66,7 @@ public class AdminService {
     @Transactional
     public void deleteUser(Long userIdToDelete) {
         // [예외1] - 존재하지 않는 사용자
-        UserEntity userToDelete= userRepository.findById(userIdToDelete).orElseThrow(()
+        UserEntity userToDelete = userRepository.findById(userIdToDelete).orElseThrow(()
                 -> new CustomApiException(ResBasicCode.BAD_REQUEST, "존재하지 않는 사용자입니다."));
 
         userToDelete.setDeletionStatus(DeletionStatus.DELETED);
@@ -92,14 +89,14 @@ public class AdminService {
         }
 
         return searchUsers.map(user -> new UserResponseDto(
-                        user.getId(),
-                        user.getUserName(),
-                        user.getNickName(),
-                        user.getEmail(),
-                        user.getPhoneNumber(),
-                        user.getAddress(),
-                        user.getRole()
-                ));
+                user.getId(),
+                user.getUserName(),
+                user.getNickName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getRole()
+        ));
     }
 
     /**
@@ -179,6 +176,7 @@ public class AdminService {
 
     /**
      * UserEntity -> UserResponseDto
+     *
      * @param userEntity
      * @return
      */

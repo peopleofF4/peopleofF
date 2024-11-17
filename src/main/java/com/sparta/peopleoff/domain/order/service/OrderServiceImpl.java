@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
    * CUSTOMER의 주문 내역 조회
    *
    * @param user user
-   * @return List 주문 내역 조히
+   * @return List 주문 내역 조회
    */
   @Override
   @Transactional(readOnly = true)

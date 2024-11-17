@@ -132,13 +132,15 @@ public class AdminServiceImpl implements AdminService {
     // [예외3] - 이전과 같은 상태
     checkApproveStatusSame(store, storeApproveRequestDto);
 
+    UserEntity owner = store.getUser();
     // 가게 등록 승인시 Customer 권한이면 OWNER 권한으로 변경
-    if (storeApproveRequestDto.getStoreStatus() == StoreStatus.REGISTRATION_ACCEPTED
-        && user.getRole() == UserRole.CUSTOMER) {
+    if (!(storeApproveRequestDto.getStoreStatus() == StoreStatus.REGISTRATION_ACCEPTED
+        && owner.getRole() == UserRole.CUSTOMER)) {
 
-      user.setRole(UserRole.OWNER);
-      userRepository.save(user);
     }
+
+    owner.setRole(UserRole.OWNER);
+    userRepository.save(owner);
 
     store.setStoreStatus(storeApproveRequestDto.getStoreStatus());
   }

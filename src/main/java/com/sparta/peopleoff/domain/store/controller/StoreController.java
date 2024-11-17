@@ -74,7 +74,6 @@ public class StoreController {
    */
   @GetMapping("/stores")
   public ResponseEntity<ApiResponse<List<StoreGetResponseDto>>> getAllStores(
-      @RequestParam String keyword,
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDirection,
       @RequestParam(defaultValue = "10") int pageSize,

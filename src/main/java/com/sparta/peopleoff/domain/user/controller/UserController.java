@@ -36,16 +36,11 @@ public class UserController {
      * @return
      */
     @PostMapping("/users/signup")
-    public ResponseEntity<ApiResponse<Void>> signUp(
-            @Valid
-            @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
 
         userService.signUp(userSignUpRequestDto);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.OK(ResSuccessCode.SIGNUP_SUCCESS))
-                ;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.SIGNUP_SUCCESS));
     }
 
     /**
@@ -55,14 +50,11 @@ public class UserController {
      * @return
      */
     @GetMapping("/users/info")
-    public ResponseEntity<ApiResponse<UserInfoResponseDto>> getUserInfo(
-            @AuthenticationPrincipal UserDetailsImpl user) {
+    public ResponseEntity<ApiResponse<UserInfoResponseDto>> getUserInfo(@AuthenticationPrincipal UserDetailsImpl user) {
 
         UserInfoResponseDto response = userService.getUserInfo(user);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.OK(response));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(response));
     }
 
     /**
@@ -73,14 +65,11 @@ public class UserController {
      * @return
      */
     @PutMapping("users/{userId}")
-    public ResponseEntity<ApiResponse<Void>> updateUserInfo(@PathVariable Long userId,
-                                                            @Valid @RequestBody UserUpdateRequestDto userUpdateInfoDto) {
+    public ResponseEntity<ApiResponse<Void>> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequestDto userUpdateInfoDto) {
 
         userService.updateUserInfo(userId, userUpdateInfoDto);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_UPDATED));
     }
 
 
@@ -95,27 +84,21 @@ public class UserController {
 
         userService.deleteUser(userId);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.USER_DELETED));
     }
 
     /**
-     * // 비밀번호 변경 API
+     * 비밀번호 변경 API
      *
      * @param userChangePasswordDto
      * @param userDetails
      * @return
      */
     @PutMapping("/users/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(
-            @RequestBody @Valid UserChangePasswordDto userChangePasswordDto
-            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody @Valid UserChangePasswordDto userChangePasswordDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         userService.changePassword(userChangePasswordDto, userDetails);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
     }
-
 }

@@ -118,4 +118,18 @@ public class UserController {
         .body(ApiResponse.OK(ResSuccessCode.PASSWORD_UPDATED));
   }
 
+  /**
+   * Manager 신청 API
+   *
+   * @param userId
+   * @return
+   */
+  @PostMapping("/users/{userId}/apply-manager")
+  public ResponseEntity<ApiResponse<Void>> applyManager(@PathVariable Long userId) {
+
+    userService.applyManager(userId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.OK(ResSuccessCode.MANAGER_APPLY));
+  }
+
 }

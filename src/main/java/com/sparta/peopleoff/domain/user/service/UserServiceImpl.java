@@ -2,6 +2,7 @@ package com.sparta.peopleoff.domain.user.service;
 
 import com.sparta.peopleoff.common.auditing.AuditorContext;
 import com.sparta.peopleoff.common.enums.DeletionStatus;
+import com.sparta.peopleoff.common.enums.RegistrationStatus;
 import com.sparta.peopleoff.common.rescode.ResBasicCode;
 import com.sparta.peopleoff.domain.user.dto.UserChangePasswordDto;
 import com.sparta.peopleoff.domain.user.dto.UserInfoResponseDto;
@@ -108,6 +109,24 @@ public class UserServiceImpl implements UserService {
 
     user.updatePassword(newPassword);
     userRepository.save(user);
+
+  }
+
+  @Override
+  @Transactional
+  public void applyManager(Long userId) {
+
+    UserEntity user = userRepository.findById(userId).orElseThrow(
+        () -> new CustomApiException(ResBasicCode.NULL_POINT, "User Not Found.")
+    );
+
+    // 이미 Manager 신청이 됬거나 신청이 거부당한 User
+    if (user.getManagerRegistrationStatus() != (RegistrationStatus.NONE)) {
+      throw new CustomApiException(ResBasicCode.BAD_REQUEST,
+          "manager already registered or rejected");
+    }
+
+    user.setManagerRegistrationStatus(RegistrationStatus.PENDING);
 
   }
 

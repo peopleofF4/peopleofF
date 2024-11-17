@@ -19,4 +19,5 @@ public interface UserService {
   void changePassword(UserChangePasswordDto userChangePasswordDto,
       UserDetailsImpl userDetails);
 
+  void applyManager(Long userId);
 }

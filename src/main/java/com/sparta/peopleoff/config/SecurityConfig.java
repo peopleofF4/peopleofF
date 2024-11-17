@@ -85,7 +85,7 @@ public class SecurityConfig {
             .requestMatchers("/").permitAll()
             .requestMatchers("/api/v1/users/signup", "/api/v1/users/login",
                 "/api/v1/users/check/refreshtoken").permitAll()
-            .requestMatchers(SWAGGER.toArray(new String[0])).hasAnyRole("MASTER", "MANAGER")
+            .requestMatchers(SWAGGER.toArray(new String[0])).permitAll()
             .requestMatchers("/admin/v1/**").hasAnyRole("MASTER", "MANAGER")
             .anyRequest().authenticated()
     );

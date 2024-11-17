@@ -22,6 +22,6 @@ Authorization: {{Authorization}}
 Content-Type: application/json
 
 {
-  "aiRequest": "안녕 너는 누구야?"
+  "aiRequest": "비빔밥 메뉴 설명을 해줘."
 }
 

@@ -42,7 +42,6 @@ public class StoreController {
    * @return
    */
   @PostMapping("/stores")
-  @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<ApiResponse<Void>> registerStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody StorePostRequestDto storeRequestDto) {

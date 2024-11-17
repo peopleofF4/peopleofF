@@ -45,7 +45,6 @@ public class RefreshTokenService {
           refreshTokenEntity.updateRefreshToken(replaceRefreshToken, user);
           refreshTokenRepository.save(refreshTokenEntity);
         });
-
   }
 
   @Transactional(readOnly = true)
@@ -59,8 +58,6 @@ public class RefreshTokenService {
       response.setHeader(JwtTokenProvider.ACCESS_HEADER,
           JwtTokenProvider.createAccessToken(user.getEmail(), user.getRole()));
     }
-
   }
-
 
 }

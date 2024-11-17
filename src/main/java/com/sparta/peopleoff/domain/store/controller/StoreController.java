@@ -52,6 +52,7 @@ public class StoreController {
 
   /**
    * 가게 단건 조회
+   *
    * @param storeId
    * @return
    */
@@ -124,7 +125,7 @@ public class StoreController {
    * @return
    */
   @DeleteMapping("/stores/{storeId}")
-  @PreAuthorize("hasAuthority('OWNER') or hasAuthority('MANAGER') or hasAuthority('MASTER')")
+  @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'MASTER')")
   public ResponseEntity<ApiResponse<Void>> deleteStore(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable UUID storeId) {

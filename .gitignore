@@ -27,8 +27,7 @@ out/
 !**/src/test/**/out/
 
 **/application.properties
-*.yaml
-*.yml
+application.yml
 *.http
 
 ### NetBeans ###

@@ -220,7 +220,7 @@ gemini:
 
 <details>
 <summary>열기</summary>
-<img width="695" alt="architecture" src="https://github.com/user-attachments/assets/2ecaa34d-e28b-42ae-bd5d-f8d32c6c32a3">
+<img width="695" alt="architecture" src="https://www.notion.so/21-F-1361ee33c50580718c9ec10e5d359990?pvs=4#d48232e7477647778938f84ced51e40f">
 </details>
 
 <br>

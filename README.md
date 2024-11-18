@@ -232,7 +232,7 @@ gemini:
 
 <details>
 <summary>열기</summary>
-[https://www.notion.so/API-1371ee33c50580a09f06de93422b1f29](https://www.notion.so/API-1371ee33c50580a09f06de93422b1f29?pvs=21)
+https://sneaky-prawn-eed.notion.site/API-1371ee33c50580a09f06de93422b1f29
 </details>
 
 <br>

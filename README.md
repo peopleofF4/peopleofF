@@ -244,7 +244,11 @@ https://sneaky-prawn-eed.notion.site/API-1371ee33c50580a09f06de93422b1f29
 ## 📀 테스트용 포스트맨 컬렉션
 <details>
 <summary>열기</summary>
-  [PeopleOfF.postman_collection.json](https://github.com/user-attachments/files/17798169/PeopleOfF.postman_collection.json)
+  https://github.com/user-attachments/files/17798169/PeopleOfF.postman_collection.json
 </details>
+
+<br>
+<br>
+<br>
 
 ![footer](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=footer)

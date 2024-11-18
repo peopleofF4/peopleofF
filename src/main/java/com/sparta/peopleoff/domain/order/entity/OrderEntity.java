@@ -102,5 +102,6 @@ public class OrderEntity extends SoftDeleteEntity {
   public void cancel() {
     this.orderStatus = OrderStatus.CANCELED;
     this.setDeletionStatus(DeletionStatus.DELETED);
+
   }
 }

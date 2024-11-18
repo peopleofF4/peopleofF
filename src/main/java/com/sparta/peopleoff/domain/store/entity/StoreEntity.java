@@ -1,18 +1,21 @@
 package com.sparta.peopleoff.domain.store.entity;
 
-
+import com.sparta.peopleoff.common.entity.SoftDeleteEntity;
 import com.sparta.peopleoff.domain.category.entity.CategoryEntity;
 import com.sparta.peopleoff.domain.menu.entity.MenuEntity;
+import com.sparta.peopleoff.domain.store.dto.StorePutRequestDto;
+import com.sparta.peopleoff.domain.store.entity.enums.StoreStatus;
 import com.sparta.peopleoff.domain.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_store")
 @Getter
 @NoArgsConstructor
-public class StoreEntity {
+public class StoreEntity extends SoftDeleteEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,13 +47,9 @@ public class StoreEntity {
   @Column(nullable = false)
   private int minimumOrderPrice;
 
-  // Enum : pending(default):보류 / accepted:수락 / rejected:거절
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private String registrationStatus;
-
-  // Enum : active:활성 / deleted:삭제
-  @Column(nullable = false)
-  private String deletionStatus;
+  private StoreStatus storeStatus = StoreStatus.REGISTRATION_PENDING;
 
   @Column
   private int totalRating;
@@ -62,7 +61,7 @@ public class StoreEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
   private CategoryEntity category;
 
@@ -70,4 +69,47 @@ public class StoreEntity {
   private List<MenuEntity> menuList;
 
 
+  public StoreEntity(String storeName, String storeAddress, String storePhoneNumber,
+      String businessNumber, int minimumOrderPrice, UserEntity user,
+      CategoryEntity category) {
+    this.storeName = storeName;
+    this.storeAddress = storeAddress;
+    this.storePhoneNumber = storePhoneNumber;
+    this.businessNumber = businessNumber;
+    this.minimumOrderPrice = minimumOrderPrice;
+    this.user = user;
+    this.category = category;
+  }
+
+  public void update(StorePutRequestDto dto, CategoryEntity category) {
+    this.storeName = dto.getStoreName();
+    this.storeAddress = dto.getStoreAddress();
+    this.storePhoneNumber = dto.getStorePhoneNumber();
+    this.businessNumber = dto.getBusinessNumber();
+    this.minimumOrderPrice = dto.getMinimumOrderPrice();
+    this.category = category;
+  }
+
+  public void delete() {
+    this.storeStatus = StoreStatus.DELETED_PENDING;
+  }
+
+  public void setStoreStatus(
+      StoreStatus storeStatus) {
+    this.storeStatus = storeStatus;
+  }
+
+  public void addRating(int newRating) {
+    this.totalRating += newRating;
+    this.ratingCount += 1;
+  }
+
+  public void updateRating(int previousRating, int newRating) {
+    this.totalRating = this.totalRating - previousRating + newRating;
+  }
+
+  public void removeRating(int rating) {
+    this.totalRating -= rating;
+    this.ratingCount = Math.max(this.ratingCount - 1, 0); // 최소 0으로 유지
+  }
 }

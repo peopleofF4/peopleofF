@@ -220,7 +220,7 @@ gemini:
 
 <details>
 <summary>열기</summary>
-<img width="695" alt="architecture" src="https://github.com/user-attachments/assets/68a2890f-d128-4eae-8e86-5f6d99135995">
+<img width="834" alt="architecture" src="https://github.com/user-attachments/assets/70d8c571-45e9-400a-9889-0144430f336b">
 </details>
 
 <br>

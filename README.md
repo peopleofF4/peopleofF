@@ -216,6 +216,18 @@ gemini:
 
 ---
 
+## 📌 Architecture
+
+<details>
+<summary>열기</summary>
+<img width="695" alt="architecture" src="https://github.com/user-attachments/assets/2ecaa34d-e28b-42ae-bd5d-f8d32c6c32a3">
+</details>
+
+<br>
+<br>
+
+---
+
 ## 📄 API 명세서
 
 <details>

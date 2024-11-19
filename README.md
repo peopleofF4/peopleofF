@@ -220,7 +220,7 @@ gemini:
 
 <details>
 <summary>열기</summary>
-<img width="695" alt="architecture" src="https://github.com/user-attachments/assets/af203652-bbcd-4193-a3b1-c12ecd40710e">
+<img width="834" alt="architecture" src="https://github.com/user-attachments/assets/70d8c571-45e9-400a-9889-0144430f336b">
 </details>
 
 <br>
@@ -233,6 +233,18 @@ gemini:
 <details>
 <summary>열기</summary>
 https://sneaky-prawn-eed.notion.site/API-1371ee33c50580a09f06de93422b1f29
+</details>
+
+<br>
+<br>
+<br>
+
+---
+
+## 📀 테스트용 포스트맨 컬렉션
+<details>
+<summary>열기</summary>
+  https://github.com/user-attachments/files/17798169/PeopleOfF.postman_collection.json
 </details>
 
 <br>

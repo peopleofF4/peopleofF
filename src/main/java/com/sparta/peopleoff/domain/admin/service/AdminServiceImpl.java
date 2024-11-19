@@ -48,12 +48,12 @@ public class AdminServiceImpl implements AdminService {
         pageable.getSort());
 
     if (userName == null || userName.isEmpty()) {
-      return userRepository.findAll(pageable)
+      return userRepository.findAll(updatedPageable)
           .map(this::convertToDto)
           ;
     }
 
-    return userRepository.findByUserNameContaining(userName, pageable)
+    return userRepository.findByUserNameContaining(userName, updatedPageable)
         .map(this::convertToDto)
         ;
   }
